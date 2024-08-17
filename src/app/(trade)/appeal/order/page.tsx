@@ -1,10 +1,10 @@
 'use client'
 import React, { Fragment } from 'react'
-import Chat from './chat'
+import Chat from '../chat'
 import Button from '@/components/ui/Button'
 import FaqsSection from '@/components/sections/Faqs'
 import Timer from '@/components/timer'
-import Vote from './vote'
+import Vote from '../vote'
 import { useModal } from '@/common/contexts/ModalContext'
 
 const Appeal = () => {
