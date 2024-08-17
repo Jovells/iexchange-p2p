@@ -1,23 +1,24 @@
 'use client'
 
 import { ChevronDown, ChevronRight, Clock, Home, Settings, User } from "lucide-react";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const navItems = [
     {
         title: "Home",
         icon: <Home />,
-        link: "/home",
+        link: "/dash",
         children: [],
     },
     {
         title: "Order History",
         icon: <Clock />,
-        link: "/settings",
+        link: "/history",
         children: [
-            { title: "P2P", link: "/settings/profile" },
-            { title: "Transaction History", link: "/settings/account" },
-            { title: "Appealed Order", link: "/settings/account" },
+            { title: "P2P Order", link: "/history/p2p" },
+            { title: "Transaction History", link: "/history/transaction" },
+            { title: "Appealed Order", link: "/history/appeals" },
         ],
     },
     {
@@ -66,12 +67,12 @@ const SideNav = () => {
                             <ul className="ml-8 mt-2 space-y-6">
                                 {item.children.map((child, childIndex) => (
                                     <li key={childIndex}>
-                                        <a
+                                        <Link
                                             href={child.link}
                                             className="block p-2 hover:bg-gray-50 text-gray-600"
                                         >
                                             {child.title}
-                                        </a>
+                                        </Link>
                                     </li>
                                 ))}
                             </ul>
