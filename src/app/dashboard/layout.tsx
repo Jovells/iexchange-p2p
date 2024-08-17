@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-// import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import "@/styles/custom.css";
-
-// const inter = Inter({ subsets: ["latin"] });
+import MainNav from "@/components/layout/navbar";
+import { ModalContextProvider } from "@/common/contexts/ModalContext";
+import ModalManager from "@/components/shared/modal/Modal";
+import SideNav from "@/components/layout/SideNav";
 
 export const metadata: Metadata = {
     title: "iExchange P2P || Onchain P2P Trading Platform",
@@ -17,7 +18,18 @@ export default function DashboardLayout({
 }>) {
     return (
         <html lang="en">
-            <body >{children}</body>
+            <body className="flex flex-col min-h-screen">
+                <ModalContextProvider>
+                    <MainNav />
+                    <div className="flex flex-1 border-t p-10">
+                        <SideNav />
+                        <div className="flex-1 p-4 px-10">
+                            {children}
+                        </div>
+                    </div>
+                    <ModalManager />
+                </ModalContextProvider>
+            </body>
         </html>
     );
 }
