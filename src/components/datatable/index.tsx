@@ -7,6 +7,7 @@ type Row = {
 type Action = {
     label: string;
     onClick: (row: Row) => void;
+    classNames?:string;
 };
 
 interface Column {
@@ -37,9 +38,9 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
             <div className="overflow-x-auto">
                 <div className="min-w-full">
                     {/* Table Header */}
-                    <div className="hidden md:grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(150px,1fr))] bg-black rounded-xl px-4">
+                    <div className="hidden md:grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(150px,1fr))] bg-black rounded-xl p-4">
                         {columns.map((column, idx) => (
-                            <div key={idx} className="p-2 text-white font-semibold">
+                            <div key={idx} className="col-span-1 text-white font-semibold">
                                 {column.label}
                             </div>
                         ))}
@@ -53,13 +54,13 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
                             className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(150px,1fr))] border-b px-4 py-2"
                         >
                             {columns.map((column) => (
-                                <div key={column.key} className="p-2 text-gray-600">
+                                <div key={column.key} className="col-span-1 text-gray-600">
                                     {column.render ? column.render(row) : row[column.key]}
                                 </div>
                             ))}
 
                             {actions && actions.length > 0 && (
-                                <div className="col-span-1 w-full">
+                                <div className="col-span-1 w-full flex justify-end">
                                     {actions.map((action, actionIndex) => (
                                         <button
                                             key={actionIndex}
@@ -68,7 +69,7 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
                                                 action.onClick(row);
                                                 // handleRowClick(index);
                                             }}
-                                            className={`text-black text-sm px-4 py-3 rounded-xl`}
+                                            className={`text-black text-sm px-4 py-3 rounded-xl ${action.classNames}`}
                                         >
                                             {action.label}
                                         </button>

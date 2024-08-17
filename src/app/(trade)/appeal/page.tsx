@@ -49,8 +49,8 @@ const Appealls = () => {
   ];
 
   const actions = [
-    { label: "edit", onClick: (row: any) => console.log(row) }
-]
+    { label: "Pick Order", onClick: (row: any) => console.log(row), classNames: "bg-green-700 text-white" }
+  ]
 
   return (
     <div className="container mx-auto p-0 py-4">
@@ -71,7 +71,13 @@ const Appealls = () => {
       )}
 
       {hasStake && (
-        <GridTable columns={columns} data={data} actions={actions} itemsPerPage={50} />
+        <div className='py-12 flex flex-col gap-10'>
+          <div className='flex flex-col gap-3'>
+            <h1 className='text-gray-600 text-xl'>Awaiting Case</h1>
+            <p className='text-gray-500'>Pick up an Order and Settle cases fairly</p>
+          </div>
+          <GridTable columns={columns} data={data} actions={actions} itemsPerPage={50} />
+        </div>
       )}
 
       <FaqsSection />
