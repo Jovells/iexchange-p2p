@@ -1,9 +1,11 @@
 'use client'
+import { useModal } from '@/common/contexts/ModalContext';
 import GridTable from '@/components/datatable';
 import FaqsSection from '@/components/sections/Faqs';
 import Button from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+import Stake from './stake';
 
 const columns: any = [
   {
@@ -43,6 +45,7 @@ const columns: any = [
 const Appealls = () => {
   // State or condition that determines what content to display
   const hasStake = true;
+  const { showModal, hideModal } = useModal()
 
   const route = useRouter()
 
@@ -54,6 +57,13 @@ const Appealls = () => {
   const actions = [
     { label: "Pick Order", onClick: (row: any) => route.push('/appeal/order'), classNames: "bg-green-700 text-white" }
   ]
+
+
+  const handleStake = () => {
+    showModal(
+      <Stake hideModal={hideModal} />
+    )
+  }
 
   return (
     <div className="container mx-auto p-0 py-4">
@@ -68,6 +78,7 @@ const Appealls = () => {
               iconPosition="right"
               icon="/images/icons/export.svg"
               className='border px-3 py-2 rounded-xl text-gray-500'
+              onClick={handleStake}
             />
           </div>
         </div>
