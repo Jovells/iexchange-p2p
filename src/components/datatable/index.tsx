@@ -7,6 +7,7 @@ type Row = {
 type Action = {
     label: string;
     onClick: (row: Row) => void;
+    classNames?:string;
 };
 
 interface Column {
@@ -68,7 +69,7 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
                                                 action.onClick(row);
                                                 // handleRowClick(index);
                                             }}
-                                            className={`text-black text-sm px-4 py-3 rounded-xl`}
+                                            className={`text-black text-sm px-4 py-3 rounded-xl ${action.classNames}`}
                                         >
                                             {action.label}
                                         </button>

@@ -49,7 +49,7 @@ const Appealls = () => {
   ];
 
   const actions = [
-    { label: "edit", onClick: (row: any) => console.log(row) }
+    { label: "Pick Order", onClick: (row: any) => console.log(row), classNames:"bg-green-700 text-white" }
 ]
 
   return (
