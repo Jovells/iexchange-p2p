@@ -43,11 +43,7 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
                                 {column.label}
                             </div>
                         ))}
-                        {/* {actions && (
-                            <div className="hidden p-2 text-white font-semibold">
-                                Actions
-                            </div>
-                        )} */}
+                        {actions && actions.length > 0 && <div className="col-span-1 w-full flex justify-end"></div>}
                     </div>
 
                     {/* Table Body */}
@@ -57,13 +53,13 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
                             className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(150px,1fr))] border-b px-4 py-2"
                         >
                             {columns.map((column) => (
-                                <div key={column.key} className="col-span-1 text-gray-600">
+                                <div key={column.key} className="p-2 text-gray-600">
                                     {column.render ? column.render(row) : row[column.key]}
                                 </div>
                             ))}
 
                             {actions && actions.length > 0 && (
-                                <div className="col-span-1 w-full flex justify-end">
+                                <div className="col-span-1 w-full">
                                     {actions.map((action, actionIndex) => (
                                         <button
                                             key={actionIndex}
