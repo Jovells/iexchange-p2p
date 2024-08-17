@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import clsx from 'clsx';
 
 interface ButtonProps {
-    text?: string;
+    text?: string | ReactNode;
     icon?: React.ReactNode | string;
     iconPosition?: 'left' | 'right' | any;
     iconClassName?: string;
