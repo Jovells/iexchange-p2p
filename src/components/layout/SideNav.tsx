@@ -15,8 +15,9 @@ const navItems = [
         icon: <Clock />,
         link: "/settings",
         children: [
-            { title: "Profile", link: "/settings/profile" },
-            { title: "Account", link: "/settings/account" },
+            { title: "P2P", link: "/settings/profile" },
+            { title: "Transaction History", link: "/settings/account" },
+            { title: "Appealed Order", link: "/settings/account" },
         ],
     },
     {
@@ -24,8 +25,8 @@ const navItems = [
         icon: <User />,
         link: "/settings",
         children: [
-            { title: "Profile", link: "/settings/profile" },
-            { title: "Account", link: "/settings/account" },
+            { title: "Identification", link: "/settings/profile" },
+            { title: "Payment", link: "/settings/account" },
         ],
     },
     {
@@ -62,12 +63,12 @@ const SideNav = () => {
                             )}
                         </div>
                         {activeIndex === index && item.children.length > 0 && (
-                            <ul className="ml-8 mt-2 space-y-1">
+                            <ul className="ml-8 mt-2 space-y-6">
                                 {item.children.map((child, childIndex) => (
                                     <li key={childIndex}>
                                         <a
                                             href={child.link}
-                                            className="block p-2 hover:bg-gray-50"
+                                            className="block p-2 hover:bg-gray-50 text-gray-600"
                                         >
                                             {child.title}
                                         </a>
