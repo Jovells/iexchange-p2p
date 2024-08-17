@@ -21,12 +21,13 @@ const WalletConnect = () => {
                     />
                 </div>
             ) : (
-                <ConnectWallet
-                    text="Connect Wallet"
-                    icon="/images/icons/export.svg"
-                    iconPosition="right"
-                    className="bg-[#000000] text-white hover:bg-gray-600 rounded-xl px-4 py-2"
-                />
+                // <ConnectWallet
+                //     text="Connect Wallet"
+                //     icon="/images/icons/export.svg"
+                //     iconPosition="right"
+                //     className="bg-[#000000] text-white hover:bg-gray-600 rounded-xl px-4 py-2"
+                // />
+                <w3m-button />
             )}
         </Fragment>
     );
