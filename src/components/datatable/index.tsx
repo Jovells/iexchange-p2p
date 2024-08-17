@@ -5,9 +5,10 @@ type Row = {
 };
 
 type Action = {
-    label: string;
+    label?: string;
     onClick: (row: Row) => void;
-    classNames?:string;
+    classNames?: string;
+    icon?: ReactNode
 };
 
 interface Column {
@@ -71,7 +72,12 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
                                             }}
                                             className={`text-black text-sm px-4 py-3 rounded-xl ${action.classNames}`}
                                         >
-                                            {action.label}
+                                            <div className="flex flex-row space-x-1">
+                                                <span>
+                                                    {action.label}
+                                                </span>
+                                                {action.icon}
+                                            </div>
                                         </button>
                                     ))}
                                 </div>
