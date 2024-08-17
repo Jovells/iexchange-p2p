@@ -2,6 +2,7 @@
 import GridTable from '@/components/datatable';
 import FaqsSection from '@/components/sections/Faqs';
 import Button from '@/components/ui/Button';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const columns: any = [
@@ -43,13 +44,15 @@ const Appealls = () => {
   // State or condition that determines what content to display
   const hasStake = true;
 
+  const route = useRouter()
+
   const data = [
     { name: "John Doe", age: 25, email: "john@example.com", country: "USA", occupation: "Engineer" },
     { name: "Jane Smith", age: 30, email: "jane@example.com", country: "UK", occupation: "Designer" },
   ];
 
   const actions = [
-    { label: "Pick Order", onClick: (row: any) => console.log(row), classNames: "bg-green-700 text-white" }
+    { label: "Pick Order", onClick: (row: any) => route.push('/appeal/order'), classNames: "bg-green-700 text-white" }
   ]
 
   return (
