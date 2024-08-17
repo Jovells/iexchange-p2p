@@ -66,7 +66,7 @@ const Appealls = () => {
   }
 
   return (
-    <div className="container mx-auto p-0 py-4">
+    <div className="container mx-auto p-0 py-4 pt-0">
       {!hasStake && (
         <div className='min-h-[500px] flex justify-center items-center'>
           <div className='flex flex-col justify-center items-center space-y-4'>
