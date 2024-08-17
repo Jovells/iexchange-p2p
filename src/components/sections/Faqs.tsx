@@ -10,7 +10,7 @@ import {
 
 const FaqsSection = () => {
     return (
-        <div className="gap-10 w-full pb-12">
+        <div className="gap-10 w-full pb-10 mt-6 lg:mt-20">
             <h2 className="text-4xl font-medium text-center">
                 Frequently Asked Questions
             </h2>

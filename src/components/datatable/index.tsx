@@ -1,11 +1,25 @@
-'use client'
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
+
+type Row = {
+    [key: string]: any;
+};
+
+type Action = {
+    label: string;
+    onClick: (row: Row) => void;
+};
+
+interface Column {
+    key: string;
+    label: string;
+    render?: (row: Row) => ReactNode;
+}
 
 interface GridTableProps {
-    columns: string[];
+    columns: Column[];
     data: Record<string, any>[];
     itemsPerPage?: number;
-    actions?: (row: Record<string, any>) => JSX.Element;
+    actions?: Action[];
 }
 
 const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, actions }) => {
@@ -26,33 +40,39 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
                     <div className="hidden md:grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(150px,1fr))] bg-black rounded-xl px-4">
                         {columns.map((column, idx) => (
                             <div key={idx} className="p-2 text-white font-semibold">
-                                {column}
+                                {column.label}
                             </div>
                         ))}
-                        {/* {actions && (
-                            <div className="p-2 text-white font-semibold border-b">
-                                Actions
-                            </div>
-                        )} */}
+                        {actions && actions.length > 0 && <div className="col-span-1 w-full flex justify-end"></div>}
                     </div>
 
                     {/* Table Body */}
                     {paginatedData.map((row, idx) => (
                         <div
                             key={idx}
-                            className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(150px,1fr))] border-b px-4"
+                            className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(150px,1fr))] border-b px-4 py-2"
                         >
-                            {columns.map((col, colIdx) => (
-                                <div
-                                    key={`${idx}-${colIdx}`}
-                                    className="py-3"
-                                >
-                                    {row[col]}
+                            {columns.map((column) => (
+                                <div key={column.key} className="p-2 text-gray-600">
+                                    {column.render ? column.render(row) : row[column.key]}
                                 </div>
                             ))}
-                            {actions && (
-                                <div className="p-2">
-                                    {actions(row)}
+
+                            {actions && actions.length > 0 && (
+                                <div className="col-span-1 w-full">
+                                    {actions.map((action, actionIndex) => (
+                                        <button
+                                            key={actionIndex}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                action.onClick(row);
+                                                // handleRowClick(index);
+                                            }}
+                                            className={`text-black text-sm px-4 py-3 rounded-xl`}
+                                        >
+                                            {action.label}
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>
