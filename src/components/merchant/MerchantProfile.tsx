@@ -1,4 +1,4 @@
-import { BadgeCheck, DollarSign, IndianRupee } from 'lucide-react'
+import { BadgeCheck, IndianRupee } from 'lucide-react'
 import React from 'react'
 
 const MerchantProfile = () => {

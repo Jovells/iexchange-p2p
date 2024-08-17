@@ -72,10 +72,8 @@ const SubNav = () => {
                 icon="/images/icons/profile.png"
                 dropdownItems={accountLinks}
             >
-                <div className="px-4">
-                    <WalletConnect />
-                    <IsVerifiedButton />
-                </div>
+                <WalletConnect />
+                <IsVerifiedButton />
             </MenuDropdown>
         </div>
     );

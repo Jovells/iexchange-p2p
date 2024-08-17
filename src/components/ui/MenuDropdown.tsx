@@ -66,7 +66,9 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
                 <div
                     className="w-auto absolute right-0 w-48 mt-0 py-4 t-6 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg z-10"
                 >
-                    {children}
+                    <div className="px-3">
+                        {children}
+                    </div>
                     {dropdownItems.length > 0 && (
                         <div className="min-w-[200px] py-4 space-y-3">
                             {dropdownItems.map((item, index) => (

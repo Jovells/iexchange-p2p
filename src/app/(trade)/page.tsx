@@ -7,6 +7,8 @@ import SelectPaymentMethod from '@/components/ui/InputSelect';
 import InputAmount from '@/components/ui/InputWithSelect';
 import P2POrder from './order';
 import WalletConnectSection from '@/components/sections/WalletConnectSection';
+import Faqs from '@/components/sections/Faqs';
+import IExchangeGuide from '@/components/sections/IExchangeGuide';
 
 interface P2PMarketProps { };
 
@@ -136,6 +138,10 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
         <div className="w-full mt-4">
           <P2POrder orderType={tab} />
         </div>
+
+        <IExchangeGuide />
+
+        <Faqs />
       </div>
 
     </>
