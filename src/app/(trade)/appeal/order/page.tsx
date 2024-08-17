@@ -4,8 +4,18 @@ import Chat from './chat'
 import Button from '@/components/ui/Button'
 import FaqsSection from '@/components/sections/Faqs'
 import Timer from '@/components/timer'
+import Vote from './vote'
+import { useModal } from '@/common/contexts/ModalContext'
 
 const Appeal = () => {
+
+  const { showModal, hideModal } = useModal()
+
+  const handleVote = () => {
+    showModal(
+      <Vote hideModal={hideModal} />
+    )
+  }
   return (
     <Fragment>
       <div className='w-full py-6 bg-[#CCE0F6]'>
@@ -78,12 +88,11 @@ const Appeal = () => {
                 icon="/images/icons/export.svg"
                 iconPosition="right"
                 className="bg-[#000000] text-white rounded-xl px-4 py-2"
-              // onClick={() => { }}
+                onClick={handleVote}
               />
               <Button
                 text="Decline Case"
                 className="bg-gray-50 text-black rounded-xl px-4 py-2"
-              // onClick={() => { }}
               />
             </div>
           </div>
