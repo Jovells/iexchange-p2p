@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import "@/styles/custom.css";
 import MainNav from "@/components/layout/navbar";
@@ -12,7 +11,8 @@ import ModalManager from "@/components/shared/modal/Modal";
 
 export const metadata: Metadata = {
   title: "iExchange P2P || Onchain P2P Trading Platform",
-  description: "Convert Crypto to Fiat | Fiat to Crypto in your decentralized wallet with iExchange.",
+  description:
+    "Convert Crypto to Fiat | Fiat to Crypto in your decentralized wallet with iExchange.",
 };
 
 export default function RootLayout({
@@ -21,18 +21,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body >
-        <ModalContextProvider>
-          <MainNav />
-          <SubNav />
-          <div className="w-full min-h-screen">
-            {children}
-          </div>
-          <Footer />
-          <ModalManager />
-        </ModalContextProvider>
-      </body>
-    </html>
+    <ModalContextProvider>
+      <MainNav />
+      <SubNav />
+      <div className="w-full min-h-screen">{children}</div>
+      <Footer />
+      <ModalManager />
+    </ModalContextProvider>
   );
 }
