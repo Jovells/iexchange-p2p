@@ -26,6 +26,7 @@ type ExpandableTableProps = {
 
 const ExpandableTable = forwardRef(
   ({ columns, data, actions = [], styles, isLoading, children }: ExpandableTableProps, ref) => {
+    
     const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
     const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
 
