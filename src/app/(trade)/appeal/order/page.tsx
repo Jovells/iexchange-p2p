@@ -6,6 +6,8 @@ import FaqsSection from '@/components/sections/Faqs'
 import Timer from '@/components/timer'
 import Vote from '../vote'
 import { useModal } from '@/common/contexts/ModalContext'
+import Steps from '@/components/step'
+import { steps } from '@/common/data/steps'
 
 const Appeal = () => {
 
@@ -40,6 +42,9 @@ const Appeal = () => {
         </div>
       </div>
       <div className='container mx-auto px-0 py-4'>
+        <div className="flex justify-center items-center py-16">
+          <Steps steps={steps} />
+        </div>
         <div className="w-full h-[500px] grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
 
           <Chat />
