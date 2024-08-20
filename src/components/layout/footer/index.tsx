@@ -35,8 +35,7 @@ const Footer = () => {
             {footerNavSections.map((navSection) => (
               <div
                 key={navSection.title}
-                className="w-full flex flex-col gap-5 font-medium"
-              >
+                className="w-full flex flex-col gap-5 font-medium">
                 <h3 className="text-xl dark:text-[#f5f5f5]">
                   {navSection.title}
                 </h3>
@@ -57,7 +56,7 @@ const Footer = () => {
         <div className="py-5">
           <div className="grid lg:grid-cols-[1fr-auto] items-center lg:items-start justify-center gap-5">
             <Image
-              src="/images/logos/iexchange.png"
+              src="/images/logo/iexchange-logo.png"
               alt="logo"
               width={127}
               height={42}
