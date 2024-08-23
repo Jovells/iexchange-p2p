@@ -4,8 +4,7 @@ import "@/styles/custom.css";
 import MainNav from "@/components/layout/navbar";
 import SubNav from "@/components/layout/navbar/SubNav";
 import Footer from "@/components/layout/footer";
-import { ModalContextProvider } from "@/common/contexts/ModalContext";
-import ModalManager from "@/components/shared/modal/Modal";
+import { Fragment } from "react";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -15,18 +14,19 @@ export const metadata: Metadata = {
     "Convert Crypto to Fiat | Fiat to Crypto in your decentralized wallet with iExchange.",
 };
 
-export default function RootLayout({
+export default function TradeLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <ModalContextProvider>
+    <Fragment>
       <MainNav />
       <SubNav />
-      <div className="w-full min-h-screen">{children}</div>
+      <div className="w-full min-h-screen">
+        {children}
+      </div>
       <Footer />
-      <ModalManager />
-    </ModalContextProvider>
+    </Fragment>
   );
 }

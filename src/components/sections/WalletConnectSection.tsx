@@ -1,8 +1,10 @@
 import React from 'react'
 import WalletConnect from '../wallet';
+import { useAccount } from 'wagmi';
 
 const WalletConnectSection = () => {
-    const isConnected = false;
+    const { isConnected } = useAccount();
+    // const isConnected = false;
     if (isConnected) {
         return null;
     }

@@ -1,3 +1,4 @@
+'use client'
 import ExpandableTable from '@/components/data-grid'
 import { useSearchParams } from 'next/navigation';
 import React, { FC } from 'react'

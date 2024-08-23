@@ -4,47 +4,51 @@ import IsVerifiedButton from "@/components/ui/IsVerifiedButton";
 import MenuDropdown from "../../ui/MenuDropdown";
 import Link from 'next/link';
 import WalletConnect from "@/components/wallet";
+import { useAccount, useDisconnect } from "wagmi";
+
+const menuLinks = [
+    { href: "/", label: "P2P" },
+    { href: "/appeal", label: "Appeals" },
+    { href: "/ads", label: "My Ads" } // should on be visible to merchants
+];
+const accountLinks = [
+    { link: "/dashboard", icon: "/images/icons/home.png", label: "Dashboard" },
+    { link: "/Orders", icon: "/images/icons/clock.png", label: "Order History" },
+    { link: "/profile", icon: "/images/icons/profile-circle.png", label: "Profile" },
+    { link: "/settings", icon: "/images/icons/settings.png", label: "Settings" }
+];
+
+const helpCenterLinks = [
+    { link: "/buy-sell", label: "How to Buy/Sell" },
+    { link: "/place-order", label: "Placing and Order" },
+    { link: "/becoming-merchant", label: "How to be a Merchant" },
+    { link: "/becoming-settler", label: "How to be a settler" }
+];
+
+const items = [
+    { label: "Item 1", value: "Description of item 1" },
+    { label: "Item 2", value: "Description of item 2" },
+    { label: "Item 3", value: "Description of item 3" },
+    { label: "Item 4", value: "Description of item 4" },
+    { label: "Item 5", value: "Description of item 5" },
+    { label: "Item 6", value: "Description of item 6" },
+];
+
+const renderLinks = (links: { href: string; label: string }[]) => (
+    links.map(link => (
+        <Link
+            key={link.href}
+            href={link.href}
+            className="text-[#111315] hover:text-[#01A2E4] font-roboto font-medium text-sm leading-5 tracking-widest block px-2 py-2 rounded-md text-base"
+        >
+            {link.label}
+        </Link>
+    ))
+);
 
 const SubNav = () => {
-    const menuLinks = [
-        { href: "/", label: "P2P" },
-        { href: "/appeal", label: "Appeals" },
-        { href: "/ads", label: "My Ads" } // should on be visible to merchants
-    ];
-    const accountLinks = [
-        { link: "/dashboard", icon: "/images/icons/home.png", label: "Dashboard" },
-        { link: "/Orders", icon: "/images/icons/clock.png", label: "Order History" },
-        { link: "/profile", icon: "/images/icons/profile-circle.png", label: "Profile" },
-        { link: "/settings", icon: "/images/icons/settings.png", label: "Settings" }
-    ];
 
-    const helpCenterLinks = [
-        { link: "/buy-sell", label: "How to Buy/Sell" },
-        { link: "/place-order", label: "Placing and Order" },
-        { link: "/becoming-merchant", label: "How to be a Merchant" },
-        { link: "/becoming-settler", label: "How to be a settler" }
-    ];
-
-    const items = [
-        { label: "Item 1", value: "Description of item 1" },
-        { label: "Item 2", value: "Description of item 2" },
-        { label: "Item 3", value: "Description of item 3" },
-        { label: "Item 4", value: "Description of item 4" },
-        { label: "Item 5", value: "Description of item 5" },
-        { label: "Item 6", value: "Description of item 6" },
-    ];
-
-    const renderLinks = (links: { href: string; label: string }[]) => (
-        links.map(link => (
-            <Link
-                key={link.href}
-                href={link.href}
-                className="text-[#111315] hover:text-[#01A2E4] font-roboto font-medium text-sm leading-5 tracking-widest block px-2 py-2 rounded-md text-base"
-            >
-                {link.label}
-            </Link>
-        ))
-    );
+    const { isConnected } = useAccount();
 
     const renderMenuDropdowns = () => (
         <div className="flex flex-row">
@@ -70,10 +74,10 @@ const SubNav = () => {
             <MenuDropdown
                 title="Account"
                 icon="/images/icons/profile.png"
-                dropdownItems={accountLinks}
+                dropdownItems={isConnected ? accountLinks : []}
             >
                 <WalletConnect />
-                <IsVerifiedButton />
+                {isConnected && <IsVerifiedButton />}
             </MenuDropdown>
         </div>
     );

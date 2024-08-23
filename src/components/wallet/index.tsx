@@ -1,24 +1,39 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import ConnectWallet from '../ui/Button';
 import Image from 'next/image';
+import { useAccount, useDisconnect } from 'wagmi';
+import { shortenAddress } from '@/lib/utils';
+import { useModal } from '@/common/contexts/ModalContext';
 
 const WalletConnect = () => {
-    const isConnected = false;
-    const walletAddress = '0xAbCdEf...1234';
+    const { address: walletAddress, isConnected } = useAccount();
+    const { disconnect, isPending } = useDisconnect();
+    const { showModal, hideModal } = useModal();
+
+    useEffect(() => {
+        if (isPending) {
+            showModal(
+                <div>loading...</div>
+            )
+        } else {
+            hideModal()
+        }
+    }, [disconnect, isPending])
 
     return (
         <Fragment>
             {isConnected ? (
                 <div className="flex justify-between items-center space-x-2 text-black py-2">
-                    <span>{walletAddress}</span>
-                    <Image
-                        src="/images/icons/disconnect.png"
-                        alt="Disconnect"
-                        width={20}
-                        height={20}
-                        className="cursor-pointer"
-                        onClick={() => console.log('Disconnect wallet logic here')}
-                    />
+                    <span>{shortenAddress(walletAddress)}</span>
+                    <div onClick={() => disconnect()}>
+                        <Image
+                            src="/images/icons/disconnect.png"
+                            alt="Disconnect"
+                            width={30}
+                            height={30}
+                            className="cursor-pointer"
+                        />
+                    </div>
                 </div>
             ) : (
                 // <ConnectWallet

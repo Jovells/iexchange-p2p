@@ -7,7 +7,9 @@ import { cookieToInitialState } from "wagmi";
 // config
 import { config } from "@/common/configs";
 import { AppKitProvider } from "@/common/contexts";
-import Providers from "@/common/providers";
+import ModalManager from "@/components/shared/modal/Modal";
+import { ModalContextProvider } from "@/common/contexts/ModalContext";
+
 
 export default function RootLayout({
   children,
@@ -19,11 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>
-          <AppKitProvider initialState={initialState}>
+        <AppKitProvider initialState={initialState}>
+          <ModalContextProvider>
             {children}
-          </AppKitProvider>
-        </Providers>
+            <ModalManager />
+          </ModalContextProvider>
+        </AppKitProvider>
       </body>
     </html>
   );
