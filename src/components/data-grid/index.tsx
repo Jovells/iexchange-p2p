@@ -3,25 +3,21 @@ import React, { useState, ReactNode, useImperativeHandle, forwardRef, ReactEleme
 type Column = {
   key: string;
   label: string;
-  render?: (row: Row) => ReactNode;
-};
-
-type Row = {
-  [key: string]: any;
+  render?: (row: Offer) => ReactNode;
 };
 
 type Action = {
   label: string;
-  onClick: (row: Row) => void;
+  onClick: (row: Offer) => void;
 };
 
 type ExpandableTableProps = {
   columns: Column[];
-  data: Row[];
+  data: Offer[];
   actions?: Action[];
   styles?: React.CSSProperties;
   isLoading: boolean;
-  children: (row: Row, toggleExpand: () => void) => ReactElement;
+  children: (row: Offer, toggleExpand: () => void) => ReactElement;
 };
 
 let window: typeof globalThis.window;
@@ -94,7 +90,9 @@ const ExpandableTable = forwardRef(
                     {columns.map((column) => (
                       <div key={column.key} className="mb-2">
                         <span>
-                          {column.render ? column.render(row) : row[column.key]}
+                          {column.render
+                            ? column.render(row)
+                            : row[column.key as keyof Offer]}
                         </span>
                       </div>
                     ))}
@@ -158,7 +156,7 @@ const ExpandableTable = forwardRef(
                           <div key={column.key} className="col-span-1">
                             {column.render
                               ? column.render(row)
-                              : row[column.key]}
+                              : row[column.key as keyof Offer]}
                           </div>
                         ))}
                         {actions.length > 0 && (

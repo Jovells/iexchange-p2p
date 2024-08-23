@@ -1,0 +1,1646 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        { "internalType": "address", "name": "_daoAddress", "type": "address" },
+        {
+          "internalType": "contract IKYCWhitelist",
+          "name": "_kycAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IAMLBlacklist",
+          "name": "_amlAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IERC20Metadata",
+          "name": "_usdtAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_merchantStakeAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_settlerStakeAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_settlerMinTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_settlerMaxTime",
+          "type": "uint256"
+        },
+        { "internalType": "uint256", "name": "_daoMinTime", "type": "uint256" },
+        {
+          "internalType": "uint256",
+          "name": "_concurrentSettlerSettlements",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_concurrentMerchantSettlements",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_appealAfter",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxAppealRounds",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    { "inputs": [], "name": "AcceptNotRequiredForSell", "type": "error" },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "target", "type": "address" }
+      ],
+      "name": "AddressEmptyCode",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "account", "type": "address" }
+      ],
+      "name": "AddressInsufficientBalance",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_appealId", "type": "uint256" }
+      ],
+      "name": "AppealInProgress",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_appealId", "type": "uint256" }
+      ],
+      "name": "AppealOver",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "_address", "type": "address" }
+      ],
+      "name": "BlacklistedAddress",
+      "type": "error"
+    },
+    { "inputs": [], "name": "EmptyReasonHash", "type": "error" },
+    { "inputs": [], "name": "EmptyString", "type": "error" },
+    { "inputs": [], "name": "FailedInnerCall", "type": "error" },
+    { "inputs": [], "name": "InsufficientMerchantCapacity", "type": "error" },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "appealId", "type": "uint256" }
+      ],
+      "name": "InvalidAppeal",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IKYCWhitelist.KYCLevel",
+          "name": "_level",
+          "type": "uint8"
+        }
+      ],
+      "name": "InvalidKYCLevel",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_stakeAmount", "type": "uint256" }
+      ],
+      "name": "InvalidMerchantStake",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "offerId", "type": "uint256" }
+      ],
+      "name": "InvalidOfferId",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "orderId", "type": "uint256" }
+      ],
+      "name": "InvalidOrderId",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_stakeAmount", "type": "uint256" }
+      ],
+      "name": "InvalidSettlerStake",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum P2Pparams.OrderState",
+          "name": "_currentState",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum P2Pparams.OrderState",
+          "name": "_requiredState",
+          "type": "uint8"
+        }
+      ],
+      "name": "InvalidStateForAction",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "_vote",
+          "type": "uint8"
+        }
+      ],
+      "name": "InvalidVote",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_round", "type": "uint256" }
+      ],
+      "name": "MerchantAlreadyVoted",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_count", "type": "uint256" }
+      ],
+      "name": "MerchantConcurrencyReached",
+      "type": "error"
+    },
+    { "inputs": [], "name": "NonTradeToken", "type": "error" },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_orderQuantity",
+          "type": "uint256"
+        },
+        { "internalType": "uint256", "name": "_offerMax", "type": "uint256" }
+      ],
+      "name": "OfferMaxExceeded",
+      "type": "error"
+    },
+    { "inputs": [], "name": "OrderAlreadyAppealed", "type": "error" },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "owner", "type": "address" }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "account", "type": "address" }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_roundId", "type": "uint256" }
+      ],
+      "name": "PreviousRoundOngoing",
+      "type": "error"
+    },
+    { "inputs": [], "name": "ReentrancyGuardReentrantCall", "type": "error" },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "token", "type": "address" }
+      ],
+      "name": "SafeERC20FailedOperation",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_round", "type": "uint256" }
+      ],
+      "name": "SettlerAlreadyVoted",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_count", "type": "uint256" }
+      ],
+      "name": "SettlerConcurrencyReached",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_round", "type": "uint256" }
+      ],
+      "name": "SettlerNotVoted",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_currentSettler",
+          "type": "address"
+        }
+      ],
+      "name": "SettlingInProgress",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_round", "type": "uint256" }
+      ],
+      "name": "TraderAlreadyVoted",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        { "internalType": "string", "name": "messsage", "type": "string" }
+      ],
+      "name": "UnauthorizedUser",
+      "type": "error"
+    },
+    { "inputs": [], "name": "UnsupportedCurrency", "type": "error" },
+    { "inputs": [], "name": "UnsupportedPaymentMethod", "type": "error" },
+    { "inputs": [], "name": "ZeroAddress", "type": "error" },
+    { "inputs": [], "name": "ZeroMerchantOrders", "type": "error" },
+    { "inputs": [], "name": "ZeroSetterSettlements", "type": "error" },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_addedBy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_currency",
+          "type": "string"
+        }
+      ],
+      "name": "CurrencyAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_removedBy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_currency",
+          "type": "string"
+        }
+      ],
+      "name": "CurrencyRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "appealId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "daoVote",
+          "type": "uint8"
+        }
+      ],
+      "name": "DAOVoted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "merchant",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MerchantStaked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "merchant",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MerchantUnstaked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "appealId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "merchant",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "settled",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "merchantVote",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        }
+      ],
+      "name": "MerchantVoted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "merchant",
+          "type": "address"
+        }
+      ],
+      "name": "NewMerchant",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "currency",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "paymentMethod",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "offerId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "minOrder",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maxOrder",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "merchant",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "accountHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "depositAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.TradeType",
+          "name": "offerType",
+          "type": "uint8"
+        }
+      ],
+      "name": "NewOffer",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "orderId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "trader",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.TradeType",
+          "name": "orderType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "offerId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "depositAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "accountHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "appealId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.OrderState",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "NewOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "settler",
+          "type": "address"
+        }
+      ],
+      "name": "NewSettler",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "trader",
+          "type": "address"
+        }
+      ],
+      "name": "NewTrader",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "offerId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "name": "OfferDisabled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "offerId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "name": "OfferEnabled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "orderId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.OrderState",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "OrderAccepted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "orderId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "appealId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "appealer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "reasonHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "daoVote",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "appealDecision",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.OrderState",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "OrderAppealed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "orderId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.OrderState",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "OrderCancelled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "orderId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.OrderState",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "OrderPaid",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "orderId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.OrderState",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "OrderReleased",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_addedBy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_method",
+          "type": "string"
+        }
+      ],
+      "name": "PaymentMethodAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_removedBy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_method",
+          "type": "string"
+        }
+      ],
+      "name": "PaymentMethodRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "appealId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "affected",
+          "type": "address[]"
+        }
+      ],
+      "name": "PenaltySlashed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "ProtocolParamsUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "appealId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "beneficiaries",
+          "type": "address[]"
+        }
+      ],
+      "name": "RewardDistributed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_settler",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_caseId",
+          "type": "uint256"
+        }
+      ],
+      "name": "SettlerAssignedToCase",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "settler",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "SettlerStaked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "settler",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "SettlerUnstaked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "appealId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "settler",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "settled",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "settlerVote",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        }
+      ],
+      "name": "SettlerVoted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_addedBy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_token",
+          "type": "address"
+        }
+      ],
+      "name": "TokenAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_addedBy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_token",
+          "type": "address"
+        }
+      ],
+      "name": "TokenRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "appealId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "trader",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "settled",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "traderVote",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        }
+      ],
+      "name": "TraderVoted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "orderId", "type": "uint256" }
+      ],
+      "name": "acceptOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "string", "name": "", "type": "string" }],
+      "name": "acceptedCurrencies",
+      "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "string", "name": "", "type": "string" }],
+      "name": "acceptedPaymentMethods",
+      "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "string", "name": "currency", "type": "string" }
+      ],
+      "name": "addCurrency",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "string", "name": "_paymentMethod", "type": "string" }
+      ],
+      "name": "addPaymentMethod",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "token", "type": "address" }
+      ],
+      "name": "addToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "amlAddress",
+      "outputs": [
+        {
+          "internalType": "contract IAMLBlacklist",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "appealAfter",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "orderId", "type": "uint256" },
+        { "internalType": "bytes32", "name": "reasonHash", "type": "bytes32" }
+      ],
+      "name": "appealOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "name": "appeals",
+      "outputs": [
+        { "internalType": "uint256", "name": "orderId", "type": "uint256" },
+        { "internalType": "address", "name": "appealer", "type": "address" },
+        { "internalType": "bytes32", "name": "reasonHash", "type": "bytes32" },
+        {
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "daoVote",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "appealDecision",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "currentSettler",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "settlerPickTime",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "orderId", "type": "uint256" }
+      ],
+      "name": "cancelOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "concurrentMerchantSettlements",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "concurrentSettlerSettlements",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "token", "type": "address" },
+        { "internalType": "string", "name": "currency", "type": "string" },
+        { "internalType": "string", "name": "paymentMethod", "type": "string" },
+        { "internalType": "uint256", "name": "rate", "type": "uint256" },
+        { "internalType": "uint256", "name": "minOrder", "type": "uint256" },
+        { "internalType": "uint256", "name": "maxOrder", "type": "uint256" },
+        { "internalType": "bytes32", "name": "accountHash", "type": "bytes32" },
+        {
+          "internalType": "address",
+          "name": "depositAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "enum P2Pparams.TradeType",
+          "name": "offerType",
+          "type": "uint8"
+        }
+      ],
+      "name": "createOffer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "offerId", "type": "uint256" },
+        { "internalType": "uint256", "name": "quantity", "type": "uint256" },
+        {
+          "internalType": "address",
+          "name": "depositAddress",
+          "type": "address"
+        },
+        { "internalType": "bytes32", "name": "accountHash", "type": "bytes32" }
+      ],
+      "name": "createOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "daoAddress",
+      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "daoMinTime",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "appealId", "type": "uint256" },
+        {
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "vote",
+          "type": "uint8"
+        }
+      ],
+      "name": "daoVote",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "offerId", "type": "uint256" }
+      ],
+      "name": "disableOffer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "offerId", "type": "uint256" }
+      ],
+      "name": "enableOffer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "kycAddress",
+      "outputs": [
+        {
+          "internalType": "contract IKYCWhitelist",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxAppealRounds",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "name": "merchantOrders",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "name": "merchantStake",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "merchantStakeAmount",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "merchantUnstake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "appealId", "type": "uint256" },
+        {
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "vote",
+          "type": "uint8"
+        }
+      ],
+      "name": "merchantVote",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "name": "merchants",
+      "outputs": [{ "internalType": "bool", "name": "active", "type": "bool" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "name": "offers",
+      "outputs": [
+        { "internalType": "address", "name": "token", "type": "address" },
+        { "internalType": "string", "name": "currency", "type": "string" },
+        { "internalType": "string", "name": "paymentMethod", "type": "string" },
+        { "internalType": "uint256", "name": "rate", "type": "uint256" },
+        { "internalType": "uint256", "name": "minOrder", "type": "uint256" },
+        { "internalType": "uint256", "name": "maxOrder", "type": "uint256" },
+        { "internalType": "bool", "name": "active", "type": "bool" },
+        { "internalType": "address", "name": "merchant", "type": "address" },
+        { "internalType": "bytes32", "name": "accountHash", "type": "bytes32" },
+        {
+          "internalType": "address",
+          "name": "depositAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "enum P2Pparams.TradeType",
+          "name": "offerType",
+          "type": "uint8"
+        },
+        { "internalType": "uint256", "name": "createdAt", "type": "uint256" }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "name": "orders",
+      "outputs": [
+        { "internalType": "uint256", "name": "offerId", "type": "uint256" },
+        { "internalType": "address", "name": "trader", "type": "address" },
+        {
+          "internalType": "enum P2Pparams.TradeType",
+          "name": "orderType",
+          "type": "uint8"
+        },
+        { "internalType": "uint256", "name": "quantity", "type": "uint256" },
+        {
+          "internalType": "address",
+          "name": "depositAddress",
+          "type": "address"
+        },
+        { "internalType": "bytes32", "name": "accountHash", "type": "bytes32" },
+        { "internalType": "uint256", "name": "appealId", "type": "uint256" },
+        {
+          "internalType": "enum P2Pparams.OrderState",
+          "name": "status",
+          "type": "uint8"
+        },
+        { "internalType": "uint256", "name": "createdAt", "type": "uint256" }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "orderId", "type": "uint256" }
+      ],
+      "name": "payOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "appealId", "type": "uint256" }
+      ],
+      "name": "pickCase",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "registerMerchant",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "registerSettler",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "registerTrader",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "orderId", "type": "uint256" }
+      ],
+      "name": "releaseOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "string", "name": "currency", "type": "string" }
+      ],
+      "name": "removeCurrency",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "string", "name": "_paymentMethod", "type": "string" }
+      ],
+      "name": "removePaymentMethod",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "token", "type": "address" }
+      ],
+      "name": "removeToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "setterUnstake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "settlerMaxTime",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "settlerMinTime",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "name": "settlerSettlements",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "name": "settlerStake",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "settlerStakeAmount",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "appealId", "type": "uint256" },
+        {
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "vote",
+          "type": "uint8"
+        }
+      ],
+      "name": "settlerVote",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "name": "settlers",
+      "outputs": [{ "internalType": "bool", "name": "active", "type": "bool" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "name": "tradedTokens",
+      "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "appealId", "type": "uint256" },
+        {
+          "internalType": "enum P2Pparams.AppealDecision",
+          "name": "vote",
+          "type": "uint8"
+        }
+      ],
+      "name": "traderVote",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "name": "traders",
+      "outputs": [{ "internalType": "bool", "name": "active", "type": "bool" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "newOwner", "type": "address" }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "_daoAddress", "type": "address" },
+        {
+          "internalType": "contract IKYCWhitelist",
+          "name": "_kycAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IAMLBlacklist",
+          "name": "_amlAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IERC20Metadata",
+          "name": "_usdtAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_merchantStakeAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_settlerStakeAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_settlerMinTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_settlerMaxTime",
+          "type": "uint256"
+        },
+        { "internalType": "uint256", "name": "_daoMinTime", "type": "uint256" },
+        {
+          "internalType": "uint256",
+          "name": "_concurrentSettlerSettlements",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_concurrentMerchantSettlements",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_appealAfter",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxAppealRounds",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateProtocolParams",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "usdtAddress",
+      "outputs": [
+        {
+          "internalType": "contract IERC20Metadata",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

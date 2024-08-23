@@ -7,12 +7,12 @@ interface SelectOption {
     icon?: React.ReactNode;
 }
 
-interface InputSelectProps {
-    label?: string;
-    initialValue?: string;
-    options: SelectOption[];
-    onValueChange?: (value: string) => void;
-    placeholder?:string;
+interface InputSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  initialValue?: string;
+  options: SelectOption[];
+  onValueChange?: (value: string) => void;
+  placeholder?: string;
 }
 
 const InputSelect: React.FC<InputSelectProps> = ({

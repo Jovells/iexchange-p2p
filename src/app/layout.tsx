@@ -7,6 +7,7 @@ import { cookieToInitialState } from "wagmi";
 // config
 import { config } from "@/common/configs";
 import { AppKitProvider } from "@/common/contexts";
+import Providers from "@/common/providers";
 
 export default function RootLayout({
   children,
@@ -18,7 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppKitProvider initialState={initialState}>{children}</AppKitProvider>
+        <Providers>
+          <AppKitProvider initialState={initialState}>
+            {children}
+          </AppKitProvider>
+        </Providers>
       </body>
     </html>
   );

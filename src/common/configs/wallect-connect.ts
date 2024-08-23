@@ -1,6 +1,13 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
 import { cookieStorage, createStorage } from "wagmi";
-import { base, baseSepolia, mainnet, polygon, sepolia } from "wagmi/chains";
+import {
+  base,
+  baseSepolia,
+  mainnet,
+  morphHolesky,
+  polygon,
+  sepolia,
+} from "wagmi/chains";
 
 // Get projectId from https://cloud.walletconnect.com
 export const projectId = process.env.WEB3_PROJECT_ID;
@@ -15,7 +22,15 @@ export const metadata = {
 };
 
 // Create wagmiConfig
-const chains = [mainnet, sepolia, baseSepolia, base, polygon] as const;
+const mHolesky = {
+  ...morphHolesky,
+  rpcUrls: {
+    default: {
+      http: ["https://rpc-holesky.morphl2.io"],
+    },
+  },
+};
+const chains = [mHolesky] as const;
 export const config = defaultWagmiConfig({
   chains,
   projectId,

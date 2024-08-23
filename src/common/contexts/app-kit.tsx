@@ -15,12 +15,12 @@ const queryClient = new QueryClient()
 if (!projectId) throw new Error('Project ID is not defined')
 
 // Create modal
-createWeb3Modal({
-  metadata,
-  wagmiConfig: config,
-  projectId,
-  enableAnalytics: true // Optional - defaults to your Cloud configuration
-})
+ const web3Modal = createWeb3Modal({
+   metadata,
+   wagmiConfig: config,
+   projectId,
+   enableAnalytics: true, // Optional - defaults to your Cloud configuration
+ });
 
 export default function AppKitProvider({
   children,

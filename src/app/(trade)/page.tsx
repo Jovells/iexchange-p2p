@@ -1,49 +1,62 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { DollarSign, Euro, Filter } from 'lucide-react';
-import SelectPaymentMethod from '@/components/ui/InputSelect';
-import InputAmount from '@/components/ui/InputWithSelect';
-import P2POrder from './order';
-import WalletConnectSection from '@/components/sections/WalletConnectSection';
-import Faqs from '@/components/sections/Faqs';
-import IExchangeGuide from '@/components/sections/IExchangeGuide';
+import React, { useEffect, useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { DollarSign, Euro, Filter } from "lucide-react";
+import SelectPaymentMethod from "@/components/ui/InputSelect";
+import InputAmount from "@/components/ui/InputWithSelect";
+import P2POffers from "./order";
+import WalletConnectSection from "@/components/sections/WalletConnectSection";
+import Faqs from "@/components/sections/Faqs";
+import IExchangeGuide from "@/components/sections/IExchangeGuide";
 
-interface P2PMarketProps { };
+interface P2PMarketProps {}
 
 const P2PMarket: React.FC<P2PMarketProps> = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const tab: any = searchParams.get('trade')?.toLowerCase();
-  const [activeTab, setActiveTab] = useState<'buy' | 'sell' | string>(tab === 'sell' ? 'sell' : 'buy');
-  const [selectedCrypto, setSelectedCrypto] = useState("USDT")
+  const tab: any = searchParams.get("trade")?.toLowerCase();
+  const [activeTab, setActiveTab] = useState<"buy" | "sell" | string>(
+    tab === "sell" ? "sell" : "buy"
+  );
+  const [selectedCrypto, setSelectedCrypto] = useState("USDT");
 
   const options = [
-    { value: 'usd', label: 'US Dollar', icon: <DollarSign className="w-4 h-4" /> },
-    { value: 'eur', label: 'Euro', icon: <Euro className="w-4 h-4" /> },
-    { value: 'gbp', label: 'British Pound', icon: <DollarSign className="w-4 h-4" /> },
-    { value: 'shopping', label: 'Shopping', icon: <DollarSign className="w-4 h-4" /> },
+    {
+      value: "usd",
+      label: "US Dollar",
+      icon: <DollarSign className="w-4 h-4" />,
+    },
+    { value: "eur", label: "Euro", icon: <Euro className="w-4 h-4" /> },
+    {
+      value: "gbp",
+      label: "British Pound",
+      icon: <DollarSign className="w-4 h-4" />,
+    },
+    {
+      value: "shopping",
+      label: "Shopping",
+      icon: <DollarSign className="w-4 h-4" />,
+    },
   ];
   const currencies = [
-    { symbol: 'GHS', name: 'BTC', icon: <DollarSign className="w-4 h-4" /> },
-    { symbol: 'USD', name: 'ETH', icon: <DollarSign className="w-4 h-4" /> },
-    { symbol: 'EUR', name: 'USD', icon: <Euro className="w-4 h-4" /> },
+    { symbol: "GHS", name: "BTC", icon: <DollarSign className="w-4 h-4" /> },
+    { symbol: "USD", name: "ETH", icon: <DollarSign className="w-4 h-4" /> },
+    { symbol: "EUR", name: "USD", icon: <Euro className="w-4 h-4" /> },
   ];
 
-  const cryptos = ['USDT', 'BTC', 'USDC', 'ETH'];
+  const cryptos = ["USDT", "BTC", "USDC", "ETH"];
 
   useEffect(() => {
-    if (tab === 'buy' || tab === 'sell') {
+    if (tab === "buy" || tab === "sell") {
       setActiveTab(tab);
     }
   }, [tab]);
 
-
   const handleTabChange = (
-    tab: 'buy' | 'sell' | string,
+    tab: "buy" | "sell" | string,
     cryptocurrency: string = "USDT",
     fiat: string = "MDL"
   ) => {
@@ -59,22 +72,26 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
       <WalletConnectSection />
       <div className="w-full lg:w-auto lg:container lg:mx-auto bg-white flex flex-col justify-start items-start space-y-4">
         {/* trading parameters */}
-        <div className='w-full'>
+        <div className="w-full">
           <div className="flex flex-row justify-between lg:justify-start items-center flex-wrap lg:flex-nowrap w-full lg:w-auto">
             {/* buy or sell option */}
             <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl p-1 min-w-[150px]">
               <button
-                onClick={() => handleTabChange('Buy')}
-                className={`w-full rounded-xl text-center text-md p-1 ${activeTab.toLowerCase() === 'buy' ? 'text-black bg-gray-300' : 'text-gray-600'
-                  }`}
-              >
+                onClick={() => handleTabChange("Buy")}
+                className={`w-full rounded-xl text-center text-md p-1 ${
+                  activeTab.toLowerCase() === "buy"
+                    ? "text-black bg-gray-300"
+                    : "text-gray-600"
+                }`}>
                 Buy
               </button>
               <button
-                onClick={() => handleTabChange('Sell')}
-                className={`w-full rounded-xl text-center text-md p-1 ${activeTab.toLowerCase() === 'sell' ? 'text-black bg-gray-300' : 'text-gray-600'
-                  }`}
-              >
+                onClick={() => handleTabChange("Sell")}
+                className={`w-full rounded-xl text-center text-md p-1 ${
+                  activeTab.toLowerCase() === "sell"
+                    ? "text-black bg-gray-300"
+                    : "text-gray-600"
+                }`}>
                 Sell
               </button>
             </div>
@@ -85,9 +102,11 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
                   <button
                     key={crypto}
                     onClick={() => setSelectedCrypto(crypto)}
-                    className={`p-1 rounded-full text-md ${selectedCrypto === crypto ? ' text-blue-500' : 'text-black'
-                      }`}
-                  >
+                    className={`p-1 rounded-full text-md ${
+                      selectedCrypto === crypto
+                        ? " text-blue-500"
+                        : "text-black"
+                    }`}>
                     {crypto}
                   </button>
                 ))}
@@ -96,15 +115,17 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
                 <select
                   value={selectedCrypto}
                   onChange={(e) => setSelectedCrypto(e.target.value)}
-                  className="w-full px-6 py-2 rounded-xl text-md bg-white border border-gray-300 text-gray-600"
-                >
+                  className="w-full px-6 py-2 rounded-xl text-md bg-white border border-gray-300 text-gray-600">
                   {cryptos.map((crypto) => (
                     <option key={crypto} value={crypto}>
                       {crypto}
                     </option>
                   ))}
                 </select>
-                <Filter className='cursor-pointer w-10 h-10' onClick={() => { }} />
+                <Filter
+                  className="cursor-pointer w-10 h-10"
+                  onClick={() => {}}
+                />
               </div>
             </div>
           </div>
@@ -116,7 +137,9 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
                 label=""
                 initialCurrency="USD"
                 currencies={currencies}
-                onValueChange={(value: { currency: string, amount: string }) => console.log(value)}
+                onValueChange={(value: { currency: string; amount: string }) =>
+                  console.log(value)
+                }
                 readOnly={false}
                 placeholder="Enter amount"
               />
@@ -131,19 +154,21 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
               />
             </div>
             {/* additional filter */}
-            <Filter className='hidden lg:block cursor-pointer' onClick={() => { }} />
+            <Filter
+              className="hidden lg:block cursor-pointer"
+              onClick={() => {}}
+            />
           </div>
         </div>
 
         <div className="w-full mt-4">
-          <P2POrder orderType={tab} />
+          <P2POffers offerType={tab} />
         </div>
 
         <IExchangeGuide />
 
         <Faqs />
       </div>
-
     </>
   );
 };
