@@ -4,8 +4,33 @@ import { X } from "lucide-react";
 import Button from "../ui/Button";
 import InputWithSelect from "../ui/InputWithSelect";
 import { currencies } from "@/common/data/currencies";
+import { useWriteContract } from "wagmi";
+import CediH from "@/common/abis/CediH";
+import { MORPH_CEDIH_ADDRESS, MORPH_P2P_ADDRESS } from "@/common/contracts";
+import OptimisticP2P from "@/common/abis/OptimisticP2P";
 
 const MerchantModal = ({ hideModal, action }: { hideModal: () => void; action: string }) => {
+    const { writeContractAsync, data: hash } = useWriteContract();
+
+    const handleStake = async () => {
+        const stakeAmount = BigInt(1500 * 1e18)
+        const approveHash = await writeContractAsync({
+            abi: CediH,
+            address: MORPH_P2P_ADDRESS,
+            functionName: "approve",
+            args: [MORPH_CEDIH_ADDRESS, stakeAmount],
+        });
+
+        console.log("approveHash", approveHash);
+
+        const hash = await writeContractAsync({
+            abi: OptimisticP2P,
+            address: MORPH_P2P_ADDRESS,
+            functionName: "registerMerchant",
+        });
+        console.log("p2phash", hash);
+    }
+
     return (
         <div className='w-full lg:w-[500px] h-auto bg-[#ffffff] p-8 rounded-xl shadow-md border-2-gray-500'>
             <div className='flex justify-end'>
@@ -35,14 +60,15 @@ const MerchantModal = ({ hideModal, action }: { hideModal: () => void; action: s
                         initialCurrency="GHS"
                         currencies={currencies}
                         onValueChange={(value) => console.log(value)}
-                        readOnly={false}
+                        value="1500"
+                        readOnly={true}
                         placeholder="Enter amount"
-                        selectIsReadOnly={false}
+                        selectIsReadOnly={true}
                     />
                     <Button
                         text="Proceed"
                         className="bg-[#000000] text-white hover:bg-gray-600 rounded-xl px-4 py-2 mt-6 w-full"
-                        onClick={() => { }}
+                        onClick={handleStake}
                     />
                 </>
             )}
