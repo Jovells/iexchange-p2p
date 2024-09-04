@@ -5,8 +5,7 @@ import { cookieToInitialState } from "wagmi";
 
 // contexts
 // config
-import { config } from "@/common/configs";
-import { AppKitProvider } from "@/common/contexts";
+import { WalletProvider } from "@/common/contexts";
 import ModalManager from "@/components/shared/modal/Modal";
 import { ModalContextProvider } from "@/common/contexts/ModalContext";
 
@@ -16,17 +15,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialState = cookieToInitialState(config, headers().get("cookie"));
 
   return (
     <html lang="en">
       <body>
-        <AppKitProvider initialState={initialState}>
+<WalletProvider>
           <ModalContextProvider>
             {children}
             <ModalManager />
           </ModalContextProvider>
-        </AppKitProvider>
+        
+  </WalletProvider>            
       </body>
     </html>
   );
