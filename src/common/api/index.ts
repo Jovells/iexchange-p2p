@@ -60,6 +60,15 @@ const operation = `
     }
   }
 `;
+
+const accountQuery = `
+query merchantAccount($id:String) {
+  account(id: $id) {
+    id
+    isMerchant
+  }
+}
+`;
 // Create a reference to the cities collection
 import {
   collection,
@@ -97,4 +106,10 @@ export async function fetchAds(page: number, offerType: string, quantity = 10) {
     thisMerchantOffer!.merchant.name = data.name;
   });
   return graphdata;
+}
+
+export async function fetchAccount(id: any): Promise<any> {
+  const account = await fetchGraphQL(accountQuery, "merchantAccount", { id });
+  console.log("DATA" + account)
+  return account;
 }
