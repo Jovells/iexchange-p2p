@@ -4,6 +4,10 @@ import Image from 'next/image';
 import { useAccount, useDisconnect } from 'wagmi';
 import { shortenAddress } from '@/lib/utils';
 import { useModal } from '@/common/contexts/ModalContext';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import '@rainbow-me/rainbowkit/styles.css';
+
+
 
 const WalletConnect = () => {
     const { address: walletAddress, isConnected } = useAccount();
@@ -36,13 +40,7 @@ const WalletConnect = () => {
                     </div>
                 </div>
             ) : (
-                // <ConnectWallet
-                //     text="Connect Wallet"
-                //     icon="/images/icons/export.svg"
-                //     iconPosition="right"
-                //     className="bg-[#000000] text-white hover:bg-gray-600 rounded-xl px-4 py-2"
-                // />
-                <w3m-button />
+                <ConnectButton />
             )}
         </Fragment>
     );
