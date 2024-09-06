@@ -90,9 +90,10 @@ const ExpandableTable = forwardRef(
                     {columns.map((column) => (
                       <div key={column.key} className="mb-2">
                         <span>
-                          {column.render
+                          {
+                          column.render
                             ? column.render(row)
-                            : row[column.key as keyof Offer]}
+                            : row[column.key as keyof Offer] as ReactNode}
                         </span>
                       </div>
                     ))}
@@ -156,7 +157,7 @@ const ExpandableTable = forwardRef(
                           <div key={column.key} className="col-span-1">
                             {column.render
                               ? column.render(row)
-                              : row[column.key as keyof Offer]}
+                              : row[column.key as keyof Offer] as ReactNode}
                           </div>
                         ))}
                         {actions.length > 0 && (
@@ -182,7 +183,7 @@ const ExpandableTable = forwardRef(
                       </div>
                     )}
                     {expandedRowIndex === index && (
-                      <div className="col-span-full py-2 py-4 border-b border-[#C3D5F124]">
+                      <div className="col-span-full py-4 border-b border-[#C3D5F124]">
                         {children(row, closeExpandedRow)}
                       </div>
                     )}

@@ -1,5 +1,5 @@
 'use client'
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import InputWithSelect from "@/components/ui/InputWithSelect";
 import InputSelect from "@/components/ui/InputSelect";
@@ -153,6 +153,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   }
 
   return (
+    <Suspense>
     <form
       onSubmit={handleSubmit}
       className="w-full border-0 lg:border rounded-xl p-0 lg:p-6 min-h-[400px] flex flex-col flex-col-reverse lg:grid lg:grid-cols-2 bg-white lg:bg-gray-200">
@@ -209,6 +210,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
         </div>
       </div>
     </form>
+    </Suspense>
   );
 };
 

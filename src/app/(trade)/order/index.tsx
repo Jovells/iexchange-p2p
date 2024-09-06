@@ -1,7 +1,7 @@
 'use client'
 import ExpandableTable from '@/components/data-grid'
 import { useSearchParams } from 'next/navigation';
-import React, { FC } from 'react'
+import React, { FC, Suspense } from 'react'
 import CreateOrder from './create-order';
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api";
@@ -71,6 +71,7 @@ const P2POrder: FC<Props> = ({ offerType }) => {
   const hasMore = data?.offers?.length === 10;
 
   return (
+    <Suspense>
     <div className="w-full">
       <ExpandableTable
         columns={columns}
@@ -103,6 +104,8 @@ const P2POrder: FC<Props> = ({ offerType }) => {
       </Button>
       {isFetching ? <span> Loading...</span> : null}
     </div>
+    </Suspense>
+
   );
 };
 

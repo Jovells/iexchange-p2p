@@ -8,6 +8,7 @@ import { useAccount } from 'wagmi'
 import { X } from 'lucide-react'
 import { fetchAccount } from '@/common/api'
 import { useQuery } from '@tanstack/react-query'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 const BecomeAMerchant = () => {
     const { isConnected, address } = useAccount()
@@ -39,7 +40,7 @@ const BecomeAMerchant = () => {
                     <X onClick={hideModal} className="cursor-pointer" />
                 </div>
                 <div className="flex flex-col justify-center items-center w-full gap-3">
-                    <w3m-button />
+                    <ConnectButton />
                 </div>
             </div>
         ) : (
@@ -57,7 +58,7 @@ const BecomeAMerchant = () => {
 
     return (
         <Button
-            text={isMerchant ? 'Post an Ads' : 'Become a Merchant'}
+            text={isMerchant ? 'Post an Ad' : 'Become a Merchant'}
             icon={isMerchant ? '/images/icons/add-circle.png' : '/images/icons/export.svg'}
             iconPosition="right"
             className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2"

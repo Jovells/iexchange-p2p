@@ -4,7 +4,6 @@ import "@/styles/custom.css";
 import MainNav from "@/components/layout/navbar";
 import SubNav from "@/components/layout/navbar/SubNav";
 import Footer from "@/components/layout/footer";
-import { Fragment } from "react";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -20,13 +19,13 @@ export default function TradeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Fragment>
+    <>
       <MainNav />
       <SubNav />
       <div className="w-full min-h-screen">
         {children}
       </div>
       <Footer />
-    </Fragment>
+    </>
   );
 }
