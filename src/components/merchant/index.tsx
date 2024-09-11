@@ -8,6 +8,7 @@ import { useAccount } from 'wagmi'
 import { fetchAccount } from '@/common/api'
 import { useQuery } from '@tanstack/react-query'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 const BecomeAMerchant = () => {
     const { openConnectModal } = useConnectModal()
@@ -48,7 +49,7 @@ const BecomeAMerchant = () => {
 
     return (
         <Button
-            text={isMerchant ? 'Post an Ads' : 'Become a Merchant'}
+            text={isMerchant ? 'Post an Ad' : 'Become a Merchant'}
             icon={isMerchant ? '/images/icons/add-circle.png' : '/images/icons/export.svg'}
             iconPosition="right"
             className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2"

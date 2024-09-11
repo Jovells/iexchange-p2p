@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { DollarSign, Euro, Filter } from "lucide-react";
 import SelectPaymentMethod from "@/components/ui/InputSelect";
@@ -17,7 +17,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const tab: any = searchParams.get("trade")?.toLowerCase();
+  const tab: any = searchParams.get("trade")?.toLowerCase() || "buy";
   const [activeTab, setActiveTab] = useState<"buy" | "sell" | string>(
     tab === "sell" ? "sell" : "buy"
   );
@@ -68,7 +68,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   };
 
   return (
-    <>
+    <Suspense fallback={<div>'loading'</div>}>
       <WalletConnectSection />
       <div className="w-full lg:w-auto lg:container lg:mx-auto bg-white flex flex-col justify-start items-start space-y-4">
         {/* trading parameters */}
@@ -169,7 +169,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
 
         <Faqs />
       </div>
-    </>
+    </Suspense>
   );
 };
 
