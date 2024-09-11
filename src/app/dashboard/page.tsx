@@ -1,6 +1,7 @@
-import { steps } from '@/common/data/steps'
+
+'use client'
+
 import Verify from '@/components/cards/Verify'
-import Steps from '@/components/step'
 import Button from '@/components/ui/Button'
 import { Clock, EyeOff, SquareAsterisk } from 'lucide-react'
 import React from 'react'
