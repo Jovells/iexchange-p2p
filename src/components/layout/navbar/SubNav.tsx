@@ -50,6 +50,10 @@ const SubNav = () => {
 
     const { isConnected } = useAccount();
 
+    if (!isConnected) {
+        return
+    }
+
     const renderMenuDropdowns = () => (
         <div className="flex flex-row">
             <MenuDropdown

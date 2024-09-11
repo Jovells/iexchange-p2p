@@ -110,6 +110,6 @@ export async function fetchAds(page: number, offerType: string, quantity = 10) {
 
 export async function fetchAccount(id: any): Promise<any> {
   const account = await fetchGraphQL(accountQuery, "merchantAccount", { id });
-  console.log("DATA" + account)
+  console.log("DATA >>>>>>", account)
   return account;
 }

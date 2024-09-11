@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi';
 
 const WalletConnectSection = () => {
     const { isConnected } = useAccount();
-    // const isConnected = false;
+    
     if (isConnected) {
         return null;
     }
