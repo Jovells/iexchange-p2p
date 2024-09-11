@@ -14,11 +14,8 @@ export const metadata: Metadata = {
     "Convert Crypto to Fiat | Fiat to Crypto in your decentralized wallet with iExchange.",
 };
 
-export default function TradeLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function TradeLayout({children,}: Readonly<{children: React.ReactNode;}>) {
+  
   return (
     <Fragment>
       <MainNav />

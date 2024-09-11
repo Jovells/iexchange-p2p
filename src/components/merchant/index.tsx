@@ -1,17 +1,20 @@
 'use client'
 
-import React, { useEffect, useCallback } from 'react'
+import React, { useCallback } from 'react'
 import Button from '../ui/Button'
 import { useModal } from '@/common/contexts/ModalContext'
 import MerchantModal from './MerchantModal'
 import { useAccount } from 'wagmi'
-import { X } from 'lucide-react'
 import { fetchAccount } from '@/common/api'
 import { useQuery } from '@tanstack/react-query'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 
 const BecomeAMerchant = () => {
+    const { openConnectModal } = useConnectModal()
     const { isConnected, address } = useAccount()
     const { showModal, hideModal } = useModal()
+
+    // const address: any = "0x8db769ccd2f5946a94fce8b3ad9a296d5309c36c"
 
     const { data: account, error, isLoading, isError, isFetching } = useQuery({
         queryKey: ['merchantAccount', address],
@@ -21,39 +24,27 @@ const BecomeAMerchant = () => {
         refetchOnWindowFocus: false,
     })
 
-    // Determine if the user is a merchant based on account data
-    const isMerchant = account?.isMerchant || false
+    const isMerchant = account?.account?.isMerchant || false
 
     const handleClick = useCallback(() => {
-        if (isConnected) return //to updated to !isConnected
 
-        if (isMerchant) {
-            // Handle the case when the user is a merchant (e.g., navigation to an ad page)
-            // Add your navigation logic here
+
+        console.log("MERCHANT ", isMerchant, isConnected)
+        if (!isConnected) {
+            openConnectModal?.()
             return
         }
 
-        const content = isConnected ? (  //to updated to !isConnected
-            <div className="w-full lg:w-[300px] h-auto bg-white p-8 rounded-xl shadow-md border-2 border-gray-500">
-                <div className="flex justify-end">
-                    <X onClick={hideModal} className="cursor-pointer" />
-                </div>
-                <div className="flex flex-col justify-center items-center w-full gap-3">
-                    <w3m-button />
-                </div>
-            </div>
-        ) : (
-            <MerchantModal hideModal={hideModal} action="stake" />
-        )
+        if (isMerchant) {
+            // navigate to create ads
+            return
+        }
+
+        const content = <MerchantModal hideModal={hideModal} action="stake" />
 
         showModal(content)
-    }, [isConnected, isMerchant, showModal, hideModal])
 
-    useEffect(() => {
-        if (isConnected) {
-            hideModal()
-        }
-    }, [isConnected, hideModal])
+    }, [isConnected, isMerchant, showModal, hideModal])
 
     return (
         <Button

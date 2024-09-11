@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect } from 'react';
-import ConnectWallet from '../ui/Button';
 import Image from 'next/image';
 import { useAccount, useDisconnect } from 'wagmi';
 import { shortenAddress } from '@/lib/utils';

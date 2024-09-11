@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 import Button from "../ui/Button";
 import InputWithSelect from "../ui/InputWithSelect";
-import { currencies } from "@/common/data/currencies";
+import { cryptoTokens, currencies } from "@/common/data/currencies";
 import { useWriteContract } from "wagmi";
 import CediH from "@/common/abis/CediH";
 import { MORPH_CEDIH_ADDRESS, MORPH_P2P_ADDRESS } from "@/common/contracts";
@@ -27,14 +27,14 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
                 args: [MORPH_CEDIH_ADDRESS, stakeAmount],
             });
 
-            console.log("Approve Hash:", approveHash);
+            console.log("Approved:", approveHash);
 
             const registerHash = await writeContractAsync({
                 abi: OptimisticP2P,
                 address: MORPH_P2P_ADDRESS,
                 functionName: "registerMerchant",
             });
-            console.log("Register Hash:", registerHash);
+            console.log("Registered:", registerHash);
         } catch (error) {
             console.error("Error handling stake:", error);
         }
@@ -66,8 +66,8 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
                     </div>
                     <InputWithSelect
                         label="Stake Amount"
-                        initialCurrency="GHS"
-                        currencies={currencies}
+                        initialCurrency="ETH"
+                        currencies={cryptoTokens}
                         onValueChange={(value) => console.log(value)}
                         value="1500"
                         readOnly
