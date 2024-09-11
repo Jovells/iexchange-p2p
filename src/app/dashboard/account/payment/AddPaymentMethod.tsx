@@ -99,7 +99,8 @@ const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
                         steps === 2 && (
                             <Fragment>
                                 <div>
-                                    <p>Provide details of your selected payment methods.</p>
+                                    <p>Provide your <span className="font-bold">{selectedMethod}</span> details. </p>
+                                    <p>(Name, account number, MOMO number etc)</p>
                                     <textarea rows={10} className='w-full p-4 border border-gray-300 rounded-xl outline-none resize-none ' />
                                 </div>
                                 <div className='flex flex-row items-center gap-4 p-4 px-0'>
