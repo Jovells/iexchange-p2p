@@ -7,6 +7,9 @@ import QueryProvider  from './QueryProvider'
 import { State, WagmiProvider } from 'wagmi';
 
 import {RainbowKitProvider, darkTheme} from '@rainbow-me/rainbowkit' 
+import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
+import { UserProvider } from './UserContext';
+
 
 
 if (!projectId) throw new Error('Project ID is not defined')
@@ -22,6 +25,8 @@ export default function WalletProvider({
   return (
     <WagmiProvider config={config} initialState={initialState}>
       <QueryProvider>
+        <UserProvider>
+      <RainbowKitSiweNextAuthProvider>
         <RainbowKitProvider theme={darkTheme({
           accentColor: '#000000',
           // accentColorForeground: '#',
@@ -30,6 +35,8 @@ export default function WalletProvider({
         })}>
         {children}
         </RainbowKitProvider>
+        </RainbowKitSiweNextAuthProvider>
+        </UserProvider>
         </QueryProvider>
     </WagmiProvider>
   )

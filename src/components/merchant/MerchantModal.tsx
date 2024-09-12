@@ -4,10 +4,11 @@ import { X } from "lucide-react";
 import Button from "../ui/Button";
 import InputWithSelect from "../ui/InputWithSelect";
 import { cryptoTokens, currencies } from "@/common/data/currencies";
-import { useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
 import CediH from "@/common/abis/CediH";
 import { MORPH_CEDIH_ADDRESS, MORPH_P2P_ADDRESS } from "@/common/contracts";
 import OptimisticP2P from "@/common/abis/OptimisticP2P";
+import { useUser } from "@/common/contexts/UserContext";
 
 interface MerchantModalProps {
     hideModal: () => void;
@@ -16,18 +17,31 @@ interface MerchantModalProps {
 
 const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     const { writeContractAsync } = useWriteContract();
+    const account = useAccount()
+
+    const {data }= useReadContract({
+        abi: CediH,
+        address: MORPH_CEDIH_ADDRESS,
+        functionName: "balanceOf",
+        args: [account.address!],
+    })
 
     const handleStake = async () => {
         try {
             const stakeAmount = BigInt(1500 * 1e18);
-            const approveHash = await writeContractAsync({
-                abi: CediH,
-                address: MORPH_P2P_ADDRESS,
-                functionName: "approve",
-                args: [MORPH_CEDIH_ADDRESS, stakeAmount],
-            });
+            if (data && data < stakeAmount) {
+                const approveHash = await writeContractAsync({
+                    abi: CediH,
+                    address: MORPH_CEDIH_ADDRESS,
+                    functionName: "approve",
+                    args: [MORPH_P2P_ADDRESS, stakeAmount],
+                });
+                console.log("Approved:", approveHash);
+            }
+            else{
+                console.log("Already Approved")
+            }
 
-            console.log("Approved:", approveHash);
 
             const registerHash = await writeContractAsync({
                 abi: OptimisticP2P,

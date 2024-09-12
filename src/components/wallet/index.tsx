@@ -1,10 +1,14 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useLayoutEffect } from 'react';
 import Image from 'next/image';
 import { useAccount, useDisconnect } from 'wagmi';
 import { shortenAddress } from '@/lib/utils';
 import { useModal } from '@/common/contexts/ModalContext';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
+import { useSession } from 'next-auth/react';
+import { getAuth, signInWithCustomToken, signOut } from "firebase/auth";
+import { UserSession } from '@/common/types';
+
 
 
 
@@ -13,6 +17,8 @@ const WalletConnect = () => {
     const { disconnect, isPending } = useDisconnect();
     const { showModal, hideModal } = useModal();
 
+
+//sign out
     useEffect(() => {
         if (isPending) {
             showModal(
@@ -21,7 +27,9 @@ const WalletConnect = () => {
         } else {
             hideModal()
         }
-    }, [disconnect, isPending])
+    }, [isPending])
+
+
 
     return (
         <Fragment>
@@ -39,7 +47,7 @@ const WalletConnect = () => {
                     </div>
                 </div>
             ) : (
-                <ConnectButton />
+                <ConnectButton/>
             )}
         </Fragment>
     );
