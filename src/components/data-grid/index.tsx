@@ -138,10 +138,64 @@ const ExpandableTable = forwardRef(
                       )}
                     </div>
                   ))}
+                  {expandedRowIndex !== null && (
+                    <div
+                      className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50"
+                      onClick={closeExpandedRow}>
+                      <div
+                        className="bg-white w-full p-4 rounded-t-xl max-h-[500px] overflow-auto"
+                        onClick={(e) => e.stopPropagation()}>
+                        {children(data[expandedRowIndex], closeExpandedRow)}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div>
-                  {data.map((row, index) => (
+                                  {data.map((row, index) => (
+                  <React.Fragment key={index}>
+                    {expandedRowIndex !== index && (
+                      <div
+                        className="grid grid-cols-12 gap-4 p-4 border-b border-[#C3D5F124] cursor-pointer"
+                        style={{ gridTemplateColumns: columnGridTemplate }}
+                        >
+                          {columns.map((column) => (
+                            <div key={column.key} className="col-span-1">
+                              {column.render
+                                ? column.render(row)
+                                : (row[column.key as keyof Offer] as ReactNode)}
+                            </div>
+                          ))}
+                        {actions.length > 0 && (
+                          <div className="col-span-1 w-full flex justify-end">
+                            {actions.map((action, actionIndex) => (
+                              <button
+                                key={actionIndex}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  action.onClick(row);
+                                  handleRowClick(index);
+                                }}
+                                className={`${
+                                  action.label.toLowerCase().includes("buy")
+                                    ? "bg-[#2D947A]"
+                                    : "bg-[#F14E4E]"
+                                } text-white text-sm px-4 py-3 rounded-xl`}>
+                                {action.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {expandedRowIndex === index && (
+                      <div className="col-span-full py-2 py-4 border-b border-[#C3D5F124]">
+                        {children(row, closeExpandedRow)}
+                      </div>
+                    )}
+                  </React.Fragment>
+                ))}
+                  {/* {data.map((row, index) => (
                     <React.Fragment key={index}>
                       <div
                         className="grid grid-cols-12 gap-4 p-4 border-b border-[#C3D5F124] cursor-pointer"
@@ -175,8 +229,19 @@ const ExpandableTable = forwardRef(
                           </div>
                         )}
                       </div>
+                      {expandedRowIndex !== null && (
+                        <div
+                          className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50"
+                          onClick={closeExpandedRow}>
+                          <div
+                            className="bg-white w-full p-4 rounded-t-xl max-h-[500px] overflow-auto"
+                            onClick={(e) => e.stopPropagation()}>
+                            {children(data[expandedRowIndex], closeExpandedRow)}
+                          </div>
+                        </div>
+                      )}ƒ
                     </React.Fragment>
-                  ))}
+                  ))} */}
                 </div>
               )}
             </>
