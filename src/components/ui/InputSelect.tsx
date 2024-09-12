@@ -1,3 +1,5 @@
+'use client'
+
 import { Check, CheckCircle, CheckSquare, ChevronDown } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 
@@ -59,11 +61,11 @@ const InputSelect: React.FC<InputSelectProps> = ({
     return (
         <div ref={dropdownRef} className="relative border rounded-xl cursor-pointer w-full ">
             <div className="w-full flex flex-col px-3 py-3">
-                <span>{label}</span>
+                {(label && selectedValue) && <span className='text-sm text-gray-500 '>{label}</span>}
                 <div className="flex items-center w-full" onClick={toggleDropdown}>
                     <div className="flex items-center flex-1 space-x-1">
-                        {/* {selectedOption?.icon} */}
-                        <span>{selectedOption?.label}</span>
+                        {!selectedValue && <span className='text-sm text-gray-500 '>{label}</span>}
+                        {selectedValue && <span>{selectedOption?.label}</span>}
                     </div>
                     <ChevronDown />
                 </div>

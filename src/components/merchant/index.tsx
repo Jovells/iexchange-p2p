@@ -8,8 +8,10 @@ import { useAccount } from 'wagmi'
 import { fetchAccount } from '@/common/api'
 import { useQuery } from '@tanstack/react-query'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { useRouter } from 'next/navigation'
 
 const BecomeAMerchant = () => {
+    const router = useRouter()
     const { openConnectModal } = useConnectModal()
     const { isConnected, address } = useAccount()
     const { showModal, hideModal } = useModal()
@@ -38,7 +40,7 @@ const BecomeAMerchant = () => {
         }
 
         if (isMerchant) {
-            // navigate to create ads
+            router.push("/ads/create")
             return
         }
 
