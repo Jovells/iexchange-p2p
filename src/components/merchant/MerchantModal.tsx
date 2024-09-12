@@ -3,12 +3,11 @@
 import { X } from "lucide-react";
 import Button from "../ui/Button";
 import InputWithSelect from "../ui/InputWithSelect";
-import { cryptoTokens, currencies } from "@/common/data/currencies";
-import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
+import { cryptoTokens } from "@/common/data/currencies";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import CediH from "@/common/abis/CediH";
 import { MORPH_CEDIH_ADDRESS, MORPH_P2P_ADDRESS } from "@/common/contracts";
 import OptimisticP2P from "@/common/abis/OptimisticP2P";
-import { useUser } from "@/common/contexts/UserContext";
 
 interface MerchantModalProps {
     hideModal: () => void;

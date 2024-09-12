@@ -1,16 +1,18 @@
+'use client'
+
 import { Check, ChevronDown, DollarSign } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 
 interface Currency {
-    symbol: string;
-    name: string;
-    icon?: React.ReactNode;
+  symbol: string;
+  name: string;
+  icon?: React.ReactNode;
 }
 
 interface InputSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   initialCurrency?: string;
-  initialAmount?: string;
+  initialAmount?: any;
   currencies: Currency[];
   onValueChange?: (value: { currency: string; amount: string }) => void;
   readOnly?: boolean;
@@ -19,9 +21,9 @@ interface InputSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const InputWithSelect: React.FC<InputSelectProps> = ({
-  label = "You receive",
+  label,
   initialCurrency = "GHS",
-  initialAmount = "0.00",
+  initialAmount,
   currencies,
   onValueChange,
   value,
@@ -48,9 +50,11 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
     });
     setIsOpen(false);
   };
+
   const valueToDisplay = value
     ? { amount: value, currency: insideValue.currency }
     : insideValue;
+
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const amount = event.target.value;
     setValue((prevState) => {
@@ -88,14 +92,16 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
       ref={dropdownRef}
       className="w-full relative border rounded-xl cursor-pointer">
       <div className="w-full flex flex-col px-3 py-1">
-        <span>{label}</span>
+        {insideValue.amount && label && (
+          <span className="text-sm text-gray-500 mb-1">{label}</span>
+        )}
         <div className="flex items-center w-full">
           <input
             type="text"
             className="flex-1 p-2 px-0 border-none outline-none"
             value={valueToDisplay.amount}
             readOnly={readOnly}
-            placeholder={placeholder}
+            placeholder={!insideValue.amount ? label : ''}
             onChange={handleAmountChange}
           />
           <div className="flex items-center space-x-1" onClick={toggleDropdown}>

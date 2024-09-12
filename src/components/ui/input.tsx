@@ -1,25 +1,48 @@
-import * as React from "react"
+'use client'
 
-import { cn } from "@/lib/utils"
+import React, { useState } from 'react';
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+}
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
-    return (
+const Input: React.FC<InputProps> = ({ label, value, onChange, ...props }) => {
+  const [inputValue, setInputValue] = useState(value || '');
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    setInputValue(newValue);
+    if (onChange) {
+      onChange(event);
+    }
+  };
+
+  const handleFocus = () => setIsFocused(true);
+  const handleBlur = () => setIsFocused(false);
+
+  return (
+    <div className="relative w-full h-auto border rounded-xl px-2 py-1">
+      {/* Floating label inside the container */}
+      <label
+        className={`absolute left-2 transition-all duration-200 bg-white px-1 pointer-events-none
+          ${inputValue || isFocused ? 'top-1 text-sm text-gray-500' : 'top-1/2 text-lg text-gray-400 transform -translate-y-1/2'}`}
+      >
+        {label}
+      </label>
+      
+      {/* Input field */}
       <input
-        type={type}
-        className={cn(
-          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-          className
-        )}
-        ref={ref}
+        type="text"
+        className="w-full pt-4 px-1 pb-1 bg-transparent outline-none text-gray-800"
+        value={inputValue}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         {...props}
       />
-    )
-  }
-)
-Input.displayName = "Input"
+    </div>
+  );
+};
 
-export { Input }
+export default Input;
