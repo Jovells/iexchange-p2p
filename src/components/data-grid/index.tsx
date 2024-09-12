@@ -138,6 +138,17 @@ const ExpandableTable = forwardRef(
                       )}
                     </div>
                   ))}
+                  {expandedRowIndex !== null && (
+                    <div
+                      className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50"
+                      onClick={closeExpandedRow}>
+                      <div
+                        className="bg-white w-full p-4 rounded-t-xl max-h-[500px] overflow-auto"
+                        onClick={(e) => e.stopPropagation()}>
+                        {children(data[expandedRowIndex], closeExpandedRow)}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div>
@@ -175,6 +186,17 @@ const ExpandableTable = forwardRef(
                           </div>
                         )}
                       </div>
+                      {expandedRowIndex !== null && (
+                        <div
+                          className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50"
+                          onClick={closeExpandedRow}>
+                          <div
+                            className="bg-white w-full p-4 rounded-t-xl max-h-[500px] overflow-auto"
+                            onClick={(e) => e.stopPropagation()}>
+                            {children(data[expandedRowIndex], closeExpandedRow)}
+                          </div>
+                        </div>
+                      )}ƒ
                     </React.Fragment>
                   ))}
                 </div>
