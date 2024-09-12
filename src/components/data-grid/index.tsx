@@ -7,6 +7,7 @@ import React, {
   useEffect,
 } from 'react';
 import Loader from '../loader/Loader';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type Column = {
   key: string;
@@ -188,13 +189,13 @@ const ExpandableTable = forwardRef(
           {/* Pagination */}
           {
             data && data.length > 0 && (
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-center mt-4">
                 <button
                   disabled={page === 1}
                   onClick={() => onPageChange(page - 1)}
-                  className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                  className="px-4 py-2 bg-transparent cursor-pointer rounded disabled:opacity-50"
                 >
-                  Previous
+                  <ChevronLeft />
                 </button>
                 <span className="px-4 py-2">
                   Page {page} of {totalPages}
@@ -202,9 +203,9 @@ const ExpandableTable = forwardRef(
                 <button
                   disabled={page === totalPages}
                   onClick={() => onPageChange(page + 1)}
-                  className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                  className="px-4 py-2 bg-transparent cursor-pointer rounded disabled:opacity-50"
                 >
-                  Next
+                  <ChevronRight />
                 </button>
               </div>
             )
