@@ -40,19 +40,18 @@ interface Props {
 const P2POrder: FC<Props> = ({ offerType }) => {
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
 
-  const [page, setPage] = React.useState(0);
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } =
     useQuery({
-      queryKey: ["ads", page, offerType],
-      queryFn: () => fetchAds(page, offerType),
-      placeholderData: keepPreviousData,
+      queryKey: ["ads", currentPage, offerType],
+      queryFn: () => fetchAds(currentPage, offerType),
+      // placeholderData: keepPreviousData,
     });
 
   const handlePageChange = (page: number) => {
@@ -67,8 +66,6 @@ const P2POrder: FC<Props> = ({ offerType }) => {
   if (error) {
     console.log("error:", error);
   }
-
-  const hasMore = data?.offers?.length === 10;
 
   return (
     <Suspense>
@@ -89,23 +86,7 @@ const P2POrder: FC<Props> = ({ offerType }) => {
             />
           )}
         </ExpandableTable>
-        {/* <span>Current Page: {page + 1}</span>
-      <Button
-        onClick={() => setPage((old) => Math.max(old - 1, 0))}
-        disabled={page === 0}>
-        Previous Page
-      </Button>
-      <Button
-        onClick={() => {
-          if (!isPlaceholderData && hasMore) {
-            setPage((old) => old + 1);
-          }
-        }}
-        // Disable the Next Page button until we know a next page is available
-        disabled={isPlaceholderData || !hasMore}>
-        Next Page
-      </Button>
-      {isFetching ? <span> Loading...</span> : null} */}
+
       </div>
     </Suspense>
 

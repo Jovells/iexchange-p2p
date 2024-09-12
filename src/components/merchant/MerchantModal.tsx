@@ -17,7 +17,7 @@ interface MerchantModalProps {
 
 const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     const { writeContractAsync } = useWriteContract();
-    const account = useAccount()
+    const account = useAccount();
 
     const {data: allowance }= useReadContract({
         abi: CediH,
