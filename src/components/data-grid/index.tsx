@@ -86,7 +86,7 @@ const ExpandableTable = forwardRef(
       <div className="w-full overflow-x-auto">
         <div className="min-w-full bg-white" style={styles}>
           {/* Column Headers */}
-          <div
+          {!isMobile && <div
             className="grid grid-cols-12 gap-4 p-4 bg-black rounded-xl text-white text-sm font-semibold"
             style={{ gridTemplateColumns: columnGridTemplate }}
           >
@@ -96,7 +96,7 @@ const ExpandableTable = forwardRef(
               </div>
             ))}
             {actions.length > 0 && <div className="col-span-1 w-full flex justify-end"></div>}
-          </div>
+          </div>}
 
           {isLoading && <Loader className='mt-20' />}
 
