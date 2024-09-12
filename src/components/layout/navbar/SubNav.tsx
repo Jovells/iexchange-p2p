@@ -56,7 +56,7 @@ const SubNav = () => {
         setIsMounted(true);
     }, []);
 
-    if (!isMounted || isConnected) {
+    if (!isMounted || !isConnected) {
         return null;
     }
 
