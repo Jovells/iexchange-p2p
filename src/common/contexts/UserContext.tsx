@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { createContext, useContext, ReactNode, FC, useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { UserSession } from "../types";
+import { app } from "../configs/firebase";
 
 type User = {
   uid: string;
@@ -34,7 +35,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const session = useSession() as UserSession;
-  const auth = getAuth();
+  const auth = getAuth(app);
 
   const [user, setUser] = useState<User>();
 

@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button";
 import MerchantProfile from "@/components/merchant/MerchantProfile";
 import { DollarSign, Euro } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import p2pAbi from "@/common/abis/OptimisticP2P.json";
 import cedihAbi from "@/common/abis/CediH.json";
 import {
@@ -72,6 +72,14 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     hash,
   });
 
+  const { data: approval } = useReadContract({
+    abi: CediH,
+    address: data.token.id,
+    functionName: "allowance",
+    args: [data.accountHash, MORPH_CEDIH_ADDRESS],
+  });
+  console.log("approval", approval);
+
   function handleFormDateChange(name: string, value: string) {
     console.log("name", name, "value", value, "data", data);
     if (name === "toPay") {
@@ -106,13 +114,17 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
 
     const valueToPay = BigInt(toPay) * BigInt(10 ** 18);
 
-    const approveHash = await writeContractAsync({
+    if (approval! < valueToPay) {
+      const approveHash = await writeContractAsync({
       abi: CediH,
       address: data.token.id,
       functionName: "approve",
       args: [MORPH_CEDIH_ADDRESS, valueToPay],
-    });
-    console.log("approveHash", approveHash);
+      });
+      console.log("approveHash", approveHash);
+    }else{
+      console.log("Already Approved")
+    }
 
     const hash = await writeContractAsync({
       abi: OptimisticP2P,
