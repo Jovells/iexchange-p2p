@@ -50,7 +50,7 @@ const P2POrder: FC<Props> = ({ offerType }) => {
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } =
     useQuery({
-      queryKey: ["ads", page],
+      queryKey: ["ads", page, offerType],
       queryFn: () => fetchAds(page, offerType),
       placeholderData: keepPreviousData,
     });

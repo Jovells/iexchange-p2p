@@ -19,17 +19,17 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     const { writeContractAsync } = useWriteContract();
     const account = useAccount()
 
-    const {data }= useReadContract({
+    const {data: allowance }= useReadContract({
         abi: CediH,
         address: MORPH_CEDIH_ADDRESS,
-        functionName: "balanceOf",
-        args: [account.address!],
+        functionName: "allowance",
+        args: [account.address!, MORPH_P2P_ADDRESS],
     })
 
     const handleStake = async () => {
         try {
             const stakeAmount = BigInt(1500 * 1e18);
-            if (data && data < stakeAmount) {
+            if (allowance! < stakeAmount) {
                 const approveHash = await writeContractAsync({
                     abi: CediH,
                     address: MORPH_CEDIH_ADDRESS,
