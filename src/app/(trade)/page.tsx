@@ -9,6 +9,7 @@ import P2POffers from "./order";
 import WalletConnectSection from "@/components/sections/WalletConnectSection";
 import Faqs from "@/components/sections/Faqs";
 import IExchangeGuide from "@/components/sections/IExchangeGuide";
+import Loader from "@/components/loader/Loader";
 
 interface P2PMarketProps {}
 
@@ -16,6 +17,8 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const [ isMounted, setIsMounted] = useState(false)
 
   const tab: any = searchParams.get("trade")?.toLowerCase() || "buy";
   const [activeTab, setActiveTab] = useState<"buy" | "sell" | string>(
@@ -67,10 +70,18 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     router.push(`${pathname}?${query}`);
   };
 
+  useEffect(()=>{
+    setIsMounted(true)
+  },[])
+
+  if(!isMounted){
+    return <Loader className="mt-20" />
+  }
+
   return (
     <Suspense fallback={<div>'loading'</div>}>
       <WalletConnectSection />
-      <div className="w-full lg:w-auto lg:container lg:mx-auto bg-white flex flex-col justify-start items-start space-y-4">
+      <div className="w-full lg:w-auto lg:container lg:mx-auto bg-white flex flex-col justify-start items-start space-y-4 mt-4">
         <div className="w-full">
           <div className="flex flex-row justify-between lg:justify-start items-center flex-wrap lg:flex-nowrap w-full lg:w-auto">
             <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl p-1 min-w-[150px]">

@@ -1,7 +1,7 @@
 'use client'
 import ExpandableTable from '@/components/data-grid'
 import { useSearchParams } from 'next/navigation';
-import React, { FC, Suspense } from 'react'
+import React, { FC, Suspense, useRef, useState } from 'react'
 import CreateOrder from './create-order';
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api";
@@ -38,7 +38,10 @@ interface Props {
   offerType: string;
 }
 const P2POrder: FC<Props> = ({ offerType }) => {
+  const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
@@ -52,6 +55,11 @@ const P2POrder: FC<Props> = ({ offerType }) => {
       placeholderData: keepPreviousData,
     });
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    console.log('Page changed to:', page);
+  };
+
   const actions = [
     { label: trade + " " + crypto, onClick: (row: any) => console.log(row) },
   ];
@@ -64,21 +72,24 @@ const P2POrder: FC<Props> = ({ offerType }) => {
 
   return (
     <Suspense>
-    <div className="w-full">
-      <ExpandableTable
-        columns={columns}
-        data={data?.offers || []}
-        actions={actions}
-        isLoading={isPending}>
-        {(row, toggleExpand) => (
-          <CreateOrder
-            data={row}
-            toggleExpand={toggleExpand}
-            orderType={trade}
-          />
-        )}
-      </ExpandableTable>
-      <span>Current Page: {page + 1}</span>
+      <div className="w-full">
+        <ExpandableTable
+          ref={tableRef}
+          columns={columns}
+          data={data?.offers || []}
+          actions={actions}
+          isLoading={isPending}
+          pageSize={50}
+          onPageChange={handlePageChange}>
+          {(row, toggleExpand) => (
+            <CreateOrder
+              data={row}
+              toggleExpand={toggleExpand}
+              orderType={trade}
+            />
+          )}
+        </ExpandableTable>
+        {/* <span>Current Page: {page + 1}</span>
       <Button
         onClick={() => setPage((old) => Math.max(old - 1, 0))}
         disabled={page === 0}>
@@ -94,8 +105,8 @@ const P2POrder: FC<Props> = ({ offerType }) => {
         disabled={isPlaceholderData || !hasMore}>
         Next Page
       </Button>
-      {isFetching ? <span> Loading...</span> : null}
-    </div>
+      {isFetching ? <span> Loading...</span> : null} */}
+      </div>
     </Suspense>
 
   );
