@@ -52,14 +52,6 @@ const P2POrder: FC<Props> = ({ offerType }) => {
       placeholderData: keepPreviousData,
     });
 
-  console.log("data:", data);
-
-  // const data = [
-  //     { advertisers: 'John Doe', price: 28, funds: 'New York', payment: 'New York' },
-  //     { advertisers: 'Jane Smith', price: 34, funds: 'San Francisco', payment: 'New York' },
-  //     { advertisers: 'Michael Johnson', price: 45, funds: 'Chicago', payment: 'New York' },
-  // ];
-
   const actions = [
     { label: trade + " " + crypto, onClick: (row: any) => console.log(row) },
   ];
@@ -77,7 +69,7 @@ const P2POrder: FC<Props> = ({ offerType }) => {
         columns={columns}
         data={data?.offers || []}
         actions={actions}
-        isLoading={false}>
+        isLoading={isPending}>
         {(row, toggleExpand) => (
           <CreateOrder
             data={row}
