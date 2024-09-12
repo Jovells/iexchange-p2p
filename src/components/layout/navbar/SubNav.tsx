@@ -5,6 +5,7 @@ import MenuDropdown from "../../ui/MenuDropdown";
 import Link from 'next/link';
 import WalletConnect from "@/components/wallet";
 import { useAccount, useDisconnect } from "wagmi";
+import { useEffect, useState } from "react";
 
 const menuLinks = [
     { href: "/", label: "P2P" },
@@ -49,9 +50,14 @@ const renderLinks = (links: { href: string; label: string }[]) => (
 const SubNav = () => {
 
     const { isConnected } = useAccount();
+    const [isMounted, setIsMounted] = useState(false);
 
-    if (!isConnected) {
-        return
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted || isConnected) {
+        return null;
     }
 
     const renderMenuDropdowns = () => (

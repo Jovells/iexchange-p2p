@@ -71,10 +71,8 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     <Suspense fallback={<div>'loading'</div>}>
       <WalletConnectSection />
       <div className="w-full lg:w-auto lg:container lg:mx-auto bg-white flex flex-col justify-start items-start space-y-4">
-        {/* trading parameters */}
         <div className="w-full">
           <div className="flex flex-row justify-between lg:justify-start items-center flex-wrap lg:flex-nowrap w-full lg:w-auto">
-            {/* buy or sell option */}
             <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl p-1 min-w-[150px]">
               <button
                 onClick={() => handleTabChange("Buy")}
@@ -95,7 +93,6 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
                 Sell
               </button>
             </div>
-            {/* crypto currency options */}
             <div className="bg-white border-0 border-gray-200 rounded-xl">
               <div className="hidden sm:flex justify-start items-center space-x-4 p-1 px-3">
                 {cryptos.map((crypto) => (
@@ -129,9 +126,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
               </div>
             </div>
           </div>
-          {/* filter options to apply */}
           <div className="flex flex-row justify-start items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6">
-            {/* amount options */}
             <div className="w-full lg:w-[300px]">
               <InputAmount
                 label=""
@@ -144,7 +139,6 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
                 placeholder="Enter amount"
               />
             </div>
-            {/* payment options */}
             <div className="w-full lg:w-[300px]">
               <SelectPaymentMethod
                 label=""
@@ -153,7 +147,6 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
                 onValueChange={(value) => console.log(value)}
               />
             </div>
-            {/* additional filter */}
             <Filter
               className="hidden lg:block cursor-pointer"
               onClick={() => {}}

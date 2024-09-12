@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Button from '../ui/Button'
 import { useModal } from '@/common/contexts/ModalContext'
 import MerchantModal from './MerchantModal'
@@ -8,12 +8,16 @@ import { useAccount } from 'wagmi'
 import { fetchAccount } from '@/common/api'
 import { useQuery } from '@tanstack/react-query'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 const BecomeAMerchant = () => {
     const { openConnectModal } = useConnectModal()
     const { isConnected, address } = useAccount()
     const { showModal, hideModal } = useModal()
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // const address: any = "0x8db769ccd2f5946a94fce8b3ad9a296d5309c36c"
 
@@ -28,9 +32,6 @@ const BecomeAMerchant = () => {
     const isMerchant = account?.account?.isMerchant || false
 
     const handleClick = useCallback(() => {
-
-
-        console.log("MERCHANT ", isMerchant, isConnected)
         if (!isConnected) {
             openConnectModal?.()
             return
