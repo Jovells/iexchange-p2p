@@ -19,14 +19,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-      <SessionProvider refetchInterval={0} session={session}>
-<WalletProvider>
-          <ModalContextProvider>
-            {children}
-            <ModalManager />
-          </ModalContextProvider>
-  </WalletProvider>
-  </SessionProvider>            
+        <SessionProvider refetchInterval={0} session={session}>
+          <WalletProvider>
+            <ModalContextProvider>
+              {children}
+              <ModalManager />
+            </ModalContextProvider>
+          </WalletProvider>
+        </SessionProvider>
       </body>
     </html>
   );
