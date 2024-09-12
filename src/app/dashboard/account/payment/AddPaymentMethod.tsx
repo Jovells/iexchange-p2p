@@ -1,8 +1,12 @@
+import { db } from '@/common/configs/firebase';
 import Loader from '@/components/loader/Loader'
 import Button from '@/components/ui/Button';
 import SearchInput from '@/components/ui/SearchInput'
 import { Check, X } from 'lucide-react'
 import React, { FC, Fragment, useEffect, useState } from 'react'
+import { collection, addDoc } from "firebase/firestore";
+import { useAccount } from 'wagmi';
+
 
 type PaymentMethod = {
     id: number;
@@ -24,11 +28,33 @@ const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
     const [selectedMethod, setSelectedMethod] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [steps, setSteps] = useState(1)
+    const account = useAccount()
+    const [details, setDetails] = useState<string | null>(null)
 
     const handleSearch = () => { }
     const toggleSelection = () => { }
 
-    const handleAdd = () => { }
+    const handleAdd = () => {
+        if (selectedMethod) {
+
+            // Add the payment method details to the "accounts" collection
+            addDoc(collection(db, `Users/${account.address}/paymentMethods`), {
+                paymentMethod: selectedMethod,
+                details
+                // Add other payment method details here
+            })
+                .then(() => {
+                    // Payment method added successfully
+                    // You can perform any necessary actions here
+                    hideModal();
+                })
+                .catch((error) => {
+                    // Error occurred while adding payment method
+                    // Handle the error appropriately
+                    console.error("Error adding payment method: ", error);
+                });
+        }
+    }
 
     useEffect(() => {
         //simulating loading
@@ -101,7 +127,7 @@ const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
                                 <div>
                                     <p>Provide your <span className="font-bold">{selectedMethod}</span> details. Prefix it with either of the below.</p>
                                     <p>(Name, account number, MOMO number etc)</p>
-                                    <textarea rows={10} className='w-full p-4 border border-gray-300 rounded-xl outline-none resize-none ' />
+                                    <textarea onChange={(e) => setDetails(e.target.value)} rows={10} className='w-full p-4 border border-gray-300 rounded-xl outline-none resize-none ' />
                                 </div>
                                 <div className='flex flex-row items-center gap-4 p-4 px-0'>
                                     <Button

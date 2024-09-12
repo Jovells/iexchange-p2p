@@ -4,6 +4,12 @@ import { useModal } from '@/common/contexts/ModalContext';
 import Button from '@/components/ui/Button';
 import React, { } from 'react';
 import AddPaymentMethod from './AddPaymentMethod';
+import { useQuery } from '@tanstack/react-query'
+import { useAccount } from 'wagmi';
+import { db } from '@/common/configs/firebase';
+import { collection, doc, getDoc, getDocs, query } from 'firebase/firestore';
+import fetchPaymentDetails from '@/common/api/fetchPaymentDetails';
+
 
 type PaymentMethod = {
   id: number;
@@ -20,6 +26,17 @@ const paymentMethods: PaymentMethod[] = [
 
 const Payment = () => {
   const { showModal, hideModal } = useModal();
+  const account = useAccount();
+
+
+
+    const { data: paymentMethods, isLoading, isError } = useQuery({
+      queryKey: ['paymentMethods', account.address],
+      queryFn: () => fetchPaymentDetails(account.address!)
+    });
+
+
+
 
   // Function to show the modal with the correct content
   const handleClick = () => {
@@ -44,7 +61,9 @@ const Payment = () => {
         />
       </div>
       <div>
-        list of payment method
+        
+      {paymentMethods?.map((method, i) => (
+            <div key={i}>{method.paymentMethod} : {method.details}</div>))}
       </div>
     </div>
   );

@@ -1,11 +1,7 @@
 import { cookieStorage, createStorage } from "wagmi";
 import {
-  base,
-  baseSepolia,
-  mainnet,
   morphHolesky,
-  polygon,
-  sepolia,
+  kakarotSepolia,
 } from "wagmi/chains";
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 
@@ -14,7 +10,6 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 export const projectId = process.env.WEB3_PROJECT_ID;
 
 if (!projectId) throw new Error("Project ID is not defined");
-
 
 // Create wagmiConfig
 const mHolesky = {
@@ -25,7 +20,7 @@ const mHolesky = {
     },
   },
 };
-const chains = [mHolesky] as const;
+const chains = [mHolesky, kakarotSepolia] as const;
 export const config = getDefaultConfig({
   appName: "IExchange",
   chains,

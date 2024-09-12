@@ -10,6 +10,7 @@ import WalletConnectSection from "@/components/sections/WalletConnectSection";
 import Faqs from "@/components/sections/Faqs";
 import IExchangeGuide from "@/components/sections/IExchangeGuide";
 import Loader from "@/components/loader/Loader";
+import { useChainModal } from "@rainbow-me/rainbowkit";
 
 interface P2PMarketProps {}
 
@@ -17,6 +18,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const {openChainModal} = useChainModal()
 
   const [ isMounted, setIsMounted] = useState(false)
 
@@ -25,6 +27,11 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     tab === "sell" ? "sell" : "buy"
   );
   const [selectedCrypto, setSelectedCrypto] = useState("USDT");
+
+  const handleOpenChainModal = () => {
+    console.log("open chain modal", openChainModal)
+    openChainModal?.()
+  }
 
   const options = [
     {
@@ -162,6 +169,9 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
               className="hidden lg:block cursor-pointer"
               onClick={() => {}}
             />
+              <button onClick={handleOpenChainModal} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+                Switch Networks
+              </button>
           </div>
         </div>
 

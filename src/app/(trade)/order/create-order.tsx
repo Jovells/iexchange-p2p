@@ -8,15 +8,8 @@ import MerchantProfile from "@/components/merchant/MerchantProfile";
 import { DollarSign, Euro } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import p2pAbi from "@/common/abis/OptimisticP2P.json";
-import cedihAbi from "@/common/abis/CediH.json";
-import {
-  CEDIH_ABI,
-  MORPH_CEDIH_ADDRESS,
-  MORPH_P2P_ADDRESS,
-} from "@/common/contracts";
 import { decodeEventLog } from "viem";
-import OptimisticP2P from "@/common/abis/OptimisticP2P";
+import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
 
 const currencies = [
@@ -56,6 +49,9 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     toReceive: "",
     paymentMethod: "",
   });
+  const {p2p, tokens, indexerUrl} = useContracts();
+  const token = tokens.find((token) => token.address.toLowerCase() === data.token.id.toLowerCase());
+
   const prevOrderType = useRef(orderType);
   const searchParams = useSearchParams();
   const navigate = useRouter();
@@ -72,13 +68,13 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     hash,
   });
 
-  const { data: approval } = useReadContract({
+  const { data: allowance } = useReadContract({
     abi: CediH,
     address: data.token.id,
     functionName: "allowance",
-    args: [data.accountHash, MORPH_CEDIH_ADDRESS],
+    args: [data.accountHash, p2p.address],
   });
-  console.log("approval", approval);
+  console.log("allowance", allowance);
 
   function handleFormDateChange(name: string, value: string) {
     console.log("name", name, "value", value, "data", data);
@@ -114,21 +110,21 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
 
     const valueToPay = BigInt(toPay) * BigInt(10 ** 18);
 
-    if (approval! < valueToPay) {
+    if (allowance! < valueToPay) {
       const approveHash = await writeContractAsync({
-      abi: CediH,
+      abi: tokens[0].abi,
       address: data.token.id,
       functionName: "approve",
-      args: [MORPH_CEDIH_ADDRESS, valueToPay],
+      args: [p2p.address, valueToPay],
       });
       console.log("approveHash", approveHash);
     }else{
-      console.log("Already Approved")
+      console.log("Already Approved");
     }
 
     const hash = await writeContractAsync({
-      abi: OptimisticP2P,
-      address: MORPH_P2P_ADDRESS,
+      abi: p2p.abi,
+      address: p2p.address,
       functionName: "createOrder",
       args: [
         BigInt(data.id),
@@ -146,7 +142,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     receipt.logs.some((log) => {
       try {
         const decoded = decodeEventLog({
-          abi: p2pAbi.abi,
+          abi: p2p.abi,
           data: log.data,
           topics: log.topics,
           eventName: "NewOrder",
