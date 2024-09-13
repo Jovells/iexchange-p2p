@@ -9,8 +9,10 @@ import { fetchAccount } from '@/common/api'
 import { useQuery } from '@tanstack/react-query'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/navigation'
+import { useContracts } from '@/common/contexts/ContractContext'
 
 const BecomeAMerchant = () => {
+    const{indexerUrl} = useContracts();
     const router = useRouter()
     const { openConnectModal } = useConnectModal()
     const { isConnected, address } = useAccount()
@@ -24,8 +26,8 @@ const BecomeAMerchant = () => {
     // const address: any = "0x8db769ccd2f5946a94fce8b3ad9a296d5309c36c"
 
     const { data: account, error, isLoading, isError, isFetching } = useQuery({
-        queryKey: ['merchantAccount', address],
-        queryFn: () => fetchAccount(address),
+        queryKey: ['merchantAccount', indexerUrl, address],
+        queryFn: () => fetchAccount(indexerUrl, address),
         enabled: !!address,
         retry: 1,
         refetchOnWindowFocus: false,

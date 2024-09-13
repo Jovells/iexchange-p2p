@@ -1,6 +1,8 @@
 "use client";
 
+import fetchAccountDetails from "@/common/api/fetchAccountDetails";
 import fetchOrder from "@/common/api/fetchOrder";
+import { useContracts } from "@/common/contexts/ContractContext";
 import ChatWithMerchant from "@/components/merchant/ChatWithMerchant";
 import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
@@ -8,14 +10,25 @@ import { useParams } from "next/navigation";
 import React, { use } from "react";
 
 const OrderCreated = () => {
+  const {indexerUrl} = useContracts();
   const { orderId } = useParams<{ orderId: string }>();
-  const { data, error } = useQuery({
+  const { data: order, error: orderError } = useQuery({
     queryKey: ["order", orderId],
-    queryFn: () => fetchOrder(orderId),
+    queryFn: () => fetchOrder(indexerUrl, orderId),
   });
-  if (error) {
-    console.log("Error fetching order", error);
+  const { data: accountDetails, error: accountDetailsError } = useQuery({
+    queryKey: ["fetchAccountDetails", order?.accountHash],
+    queryFn: () => fetchAccountDetails(order?.accountHash as string),
+    enabled: !!order
+  });
+
+  if (orderError) {
+    console.log("Error fetching order", orderError);
   }
+  if (accountDetailsError) {
+    console.log("Error fetching account details", accountDetailsError);
+  }
+  console.log("OrderData", order);
   return (
     <>
       <div className="w-full py-6 bg-[#CCE0F6]">
@@ -42,7 +55,7 @@ const OrderCreated = () => {
             </div>
             <div className="flex flex-row items-center space-x-2">
               <span className="text-gray-500">Date created:</span>
-              <span className="text-black text-sm">12.12.2024</span>
+              <span className="text-black text-sm">{order?.blockTimestamp}</span>
             </div>
           </div>
         </div>
@@ -57,17 +70,17 @@ const OrderCreated = () => {
             <div className="flex flex-col justify-start items-start lg:flex-row lg:justify-between gap-3 lg:gap-10 mt-6">
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
                 <div className="text-sm text-gray-600 font-light">
-                  {data?.quantity}
+                  Amount
                 </div>
                 <div className="text-green-700 text-lg font-medium">
-                  {Number(data?.quantity) * Number(data?.offer.rate)}
+                  {Number(order?.quantity) * Number(order?.offer.rate)}
                 </div>
               </div>
 
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
                 <div className="text-sm text-gray-600 font-light">Price</div>
                 <div className="text-gray-700 text-lg font-light">
-                  GHS 1,200.00
+                  {order?.offer.rate}
                 </div>
               </div>
 
@@ -76,26 +89,36 @@ const OrderCreated = () => {
                   Receive Quantity
                 </div>
                 <div className="text-gray-700 text-lg font-light">
-                  GHS 1,200.00
+                  {order?.quantity}
                 </div>
               </div>
             </div>
             <div>
-              <h2>Make Payment</h2>
+              <h2 className="font-bold">Make Payment</h2>
               <div className="w-full border rounded-xl p-4 h-auto space-y-4">
+                <div>
+                  <div className="font-light text-gray-500 text-sm">
+                    Payment Method
+                  </div>
+                  <div className="text-gray-600">
+                    {order?.offer.paymentMethod.method}
+                  </div>
+                </div>
                 <div>
                   <div className="font-light text-gray-500 text-sm">
                     Account Name
                   </div>
                   <div className="text-gray-600">
-                    {data?.offer.merchant.name}
+                    {accountDetails?.name}
                   </div>
                 </div>
                 <div>
                   <div className="font-light text-gray-500 text-sm">
                     Account Number
                   </div>
-                  <div className="text-gray-600">1223333349999</div>
+                  <div className="text-gray-600">
+                    {accountDetails?.number}
+                  </div>
                 </div>
               </div>
             </div>

@@ -4,8 +4,9 @@ import { useSearchParams } from 'next/navigation';
 import React, { FC, Suspense, useRef, useState } from 'react'
 import CreateOrder from './create-order';
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { fetchAds } from "@/common/api";
+import { fetchAds } from "@/common/api/fetchAds";
 import Button from "@/components/ui/Button";
+import { useContracts } from '@/common/contexts/ContractContext';
 
 const columns: any = [
   {
@@ -38,6 +39,7 @@ interface Props {
   offerType: string;
 }
 const P2POrder: FC<Props> = ({ offerType }) => {
+  const {indexerUrl} = useContracts();
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -50,7 +52,7 @@ const P2POrder: FC<Props> = ({ offerType }) => {
   const { isPending, isError, error, data, isFetching, isPlaceholderData } =
     useQuery({
       queryKey: ["ads", currentPage, offerType],
-      queryFn: () => fetchAds(currentPage, offerType),
+      queryFn: () => fetchAds(indexerUrl, currentPage, offerType),
       // placeholderData: keepPreviousData,
     });
 

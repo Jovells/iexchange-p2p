@@ -7,10 +7,12 @@ import Button from "@/components/ui/Button";
 import MerchantProfile from "@/components/merchant/MerchantProfile";
 import { DollarSign, Euro } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { decodeEventLog } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
+import { waitForTransactionReceipt } from "viem/actions";
+import { waitForTransactionReceiptQueryKey } from "wagmi/query";
 
 const currencies = [
   {
@@ -51,7 +53,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   });
   const {p2p, tokens, indexerUrl} = useContracts();
   const token = tokens.find((token) => token.address.toLowerCase() === data.token.id.toLowerCase());
-
+  const account = useAccount();
   const prevOrderType = useRef(orderType);
   const searchParams = useSearchParams();
   const navigate = useRouter();
@@ -72,7 +74,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     abi: CediH,
     address: data.token.id,
     functionName: "allowance",
-    args: [data.accountHash, p2p.address],
+    args: [account.address!, p2p.address],
   });
   console.log("allowance", allowance);
 
@@ -110,7 +112,8 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
 
     const valueToPay = BigInt(toPay) * BigInt(10 ** 18);
 
-    if (allowance! < valueToPay) {
+    const alreadyApproved = allowance! >= valueToPay;
+    if (alreadyApproved) {
       const approveHash = await writeContractAsync({
       abi: tokens[0].abi,
       address: data.token.id,
@@ -118,11 +121,14 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       args: [p2p.address, valueToPay],
       });
       console.log("approveHash", approveHash);
+      
     }else{
       console.log("Already Approved");
     }
 
-    const hash = await writeContractAsync({
+    console.log("isSuccess", isSuccess);
+
+    const hash = (alreadyApproved || isSuccess) && await writeContractAsync({
       abi: p2p.abi,
       address: p2p.address,
       functionName: "createOrder",

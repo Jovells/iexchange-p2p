@@ -1,14 +1,16 @@
 'use client'
 
 import { createContext, useContext, ReactNode, FC, useState, useEffect } from "react";
-import { useChainId } from "wagmi";
+import { useChainId, useChains } from "wagmi";
 import contracts, { NetworkContractsConfig, TokenContract } from "../contracts";
+import { Chain } from "viem";
 
 
 interface ContractsContextType {
   p2p: NetworkContractsConfig["p2p"];
   tokens: TokenContract[];
   indexerUrl: string;
+  currentChain: Chain
 }
 
 
@@ -27,13 +29,15 @@ export const useContracts = () => {
 export const ContractsProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const chain = useChainId();
-  const p2p = contracts[chain].p2p;
-  const tokens = contracts[chain].tokens;
-  const indexerUrl = contracts[chain].indexerUrl;
+  const chainId = useChainId();
+  const chains = useChains();
+  const currentChain = chains.find((chain) => chain.id === chainId) as Chain;
+  const p2p = contracts[chainId].p2p;
+  const tokens = contracts[chainId].tokens;
+  const indexerUrl = contracts[chainId].indexerUrl;
 
   return (
-    <ContractsContext.Provider value={{ p2p, tokens, indexerUrl }}>
+    <ContractsContext.Provider value={{ p2p, tokens, indexerUrl, currentChain }}>
       {children}
     </ContractsContext.Provider>
   );

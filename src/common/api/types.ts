@@ -49,12 +49,24 @@ interface Order {
     id: string;
     currency: Currency;
     rate: string;
+    paymentMethod: {
+      method: string;
+      id: string;
+    }
   };
   trader: {
     id: `0x${string}`;
   };
+  blockTimestamp: number;
 }
 
 interface OrderResponse {
   order: Order;
+}
+
+interface AccountDetails {
+  name: string;
+  number: string;
+  address: string;
+  hash?: string;
 }

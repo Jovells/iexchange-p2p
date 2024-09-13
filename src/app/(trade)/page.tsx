@@ -11,6 +11,8 @@ import Faqs from "@/components/sections/Faqs";
 import IExchangeGuide from "@/components/sections/IExchangeGuide";
 import Loader from "@/components/loader/Loader";
 import { useChainModal } from "@rainbow-me/rainbowkit";
+import { useContracts } from "@/common/contexts/ContractContext";
+import Button from "@/components/ui/Button";
 
 interface P2PMarketProps {}
 
@@ -19,6 +21,8 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const {openChainModal} = useChainModal()
+
+  const {currentChain} = useContracts()
 
   const [ isMounted, setIsMounted] = useState(false)
 
@@ -169,9 +173,9 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
               className="hidden lg:block cursor-pointer"
               onClick={() => {}}
             />
-              <button onClick={handleOpenChainModal} className="bg-blue-500 text-white px-4 py-2 rounded-md">
-                Switch Networks
-              </button>
+              <Button  onClick={handleOpenChainModal} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+                {currentChain.name} 
+              </Button>
           </div>
         </div>
 

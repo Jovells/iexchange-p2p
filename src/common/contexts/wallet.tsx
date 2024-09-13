@@ -9,6 +9,7 @@ import { State, WagmiProvider } from 'wagmi';
 import {RainbowKitProvider, darkTheme} from '@rainbow-me/rainbowkit' 
 import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
 import { UserProvider } from './UserContext';
+import { ContractsProvider } from './ContractContext';
 
 
 
@@ -33,7 +34,9 @@ export default function WalletProvider({
           borderRadius: 'medium',
           fontStack: "system"
         })}>
+          <ContractsProvider>
         {children}
+          </ContractsProvider>
         </RainbowKitProvider>
         </RainbowKitSiweNextAuthProvider>
         </UserProvider>

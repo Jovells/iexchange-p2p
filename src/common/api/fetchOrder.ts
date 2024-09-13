@@ -16,46 +16,41 @@ const operation = `
       id
       rate
       currency {
-        currency
+        currency 
+        id
+      }
+      paymentMethod {
+        method
         id
       }
     }
       trader {
         id
       }
+      blockTimestamp
     }
   }
 `;
 
-// Create a reference to the cities collection
 import {
   collection,
   doc,
   getDoc,
-  getDocs,
   query,
   where,
 } from "firebase/firestore";
 import { db } from "../configs/firebase";
-import { writeContract } from "viem/actions";
 import { fetchGraphQL } from ".";
-const citiesRef = collection(db, "Account");
 
 // Create a query against the collection.
 
-export default async function fetchOrder(orderId: string) {
-  const graphdata = (await fetchGraphQL(operation, "order", {
+export default async function fetchOrder(indexerUrl: string, orderId: string) {
+  console.log("fetching order", indexerUrl, orderId) ;
+  const graphdata = (await fetchGraphQL(indexerUrl, operation, "order", {
     orderId,
   })) as OrderResponse;
 
-  console.log("Order data", graphdata);
-
   const data = graphdata.order;
-
-  const mechantId = data.offer.merchant.id;
-
-  const q = query(collection(db, "Account"), where("address", "==", mechantId));
-
   const docRef = doc(db, "Account", data.accountHash);
   const docSnap = await getDoc(docRef);
   const merchant = docSnap.data();
