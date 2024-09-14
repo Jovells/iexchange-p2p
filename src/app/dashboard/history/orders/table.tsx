@@ -2,57 +2,77 @@
 import ExpandableTable from '@/components/data-grid'
 import { useSearchParams } from 'next/navigation';
 import React, { FC, Suspense, useRef, useState } from 'react'
-import CreateOrder from './create-order';
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import {  useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import Button from "@/components/ui/Button";
 import { useContracts } from '@/common/contexts/ContractContext';
+import OrderStage from '@/app/(trade)/order/[orderId]/OderStage';
+import { fetchOrders } from '@/common/api/fetchOrders';
+import { useAccount } from 'wagmi';
+import { Order, OrderOptions, OrderState } from '@/common/api/types';
 
 const columns: any = [
   {
-    key: "advertisers",
-    label: "Advertiser",
-    render: (row: Offer) => (
-      <span className="font-bold">{row.merchant.name}</span>
+    key: "type",
+    label: "Type",
+    render: (row: Order) => (
+      <span className="font-bold">{row.orderType}</span>
     ),
   },
   {
     key: "price",
     label: "Price",
-    render: (row: Offer) => <span className="font-bold">{row.rate}</span>,
+    render: (row: Order) => <span className="font-bold">{row.offer.rate}</span>,
   },
   {
     key: "funds",
     label: "Available Funds",
-    render: (row: Offer) => <span className="italic">{row.maxOrder}</span>,
+    render: (row: Order) => <span className="italic">{"not"}</span>,
   },
   {
-    key: "payment",
-    label: "Payment Options",
-    render: (row: Offer) => (
-      <span className="italic">{row.paymentMethod.method}</span>
+    key: "orderNumber",
+    label: "Order Number",
+    render: (row: Order) => (
+      <span className="italic">{row.id}</span>
+    ),
+  },
+  {
+    key: "paymentOption",
+    label: "Payment Option",
+    render: (row: Order) => (
+      <span className="italic">{row.offer.paymentMethod.method}</span>
+    ),
+  },
+  {
+    key: "status",
+    label: "Status",
+    render: (row: Order) => (
+      <span className="italic">{OrderState[row.status]}</span>
     ),
   },
 ];
 
-interface Props {
-  offerType: string;
-}
-const P2POrder: FC<Props> = ({ offerType }) => {
+
+const OrdersTable: FC<Partial<OrderOptions>> = ({orderType, }) => {
   const {indexerUrl} = useContracts();
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const account = useAccount();
 
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
-
+  const options = {page: currentPage,
+    orderType: orderType,
+    merchant: account.address?.toLowerCase(),
+    trader: account.address?.toLowerCase(),
+  }
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } =
     useQuery({
-      queryKey: ["ads", currentPage, offerType],
-      queryFn: () => fetchAds(indexerUrl, currentPage, offerType),
+      queryKey: ["orders", currentPage, orderType, options],
+      queryFn: () => fetchOrders(indexerUrl, options ),
       // placeholderData: keepPreviousData,
     });
 
@@ -62,7 +82,7 @@ const P2POrder: FC<Props> = ({ offerType }) => {
   };
 
   const actions = [
-    { label: trade + " " + crypto, onClick: (row: any) => console.log(row) },
+    { label: "expand", onClick: (row: any) => console.log(row) },
   ];
 
   if (error) {
@@ -75,16 +95,15 @@ const P2POrder: FC<Props> = ({ offerType }) => {
         <ExpandableTable
           ref={tableRef}
           columns={columns}
-          data={data?.offers || []}
+          data={data?.orders || []}
           actions={actions}
           isLoading={isPending}
           pageSize={50}
           onPageChange={handlePageChange}>
           {(row, toggleExpand) => (
-            <CreateOrder
-              data={row}
+            <OrderStage
+              orderId={row.id}
               toggleExpand={toggleExpand}
-              orderType={trade}
             />
           )}
         </ExpandableTable>
@@ -95,4 +114,4 @@ const P2POrder: FC<Props> = ({ offerType }) => {
   );
 };
 
-export default P2POrder
+export default OrdersTable

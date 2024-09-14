@@ -18,7 +18,7 @@ const CustomTab: React.FC<TabComponentProps> = ({ tabs, activeTab, onTabChange }
                 <button
                     key={tab.value}
                     onClick={() => onTabChange(tab.value)}
-                    className={`min-w-[150px] rounded-xl text-center text-md p-1 ${activeTab.toLowerCase() === tab.value.toLowerCase() ? 'text-black bg-gray-300' : 'text-gray-600'
+                    className={`min-w-[150px] rounded-xl text-center text-md p-1 ${activeTab === tab.value ? 'text-black bg-gray-300' : 'text-gray-600'
                         }`}
                 >
                     {tab.label}

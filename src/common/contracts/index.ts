@@ -27,7 +27,7 @@ export type NetworkContractsConfig = {
 
 export default {
     2810: {
-        indexerUrl: "https://api.goldsky.com/api/public/project_clx6d7rlc8ppm01wb1pls7zwp/subgraphs/iexchange/morph-holesky/gn",
+        indexerUrl: "https://api.goldsky.com/api/public/project_clx6d7rlc8ppm01wb1pls7zwp/subgraphs/iexchange/morph-holesky-01/gn",
         name: "Morph Holesky",
         rpcUrl: "https://rpc-quicknode-holesky.morphl2.io",
         p2p: {

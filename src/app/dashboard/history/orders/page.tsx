@@ -5,21 +5,23 @@ import CustomTab from '@/common/tab'
 import GridTable from '@/components/datatable'
 import { useRouter } from 'next/navigation'
 import React from 'react'
+import OrdersTable from './table'
+import { OrderState } from '@/common/api/types'
 
 const P2POrderHistory = () => {
   const route = useRouter()
-  const [activeTab, setActiveTab] = React.useState('All');
+  const [activeTab, setActiveTab] = React.useState<any>("");
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
 
   const tabs = [
-    { label: 'All', value: 'All' },
-    { label: 'Unpaid', value: 'Unpaid' },
-    { label: 'Paid', value: 'Paid' },
-    { label: 'Appeal in progress', value: 'Appeal in progress' },
-    { label: 'Cancelled orders', value: 'Cancelled orders' },
+    { label: 'All', value: "" },
+    { label: 'Unpaid', value: OrderState.pending },
+    { label: 'Paid', value: OrderState.paid },
+    { label: 'Appeal in progress', value: OrderState.appealed },
+    { label: 'Cancelled orders', value: OrderState.cancelled },
   ];
 
 
@@ -30,9 +32,9 @@ const P2POrderHistory = () => {
   return (
     <div className='py-12 pt-0 flex flex-col gap-4'>
       <div className="w-full lg:w-fit">
-        <CustomTab tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
+        <CustomTab tabs={tabs as any} activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
-      <GridTable columns={columns} data={data} actions={actions} itemsPerPage={50} />
+      <OrdersTable status={activeTab} />
     </div>
   )
 }

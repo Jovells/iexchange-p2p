@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import Loader from '../loader/Loader';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Offer } from '@/common/api/types';
 
 type Column = {
   key: string;
@@ -22,11 +23,11 @@ type Action = {
 
 type ExpandableTableProps = {
   columns: Column[];
-  data: Offer[];
+  data: any[] ;
   actions?: Action[];
   styles?: React.CSSProperties;
   isLoading: boolean;
-  children: (row: Offer, toggleExpand: () => void) => ReactElement;
+  children: (row: any, toggleExpand: () => void) => ReactElement;
   page?: number;
   pageSize?: number;
   totalRecords?: number;
@@ -163,7 +164,7 @@ const ExpandableTable = forwardRef(
                             <div key={column.key} className="col-span-1">
                               {column.render
                                 ? column.render(row)
-                                : (row[column.key as keyof Offer] as ReactNode)}
+                                : (row[column.key] as ReactNode)}
                             </div>
                           ))}
                           {actions.length > 0 && (

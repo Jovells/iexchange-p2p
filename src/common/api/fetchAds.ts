@@ -10,12 +10,26 @@ import {
   import { db } from "../configs/firebase";
   import { writeContract } from "viem/actions";
   import { offerTypes as OFFER_TYPES } from "./constants";
+import { Offer } from "./types";
   
   
 
-const operation = `
-  query ads($first: Int!, $skip: Int, $offerType: Int) {
-    offers(first: $first, skip: $skip, where: { offerType: $offerType }) {
+export async function fetchAds(indexerUrl: string, page: number, offerType: string, options?: { quantity?: number, merchant?: string }) {
+  const {
+    quantity = 10,
+    merchant,
+  } = options || {};
+  const variables:any = {
+    first: quantity, 
+    skip: page * quantity,
+    offerType: OFFER_TYPES[offerType as keyof typeof OFFER_TYPES]
+  }
+  if (merchant) {
+    variables.merchant = merchant;
+  }
+  const operation = `
+  query ads($first: Int!, $skip: Int, $offerType: Int, $merchant: String) {
+    offers(first: $first, skip: $skip, where: { offerType: $offerType, ${merchant ? 'merchant: $merchant,' : ''} }) {
       id
       maxOrder
       minOrder
@@ -36,18 +50,18 @@ const operation = `
       }
       paymentMethod {
         id
+        method
       }
+      currency {
+      id
+      currency
+      isAccepted
+    }
     }
   }
 `;
 
-
-export async function fetchAds(indexerUrl: string, page: number, offerType: string, quantity = 10) {
-    const graphdata = (await fetchGraphQL(indexerUrl, operation, "ads", {
-      first: quantity,
-      skip: page * 10,
-      offerType: OFFER_TYPES[offerType as keyof typeof OFFER_TYPES],
-    })) as { offers: Offer[] };
+    const graphdata = (await fetchGraphQL(indexerUrl, operation, "ads", variables)) as { offers: Offer[] };
   
     const mechantIds = graphdata.offers.map((offer) => offer.merchant.id);
   
@@ -55,6 +69,7 @@ export async function fetchAds(indexerUrl: string, page: number, offerType: stri
       collection(db, "Account"),
       where("address", "in", mechantIds)
     );
+
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       const data = doc.data();

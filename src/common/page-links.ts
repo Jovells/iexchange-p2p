@@ -4,6 +4,7 @@ export const ORDER_PAGE = (orderId:string) => `/order/${orderId}`
 export const HOME_PAGE = ""
 export const DASHBOARD_PAGE = '/dashboard'
 export const POST_AD_PAGE = "/my-ads/create"
+export const ORDER_HISTORY_PAGE = "/dashboard/history/orders"
 export const APPEALS_PAGE = "/appeals"
 export const MY_ADS_PAGE = "/my-ads"
 

@@ -1,17 +1,26 @@
-interface Token {
+export interface Token {
   symbol: string;
   id: `0x${string}`;
   name: string;
   isTraded?: boolean;
 }
 
-interface Merchant {
+ export enum OrderState {
+  pending,
+  accepted,
+  paid,
+  appealed,
+  released,
+  cancelled
+}
+
+export interface Merchant {
   id: string | `0x${string}`;
   isMerchant: boolean;
   name?: string;
 }
 
-interface PaymentMethod {
+export interface PaymentMethod {
   id: string;
   method: string;
   isAccespted: boolean;
@@ -22,14 +31,14 @@ enum OfferType {
   sell = 1,
 }
 
-interface Currency{
+export interface Currency{
   currency: string;
   id: `0x${string}`;
   isAccepted: boolean;
   addedBy: string;
 }
 
-interface Offer {
+export interface Offer {
   id: string;
   maxOrder: string;
   minOrder: string;
@@ -45,12 +54,20 @@ interface Offer {
   };
 }
 
-interface Currency {
+export interface Currency {
   currency: string;
   id: `0x${string}`;
 }
 
-interface Order {
+export interface OrderOptions{ 
+  quantity?: number, 
+  merchant?: string, 
+  trader?: string, 
+  page?: number, 
+  orderType?: OfferType, 
+  status?: OrderState }
+
+export interface Order {
   accountHash: `0x${string}`;
   depositAddress: {
     id: `0x${string}`;
@@ -58,7 +75,7 @@ interface Order {
   id: string;
   orderType: number;
   quantity: string;
-  status: number;
+  status: OrderState;
   offer: {
     merchant: Merchant;
     id: string;
@@ -76,11 +93,11 @@ interface Order {
   blockTimestamp: number;
 }
 
-interface OrderResponse {
+export interface OrderResponse {
   order: Order;
 }
 
-interface AccountDetails {
+export interface AccountDetails {
   name: string;
   number: string;
   address: string;

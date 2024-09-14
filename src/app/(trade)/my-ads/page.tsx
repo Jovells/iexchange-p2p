@@ -1,75 +1,99 @@
 'use client'
-import { useModal } from '@/common/contexts/ModalContext';
 import GridTable from '@/components/datatable';
 import FaqsSection from '@/components/sections/Faqs';
-import Button from '@/components/ui/Button';
 import { CircleCheck, Eye, Trash2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import React from 'react';
+import ExpandableTable from '@/components/data-grid'
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { FC, Suspense, useRef, useState } from 'react'
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { fetchAds } from "@/common/api/fetchAds";
+import Button from "@/components/ui/Button";
+import { useContracts } from '@/common/contexts/ContractContext';
+import { useAccount } from 'wagmi';
+
 
 const columns: any = [
   {
-    key: 'name',
-    label: 'name',
-    render: (row: any) => <span className="font-bold">{row.name}</span>,
+    key: "rate",
+    label: "Rate",
+    render: (row: Offer) => (
+      <span className="font-bold">{row.rate}</span>
+    ),
   },
   {
-    key: 'age',
-    label: 'Age',
-    render: (row: any) => <span className="font-bold">{row.age}</span>,
+    key: "amounts",
+    label: "Amounts",
+    //TODO: REPLACE WITH CURRENCY
+    render: (row: Offer) => <span className="font-bold"> GHS {Number(row.minOrder) / 10 ** 18
+    } - GHS {Number(row.maxOrder) / 10 ** 18}</span>,
   },
   {
-    key: 'email',
-    label: 'Email',
-    render: (row: any) => {
-      return (
-        //multi row rendering
-        <div>
-          <p className="font-bold">{row.name}</p>
-          <span className="font-bold">{row.email}</span>
-        </div>
-      )
-    },
+    key: "paymentMethod",
+    label: "Payment Method",
+    render: (row: Offer) => <span className="italic">{row.paymentMethod.method}</span>,
   },
   {
-    key: 'country',
-    label: 'Country',
-    render: (row: any) => <span className="font-bold">{row.country}</span>,
+    key: "status",
+    label: "Status",
+    render: (row: Offer) => (
+      <span className="italic">{row.active? "Active" : "Deactivated"}</span>
+    ),
   },
-  {
-    key: 'occupation',
-    label: 'Occupation',
-    render: (row: any) => <span className="font-bold">{row.occupation}</span>,
-  },
-]
-const MyAds = () => {
-  // State or condition that determines what content to display
-  const hasStake = true;
-  const { showModal, hideModal } = useModal()
+];
 
-  const route = useRouter()
+interface Props {
+  offerType: string;
+  merchant?: string;
+}
+const MyAds: FC<Props> = () => {
+  const {indexerUrl} = useContracts();
+  const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
+  const searchParams = useSearchParams();
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const account = useAccount();
+  const [offerType, setOfferType] = useState<string>("buy");
 
-  const data = [
-    { name: "John Doe", age: 25, email: "john@example.com", country: "USA", occupation: "Engineer" },
-    { name: "Jane Smith", age: 30, email: "jane@example.com", country: "UK", occupation: "Designer" },
-  ];
+  const trade = searchParams.get("trade") || "Buy";
+  const crypto = searchParams.get("crypto") || "USDT";
+
+
+  const { isPending, isError, error, data, isFetching, isPlaceholderData } =
+    useQuery({
+      queryKey: ["ads", currentPage, offerType, {merchant: account.address}],
+      queryFn: () => fetchAds(indexerUrl, currentPage, offerType, {
+        merchant: account.address?.toLowerCase()
+      }),
+      // placeholderData: keepPreviousData,
+    });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    console.log('Page changed to:', page);
+  };
+
+  if (error) {
+    console.log("error:", error);
+  }
 
   const actions = [
-    { onClick: (row: any) => route.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <Eye /> },
-    { onClick: (row: any) => route.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <Trash2 /> },
-    { onClick: (row: any) => route.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <CircleCheck /> },
+    { onClick: (row: any) => router.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <Eye /> },
+    { onClick: (row: any) => router.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <Trash2 /> },
+    { onClick: (row: any) => router.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <CircleCheck /> },
   ]
+
 
 
   return (
     <div className="container mx-auto p-0 py-4">
       <div className='py-12 flex flex-col gap-10'>
-        <GridTable columns={columns} data={data} actions={actions} itemsPerPage={50} />
+        <GridTable columns={columns} data={data?.offers || []} actions={actions} itemsPerPage={50} />
       </div>
-
-      <FaqsSection />
     </div>
   );
 };
+
+
 
 export default MyAds;

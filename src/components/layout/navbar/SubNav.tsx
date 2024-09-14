@@ -6,15 +6,16 @@ import Link from 'next/link';
 import WalletConnect from "@/components/wallet";
 import { useAccount, useDisconnect } from "wagmi";
 import { useEffect, useState } from "react";
+import { DASHBOARD_PAGE, MY_ADS_PAGE, ORDER_HISTORY_PAGE } from "@/common/page-links";
 
 const menuLinks = [
     { href: "/", label: "P2P" },
     { href: "/appeal", label: "Appeals" },
-    { href: "/ads", label: "My Ads" } // should on be visible to merchants
+    { href: MY_ADS_PAGE, label: "My Ads" } // should on be visible to merchants
 ];
 const accountLinks = [
-    { link: "/dashboard", icon: "/images/icons/home.png", label: "Dashboard" },
-    { link: "/Orders", icon: "/images/icons/clock.png", label: "Order History" },
+    { link: DASHBOARD_PAGE, icon: "/images/icons/home.png", label: "Dashboard" },
+    { link: ORDER_HISTORY_PAGE, icon: "/images/icons/clock.png", label: "Order History" },
     { link: "/profile", icon: "/images/icons/profile-circle.png", label: "Profile" },
     { link: "/settings", icon: "/images/icons/settings.png", label: "Settings" }
 ];
