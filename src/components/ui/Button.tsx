@@ -24,6 +24,7 @@ const Button: React.FC<ButtonProps> = ({
   className,
   loading = false,
   loadingText = "Loading...",
+  ...ButtonProps
 }) => {
   const baseClasses = "flex justify-center items-center rounded font-medium";
   const defaultClasses = "";
@@ -36,6 +37,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
+      {...ButtonProps}
       onClick={handleClick}
       disabled={loading}
       className={clsx(baseClasses, defaultClasses, className, {

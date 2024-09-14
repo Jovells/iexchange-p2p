@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/navigation'
 import { useContracts } from '@/common/contexts/ContractContext'
+import { POST_AD_PAGE } from '@/common/page-links'
 
 const BecomeAMerchant = () => {
     const{indexerUrl} = useContracts();
@@ -42,7 +43,7 @@ const BecomeAMerchant = () => {
         }
 
         if (isMerchant) {
-            router.push("/ads/create")
+            router.push(POST_AD_PAGE)
             return
         }
 

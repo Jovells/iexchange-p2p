@@ -4,7 +4,7 @@ import { Check, CheckCircle, CheckSquare, ChevronDown } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 
 interface SelectOption {
-    value: string;
+    value: string | number; 
     label: string;
     icon?: React.ReactNode;
 }
@@ -22,7 +22,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
     initialValue = '',
     options,
     onValueChange,
-    placeholder="Select"
+    placeholder="Select",
+    ...props
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedValue, setSelectedValue] = useState(initialValue);
@@ -30,7 +31,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
 
     const toggleDropdown = () => setIsOpen(!isOpen);
 
-    const handleSelect = (value: string) => {
+    const handleSelect = (value: string ) => {
         setSelectedValue(value);
         if (onValueChange) {
             onValueChange(value);
@@ -87,6 +88,8 @@ const InputSelect: React.FC<InputSelectProps> = ({
                     ))}
                 </div>
             )}
+            <input type="hidden" {...props} value={selectedValue} />
+
         </div>
     );
 };

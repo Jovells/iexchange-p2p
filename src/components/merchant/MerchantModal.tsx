@@ -48,6 +48,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
                 functionName: "registerMerchant",
             });
             console.log("Registered:", registerHash);
+            alert("Stake successful");
         } catch (error) {
             console.error("Error handling stake:", error);
         }

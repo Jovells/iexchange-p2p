@@ -30,6 +30,7 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
   readOnly = false,
   placeholder = "Enter amount",
   selectIsReadOnly = false,
+  ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [insideValue, setValue] = useState({
@@ -128,6 +129,7 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
           ))}
         </div>
       )}
+  <input type="hidden" {...props} value={value} />
     </div>
   );
 };

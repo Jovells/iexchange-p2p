@@ -1,6 +1,8 @@
 interface Token {
   symbol: string;
   id: `0x${string}`;
+  name: string;
+  isTraded?: boolean;
 }
 
 interface Merchant {
@@ -12,6 +14,19 @@ interface Merchant {
 interface PaymentMethod {
   id: string;
   method: string;
+  isAccespted: boolean;
+}
+
+enum OfferType {
+  buy = 0,
+  sell = 1,
+}
+
+interface Currency{
+  currency: string;
+  id: `0x${string}`;
+  isAccepted: boolean;
+  addedBy: string;
 }
 
 interface Offer {
@@ -23,7 +38,7 @@ interface Offer {
   accountHash: `0x${string}`;
   active: boolean;
   merchant: Merchant;
-  offerType: number;
+  offerType: OfferType;
   paymentMethod: PaymentMethod;
   depositAddress: {
     id: `0x${string}`;
@@ -53,6 +68,7 @@ interface Order {
       method: string;
       id: string;
     }
+    offerType: OfferType;
   };
   trader: {
     id: `0x${string}`;

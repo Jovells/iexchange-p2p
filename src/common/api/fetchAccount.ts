@@ -13,6 +13,5 @@ query merchantAccount($id:String) {
 
 export async function fetchAccount(indexerUrl: string, id: any): Promise<any> {
   const account = await fetchGraphQL(indexerUrl, accountQuery, "merchantAccount", { id });
-  console.log("DATA >>>>>>", account)
   return account;
 }

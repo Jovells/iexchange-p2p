@@ -23,6 +23,7 @@ const operation = `
         method
         id
       }
+        offerType
     }
       trader {
         id

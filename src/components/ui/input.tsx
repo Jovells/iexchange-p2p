@@ -7,7 +7,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input: React.FC<InputProps> = ({ label, value, onChange, ...props }) => {
-  const [inputValue, setInputValue] = useState(value || '');
+  const [inputValue, setInputValue] = useState(value || props.defaultValue || '');
   const [isFocused, setIsFocused] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

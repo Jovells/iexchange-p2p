@@ -1,16 +1,21 @@
 "use client";
 
+import { offerTypes } from "@/common/api/constants";
 import fetchAccountDetails from "@/common/api/fetchAccountDetails";
 import fetchOrder from "@/common/api/fetchOrder";
 import { useContracts } from "@/common/contexts/ContractContext";
+import Loader from "@/components/loader/Loader";
 import ChatWithMerchant from "@/components/merchant/ChatWithMerchant";
 import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import React, { use } from "react";
+import React from "react";
+import { useAccount, useWriteContract } from "wagmi";
 
 const OrderCreated = () => {
-  const {indexerUrl} = useContracts();
+  const {indexerUrl, p2p} = useContracts();
+  const account  = useAccount();
+  const {writeContractAsync} = useWriteContract();
   const { orderId } = useParams<{ orderId: string }>();
   const { data: order, error: orderError } = useQuery({
     queryKey: ["order", orderId],
@@ -22,6 +27,19 @@ const OrderCreated = () => {
     enabled: !!order
   });
 
+  const handleTransferFunds = async () => {
+    console.log("Transfer funds");
+    const txHash = await writeContractAsync({
+      address: p2p.address,
+      abi: p2p.abi,
+      functionName: "payOrder",
+      args: [BigInt(orderId)]
+    })
+    console.log("Transaction Hash", txHash);
+
+    
+  };
+
   if (orderError) {
     console.log("Error fetching order", orderError);
   }
@@ -29,6 +47,23 @@ const OrderCreated = () => {
     console.log("Error fetching account details", accountDetailsError);
   }
   console.log("OrderData", order);
+
+  if (!order) {
+    return <Loader />;
+  }
+  
+  const isTrader = order?.trader.id.toLowerCase() === account.address?.toLowerCase();
+  const isMerchant = order?.offer.merchant.id.toLocaleLowerCase() === account.address?.toLowerCase();
+  if (!(isTrader || isMerchant)) {
+    return <div>You are not authorized to view this page</div>;
+  }
+
+  const isBuyer = order?.offer.offerType === offerTypes.buy && isMerchant;
+  const isSeller =  !isBuyer;
+
+  console.log("Is Buyer", isBuyer, "Is Seller", isSeller);
+
+  console.log("Is Trader ", isTrader, "Is Merchant", isMerchant);
   return (
     <>
       <div className="w-full py-6 bg-[#CCE0F6]">
@@ -135,7 +170,7 @@ const OrderCreated = () => {
                 icon="/images/icons/export.svg"
                 iconPosition="right"
                 className="bg-[#000000] text-white rounded-xl px-4 py-2"
-                onClick={() => {}}
+                onClick={handleTransferFunds}
               />
               <Button
                 text="Cancel Order"
