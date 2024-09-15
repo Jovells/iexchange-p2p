@@ -9,6 +9,7 @@ import CediH from "@/common/abis/CediH";
 import { MORPH_CEDIH_ADDRESS, MORPH_P2P_ADDRESS } from "@/common/contracts";
 import OptimisticP2P from "@/common/abis/OptimisticP2P";
 import { useModal } from "@/common/contexts/ModalContext";
+import ModalAlert from "../modals";
 
 interface MerchantModalProps {
     hideModal: () => void;
@@ -21,7 +22,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     const { showModal } = useModal()
 
 
-    const {data: allowance }= useReadContract({
+    const { data: allowance } = useReadContract({
         abi: CediH,
         address: MORPH_CEDIH_ADDRESS,
         functionName: "allowance",
@@ -40,7 +41,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
                 });
                 console.log("Approved:", approveHash);
             }
-            else{
+            else {
                 console.log("Already Approved")
             }
 
@@ -51,13 +52,8 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
                 functionName: "registerMerchant",
             });
             console.log("Registered:", registerHash);
-            showModal(
-                <div className="min-h-[300px] w-[300px] flex justify-center items-center bg-white">
-                    <div>
-                        {/* <Image source="" className="" /> */}
-                    </div>
-                </div>
-            )
+            const content = <ModalAlert buttonText="Done" buttonClick={async () => { }} modalType="success" title="Successfully Staked" description="You have successfully secured a merchant placement." icon="../../images/icons/success.png" />
+            showModal(content)
         } catch (error) {
             console.error("Error handling stake:", error);
         }
