@@ -2,7 +2,7 @@
 
 import React, { Fragment, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { DollarSign, Euro, Filter } from "lucide-react";
+import { ChevronDown, ChevronsUpDown, DollarSign, Euro, Filter, MoveVertical } from "lucide-react";
 import SelectPaymentMethod from "@/components/ui/InputSelect";
 import InputAmount from "@/components/ui/InputWithSelect";
 import P2PAds from "./order/P2PAds";
@@ -123,24 +123,6 @@ const currencies = [
   { symbol: "KES", name: "KES", icon: <p>₦</p> },
 ];
 
-const paymentOption = [
-  {
-    value: "usd",
-    label: "US Dollar",
-    icon: <DollarSign className="w-4 h-4" />,
-  },
-  { value: "eur", label: "Euro", icon: <Euro className="w-4 h-4" /> },
-  {
-    value: "gbp",
-    label: "British Pound",
-    icon: <DollarSign className="w-4 h-4" />,
-  },
-  {
-    value: "shopping",
-    label: "Shopping",
-    icon: <DollarSign className="w-4 h-4" />,
-  },
-];
 
 interface TabSelectorProps {
   activeTab: string;
@@ -233,38 +215,36 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
   setPaymentMethod,
   currentChain,
 }) => (
-  <div className="flex flex-row justify-start items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6">
-    <div className="w-full lg:w-[300px]">
-      <InputAmount
-        label=""
-        initialCurrency="USD"
-        currencies={currencies}
-        onValueChange={(value: { currency: string; amount: string }) => {
-          setCurrencyAmount(value);
-          console.log(value)
-        }
-        }
-        readOnly={false}
-        placeholder="Enter amount"
-      />
+  <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
+    <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
+      <Button text={currentChain.name} className="bg-transparent border border-blue-300 px-4 py-2 w-full block lg:hidden" onClick={handleOpenChainModal} icon={<MoveVertical />} />
+      <div className="w-full lg:w-[300px]">
+        <InputAmount
+          label=""
+          initialCurrency="USD"
+          currencies={currencies}
+          onValueChange={(value: { currency: string; amount: string }) => {
+            setCurrencyAmount(value);
+            console.log(value)
+          }
+          }
+          readOnly={false}
+          placeholder="Enter amount"
+        />
+      </div>
+      <div className="w-full lg:w-[300px]">
+        <SelectPaymentMethod
+          label=""
+          initialValue="usd"
+          options={paymentMethods.map((method: any) => ({
+            value: method.method,
+            label: method.method,
+          }))}
+          onValueChange={(value) => setPaymentMethod(value)}
+        />
+      </div>
+      <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
     </div>
-    <div className="w-full lg:w-[300px]">
-      <SelectPaymentMethod
-        label=""
-        initialValue="usd"
-        options={paymentMethods.map((method: any) => ({
-          value: method.method,
-          label: method.method,
-        }))}
-        onValueChange={(value) => setPaymentMethod(value)}
-      />
-    </div>
-    <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
-    <Button
-      onClick={handleOpenChainModal}
-      className="bg-blue-500 text-white px-4 py-2 rounded-md"
-    >
-      {currentChain.name}
-    </Button>
+    <Button text={currentChain.name} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full lg:w-auto hidden lg:flex" onClick={handleOpenChainModal} icon={<ChevronsUpDown />} />
   </div>
 );
