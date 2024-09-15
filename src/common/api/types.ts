@@ -1,4 +1,4 @@
-export interface Token {
+export type Token = {
   symbol: string;
   id: `0x${string}`;
   name: string;
@@ -14,13 +14,13 @@ export interface Token {
   cancelled
 }
 
-export interface Merchant {
+export type Merchant = {
   id: string | `0x${string}`;
   isMerchant: boolean;
   name?: string;
 }
 
-export interface PaymentMethod {
+export type PaymentMethod = {
   id: string;
   method: string;
   isAccespted: boolean;
@@ -31,14 +31,14 @@ enum OfferType {
   sell = 1,
 }
 
-export interface Currency{
+export type Currency ={
   currency: string;
   id: `0x${string}`;
   isAccepted: boolean;
   addedBy: string;
 }
 
-export interface Offer {
+export type Offer = {
   id: string;
   maxOrder: string;
   minOrder: string;
@@ -49,17 +49,18 @@ export interface Offer {
   merchant: Merchant;
   offerType: OfferType;
   paymentMethod: PaymentMethod;
+  currency : {
+    id : `0x${string}`;
+    currency : string;
+    isAccepted : boolean;
+  }
   depositAddress: {
     id: `0x${string}`;
   };
 }
 
-export interface Currency {
-  currency: string;
-  id: `0x${string}`;
-}
 
-export interface OrderOptions{ 
+export type OrderOptions ={ 
   quantity?: number, 
   merchant?: string, 
   trader?: string, 
@@ -67,7 +68,7 @@ export interface OrderOptions{
   orderType?: OfferType, 
   status?: OrderState }
 
-export interface Order {
+export type Order = {
   accountHash: `0x${string}`;
   depositAddress: {
     id: `0x${string}`;
@@ -93,11 +94,11 @@ export interface Order {
   blockTimestamp: number;
 }
 
-export interface OrderResponse {
+export type OrderResponse = {
   order: Order;
 }
 
-export interface AccountDetails {
+export type AccountDetails = {
   name: string;
   number: string;
   address: string;

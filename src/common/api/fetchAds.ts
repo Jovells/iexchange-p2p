@@ -1,8 +1,6 @@
 import { fetchGraphQL } from ".";
 import {
     collection,
-    doc,
-    getDoc,
     getDocs,
     query,
     where,
@@ -14,54 +12,31 @@ import { Offer } from "./types";
   
   
 
-export async function fetchAds(indexerUrl: string, page: number, offerType: string, options?: { quantity?: number, merchant?: string }) {
+export async function fetchAds(indexerUrl: string, options?: { quantity?: number, merchant?: string, page?: number, offerType: string, tokenId?: string, currency?: string, amount?: string, paymentMethod?: string}) {
   const {
     quantity = 10,
+    page = 0,
+    offerType, 
+    tokenId,
     merchant,
+    paymentMethod,
+    currency,
+    amount
   } = options || {};
-  const variables:any = {
-    first: quantity, 
-    skip: page * quantity,
-    offerType: OFFER_TYPES[offerType as keyof typeof OFFER_TYPES]
-  }
-  if (merchant) {
-    variables.merchant = merchant;
-  }
-  const operation = `
-  query ads($first: Int!, $skip: Int, $offerType: Int, $merchant: String) {
-    offers(first: $first, skip: $skip, where: { offerType: $offerType, ${merchant ? 'merchant: $merchant,' : ''} }) {
-      id
-      maxOrder
-      minOrder
-      rate
-      offerType
-      depositAddress {
-      id
-      }
-      token {
-        symbol
-        id
-      }
-      accountHash
-      active
-      merchant {
-        id
-        isMerchant
-      }
-      paymentMethod {
-        id
-        method
-      }
-      currency {
-      id
-      currency
-      isAccepted
-    }
-    }
-  }
-`;
 
-    const graphdata = (await fetchGraphQL(indexerUrl, operation, "ads", variables)) as { offers: Offer[] };
+  const operation = constructAdsQuery({
+    first: quantity,
+    skip: page * quantity,
+    options: [
+      { name: "offerType", value: OFFER_TYPES[offerType as keyof typeof OFFER_TYPES], type: "Int" },
+      { name: "token", value: tokenId, type: "String" },
+      { name: "currency", value: currency, type: "String" },
+      { name: "merchant", value: merchant, type: "String" },
+      // { name: "amount", value: amount, type: "Int" },
+      { name: "paymentMethod", value: paymentMethod, type: "String" },
+    ]
+  })
+    const graphdata = (await fetchGraphQL(indexerUrl, operation.query, "ads", operation.variables)) as { offers: Offer[] };
   
     const mechantIds = graphdata.offers.map((offer) => offer.merchant.id);
   
@@ -80,3 +55,70 @@ export async function fetchAds(indexerUrl: string, page: number, offerType: stri
     });
     return graphdata;
   }
+
+
+export function constructAdsQuery(params: {
+  first: number;
+  skip: number;
+  options: { name: string, value: string | number |undefined, type: string }[];
+}) {
+  const { first, skip, options } = params;
+
+  const variables : {[key: string]: any} = { first, skip };
+
+
+  const whereClauses = options.map((option) => {
+    if (!option.value) {
+      return undefined;
+    }
+    return `${option.name}: $${option.name}`;
+
+  }).filter(Boolean).join(", ");
+
+  const queryVariables = options.map((option) => {
+    if (!option.value) {
+      return undefined;
+    }
+    variables[option.name] = option.value;
+
+    return `$${option.name}: ${option.type}`;
+  }).filter(Boolean).join(", ");
+
+  return ({variables, query :`
+    query ads($first: Int!, $skip: Int!, ${queryVariables}) {
+      offers(first: $first, skip: $skip, where: { ${whereClauses} }) {
+        id
+        maxOrder
+        minOrder
+        rate
+        offerType
+        depositAddress {
+          id
+        }
+        token {
+          symbol
+          id
+        }
+        accountHash
+        active
+        merchant {
+          id
+          isMerchant
+        }
+        paymentMethod {
+          id
+          method
+        }
+        currency {
+          id
+          currency
+          isAccepted
+        }
+      }
+    }
+  `});
+}
+// Example usage:
+
+
+

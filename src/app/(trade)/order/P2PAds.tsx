@@ -7,14 +7,19 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import Button from "@/components/ui/Button";
 import { useContracts } from '@/common/contexts/ContractContext';
-import { Offer } from '@/common/api/types';
+import { Offer, Token } from '@/common/api/types';
+import { formatCurrency, shortenAddress } from '@/lib/utils';
+
+
+
+
 
 const columns: any = [
   {
     key: "advertisers",
     label: "Advertiser",
     render: (row: Offer) => (
-      <span className="font-bold">{row.merchant.name}</span>
+      <span className="font-bold">{row.merchant.name + " (" + shortenAddress(row.merchant.id, 2) + ")"}</span>
     ),
   },
   {
@@ -24,8 +29,8 @@ const columns: any = [
   },
   {
     key: "funds",
-    label: "Available Funds",
-    render: (row: Offer) => <span className="italic">{row.maxOrder}</span>,
+    label: "Limits",
+    render: (row: Offer) => <span className="italic">{formatCurrency(row.minOrder, row.currency.currency)} - {formatCurrency(row.maxOrder, row.currency.currency)}</span>,
   },
   {
     key: "payment",
@@ -38,8 +43,12 @@ const columns: any = [
 
 interface Props {
   offerType: string;
+  token?: Token;
+  paymentMethod?: string;
+  currency?: string;
+  amount?: string;
 }
-const P2PAds: FC<Props> = ({ offerType }) => {
+const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod }) => {
   const {indexerUrl} = useContracts();
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
@@ -49,11 +58,12 @@ const P2PAds: FC<Props> = ({ offerType }) => {
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
 
+  const options = {page: currentPage, offerType, tokenId: token?.id, currency, amount, paymentMethod}
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } =
     useQuery({
-      queryKey: ["ads", currentPage, offerType],
-      queryFn: () => fetchAds(indexerUrl, currentPage, offerType),
+      queryKey: ["ads", indexerUrl, options],
+      queryFn: () => fetchAds(indexerUrl, options),
       // placeholderData: keepPreviousData,
     });
 

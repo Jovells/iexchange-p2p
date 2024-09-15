@@ -10,6 +10,7 @@ import {
   import { db } from "../configs/firebase";
   import { writeContract } from "viem/actions";
   import { offerTypes as OFFER_TYPES } from "./constants";
+import { Currency } from "./types";
   
   
 

@@ -1,4 +1,5 @@
 import { fetchGraphQL } from ".";
+import { Token } from "./types";
 
 
 const operation = `
