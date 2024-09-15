@@ -54,7 +54,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
             showModal(
                 <div className="min-h-[300px] w-[300px] flex justify-center items-center bg-white">
                     <div>
-                        <Image source="" className="" />
+                        {/* <Image source="" className="" /> */}
                     </div>
                 </div>
             )

@@ -9,12 +9,10 @@ export const shortenAddress = (address: string | any, chars = 4): string => {
   return `${address.slice(0, chars + 2)}...${address.slice(-chars)}`;
 }
 
-<<<<<<< Updated upstream
 //esport a function which takes the a number and amount and return a currency value. juse prepend the currenty with the string, and divide the number by 10^18  to two decimal places
 export const formatCurrency = (amount: string | number, currency: string): string => {
   return `${currency} ${(Number(amount) / 10 ** 18).toFixed(2)}`;
 }
-=======
 export const parseStringToObject = (inputString: string): Record<string, string> => {
   const result: Record<string, string> = {};
 
@@ -40,4 +38,3 @@ export const parseStringToObject = (inputString: string): Record<string, string>
 
   return result;
 }
->>>>>>> Stashed changes
