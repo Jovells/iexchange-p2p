@@ -12,6 +12,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
   loading?: boolean;
   loadingText?: string;
+  disabled?: boolean
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -23,6 +24,7 @@ const Button: React.FC<ButtonProps> = ({
   className,
   loading = false,
   loadingText = "Loading...",
+  disabled,
   ...ButtonProps
 }) => {
   const baseClasses = "flex justify-center items-center rounded font-medium";
@@ -32,9 +34,9 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       {...ButtonProps}
-      disabled={loading}
+      disabled={disabled || loading}
       className={clsx(baseClasses, defaultClasses, className, {
-        "cursor-not-allowed opacity-70 text-gray-400": loading,
+        "cursor-not-allowed opacity-70 text-gray-400": loading || disabled,
       })}
     >
       {loading && (
