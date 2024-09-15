@@ -79,7 +79,7 @@ const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
                                     buttonText="Go"
                                 />
                                 <ul className="space-y-2">
-                                    {paymentMetho && paymentMetho.filter(mt => mt.isAccepted).map((method) => (
+                                    {paymentMetho && paymentMetho.filter(mt => mt.isAccespted).map((method) => (
                                         <li
                                             key={method?.method}
                                             className="flex justify-between items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100"
