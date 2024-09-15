@@ -29,13 +29,13 @@ const ModalManager: React.FC = () => {
           modalProps?.hasPadding ? "bg-black border border-gray-100 border-opacity-50 text-white" : ""
         )}
       >
-        <button
+        {/* <button
           className="absolute top-0 right-0 p-4 cursor-pointer"
           onClick={hideModal}
           aria-label="Close modal"
         >
           &times;
-        </button>
+        </button> */}
         {modalContent}
       </div>
     </div>
