@@ -5,9 +5,6 @@ import { ModalContextProvider } from "@/common/contexts/ModalContext";
 import { auth } from "../auth";
 import { SessionProvider } from "next-auth/react";
 import TopLoader from "@/components/loader/TopLoader";
-import { useState } from "react";
-
-
 
 export default async function RootLayout({
   children,

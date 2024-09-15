@@ -82,6 +82,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     return <Loader className="mt-20" />;
   }
 
+
   return (
     <Fragment>
       <WalletConnectSection />

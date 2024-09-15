@@ -20,7 +20,6 @@ const Button: React.FC<ButtonProps> = ({
   icon,
   iconPosition = "left",
   iconClassName,
-  onClick,
   className,
   loading = false,
   loadingText = "Loading...",
@@ -29,19 +28,13 @@ const Button: React.FC<ButtonProps> = ({
   const baseClasses = "flex justify-center items-center rounded font-medium";
   const defaultClasses = "";
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (onClick) {
-      onClick(event);
-    }
-  };
 
   return (
     <button
       {...ButtonProps}
-      onClick={handleClick}
       disabled={loading}
       className={clsx(baseClasses, defaultClasses, className, {
-        "cursor-not-allowed opacity-70": loading,
+        "cursor-not-allowed opacity-70 text-gray-400": loading,
       })}
     >
       {loading && (
