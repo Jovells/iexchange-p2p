@@ -8,6 +8,7 @@ import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import CediH from "@/common/abis/CediH";
 import { MORPH_CEDIH_ADDRESS, MORPH_P2P_ADDRESS } from "@/common/contracts";
 import OptimisticP2P from "@/common/abis/OptimisticP2P";
+import { useModal } from "@/common/contexts/ModalContext";
 
 interface MerchantModalProps {
     hideModal: () => void;
@@ -17,6 +18,8 @@ interface MerchantModalProps {
 const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     const { writeContractAsync } = useWriteContract();
     const account = useAccount();
+    const { showModal } = useModal()
+
 
     const {data: allowance }= useReadContract({
         abi: CediH,
@@ -48,7 +51,13 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
                 functionName: "registerMerchant",
             });
             console.log("Registered:", registerHash);
-            alert("Stake successful");
+            showModal(
+                <div className="min-h-[300px] w-[300px] flex justify-center items-center bg-white">
+                    <div>
+                        {/* <Image source="" className="" /> */}
+                    </div>
+                </div>
+            )
         } catch (error) {
             console.error("Error handling stake:", error);
         }

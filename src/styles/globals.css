@@ -65,3 +65,63 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+@keyframes wobble {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+}
+
+@keyframes dot-bounce {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.wobble-loader {
+  animation: wobble 0.8s ease-in-out infinite;
+}
+
+.dot-1, .dot-2, .dot-3 {
+  animation: dot-bounce 1s infinite ease-in-out;
+}
+
+.dot-1 {
+  animation-delay: 0s;
+}
+
+.dot-2 {
+  animation-delay: 0.2s;
+}
+
+.dot-3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes horizontalLoader {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-horizontal-loader {
+  animation: horizontalLoader 1s ease-in-out infinite;
+}

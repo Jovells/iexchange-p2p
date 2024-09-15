@@ -4,6 +4,8 @@ import ModalManager from "@/components/shared/modal/Modal";
 import { ModalContextProvider } from "@/common/contexts/ModalContext";
 import { auth } from "../auth";
 import { SessionProvider } from "next-auth/react";
+import TopLoader from "@/components/loader/TopLoader";
+import { useState } from "react";
 
 
 
@@ -14,11 +16,11 @@ export default async function RootLayout({
 }>) {
 
   const session = await auth()
-  console.log("session", session)
 
   return (
     <html lang="en">
       <body>
+        <TopLoader />
         <SessionProvider refetchInterval={0} session={session}>
           <WalletProvider>
             <ModalContextProvider>

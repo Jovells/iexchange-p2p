@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { DollarSign, Euro, Filter } from "lucide-react";
 import SelectPaymentMethod from "@/components/ui/InputSelect";
@@ -19,7 +19,7 @@ import { Token } from "@/common/api/types";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import { fetchPaymentMethods } from "@/common/api/fetchPaymentMethods";
 
-interface P2PMarketProps {}
+interface P2PMarketProps { }
 
 const P2PMarket: React.FC<P2PMarketProps> = () => {
   const router = useRouter();
@@ -54,7 +54,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   });
 
   const [selectedCrypto, setSelectedCrypto] = useState(
-    tokens?.find((t) => t.symbol === tokenSymbol) 
+    tokens?.find((t) => t.symbol === tokenSymbol)
   );
 
 
@@ -83,15 +83,17 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   }
 
   return (
-    <>
+    <Fragment>
       <WalletConnectSection />
-      <div className="w-full lg:w-auto lg:container lg:mx-auto bg-white flex flex-col justify-start items-start space-y-4 mt-4">
-        <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
-        <CryptoSelector
-          tokens={tokens}
-          selectedCrypto={selectedCrypto}
-          setSelectedCrypto={setSelectedCrypto}
-        />
+      <div className="container mx-auto p-4 lg:p-0 lg:py-10 flex flex-col items-start space-y-4">
+        <div className="flex flex-row items-start gap-4">
+          <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
+          <CryptoSelector
+            tokens={tokens}
+            selectedCrypto={selectedCrypto}
+            setSelectedCrypto={setSelectedCrypto}
+          />
+        </div>
         <PaymentsSection
           setCurrencyAmount={setCurrencyAmount}
           setPaymentMethod={setPaymentMethod}
@@ -100,15 +102,15 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
           handleOpenChainModal={handleOpenChainModal}
           currentChain={currentChain}
         />
-        <P2PAds offerType={activeTab} 
-        paymentMethod={paymentMethod} 
-        amount={currencyAmount.amount}
-        currency = {currencyAmount.currency}  
-        token={selectedCrypto} />
+        <P2PAds offerType={activeTab}
+          paymentMethod={paymentMethod}
+          amount={currencyAmount.amount}
+          currency={currencyAmount.currency}
+          token={selectedCrypto} />
         <IExchangeGuide />
         <Faqs />
       </div>
-    </>
+    </Fragment>
   );
 };
 
@@ -151,21 +153,19 @@ const TabSelector: React.FC<TabSelectorProps> = ({
   <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl p-1 min-w-[150px]">
     <button
       onClick={() => handleTabChange("buy")}
-      className={`w-full rounded-xl text-center text-md p-1 ${
-        activeTab.toLowerCase() === "buy"
-          ? "text-black bg-gray-300"
-          : "text-gray-600"
-      }`}
+      className={`w-full rounded-xl text-center text-md p-1 ${activeTab.toLowerCase() === "buy"
+        ? "text-black bg-gray-300"
+        : "text-gray-600"
+        }`}
     >
       Buy
     </button>
     <button
       onClick={() => handleTabChange("sell")}
-      className={`w-full rounded-xl text-center text-md p-1 ${
-        activeTab.toLowerCase() === "sell"
-          ? "text-black bg-gray-300"
-          : "text-gray-600"
-      }`}
+      className={`w-full rounded-xl text-center text-md p-1 ${activeTab.toLowerCase() === "sell"
+        ? "text-black bg-gray-300"
+        : "text-gray-600"
+        }`}
     >
       Sell
     </button>
@@ -183,16 +183,14 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
   selectedCrypto,
   setSelectedCrypto,
 }) => (
-  console.log("tsk", tokens, selectedCrypto),
   <div className="bg-white border-0 border-gray-200 rounded-xl">
     <div className="hidden sm:flex justify-start items-center space-x-4 p-1 px-3">
       {tokens.map((token) => (
         <button
           key={token.id}
           onClick={() => setSelectedCrypto(token)}
-          className={`p-1 rounded-full text-md ${
-            selectedCrypto?.symbol === token.symbol ? " text-blue-500" : "text-black"
-          }`}
+          className={`p-1 rounded-full text-md ${selectedCrypto?.symbol === token.symbol ? " text-blue-500" : "text-black"
+            }`}
         >
           {token.symbol}
         </button>
@@ -204,7 +202,7 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
         onChange={(e) =>
           setSelectedCrypto(tokens.find((t) => t.symbol === e.target.value)!)
         }
-        className="w-full px-6 py-2 rounded-xl text-md bg-white border border-gray-300 text-gray-600"
+        className="w-full px-6 py-2 rounded-xl text-md bg-white border border-gray-300 text-gray-600 outline-none"
       >
         {tokens.map((crypto) => (
           <option key={crypto.id} value={crypto.symbol}>
@@ -212,7 +210,7 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
           </option>
         ))}
       </select>
-      <Filter className="cursor-pointer w-10 h-10" onClick={() => {}} />
+      <Filter className="cursor-pointer w-10 h-10" onClick={() => { }} />
     </div>
   </div>
 );
@@ -240,9 +238,10 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
         label=""
         initialCurrency="USD"
         currencies={currencies}
-        onValueChange={(value: { currency: string; amount: string }) =>
-          {setCurrencyAmount(value);
-          console.log(value)}
+        onValueChange={(value: { currency: string; amount: string }) => {
+          setCurrencyAmount(value);
+          console.log(value)
+        }
         }
         readOnly={false}
         placeholder="Enter amount"
@@ -259,7 +258,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
         onValueChange={(value) => setPaymentMethod(value)}
       />
     </div>
-    <Filter className="hidden lg:block cursor-pointer" onClick={() => {}} />
+    <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
     <Button
       onClick={handleOpenChainModal}
       className="bg-blue-500 text-white px-4 py-2 rounded-md"

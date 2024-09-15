@@ -6,7 +6,7 @@ import clsx from 'clsx';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text?: string | ReactNode;
   icon?: React.ReactNode | string;
-  iconPosition?: "left" | "right";
+  iconPosition?: "left" | "right" | "any";
   iconClassName?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
@@ -50,6 +50,15 @@ const Button: React.FC<ButtonProps> = ({
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
           </svg>
+        </span>
+      )}
+      {!loading && iconPosition === "any" && icon && (
+        <span className="">
+          {typeof icon === "string" ? (
+            <img src={icon} alt="icon" className={`h-5 w-5 ${iconClassName}`} />
+          ) : (
+            icon
+          )}
         </span>
       )}
       {!loading && iconPosition === "left" && icon && (
