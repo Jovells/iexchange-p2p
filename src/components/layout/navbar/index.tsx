@@ -6,8 +6,10 @@ import Button from "../../ui/Button";
 import Image from 'next/image';
 import BecomeAMerchant from "../../merchant";
 import { ThemeToggle } from "@/components/shared";
+import { useRouter } from "next/navigation";
 
 const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
+    const navigation = useRouter()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +33,7 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
             <Link
                 key={link.href}
                 href={link.href}
-                className="text-[#111315] hover:text-[#01A2E4] font-roboto font-medium text-sm leading-5 tracking-widest block px-2 py-2 rounded-md text-base"
+                className="text-[#111315] hover:text-[#01A2E4] font-roboto font-sm leading-5 tracking-widest block px-2 py-2 rounded-md text-base"
             >
                 {link.label}
             </Link>
@@ -48,9 +50,9 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
 
     return (
         <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 px-0 lg:pr-3 lg:pl-0">
-            <Link href="/" className="">
-                <Image src="/images/logo/iexchange-logo.png" alt="iexchange logo" className="h-[50px] w-[300px] lg:w-[170px] " width={150} height={50} />
-            </Link>
+            {/* <Link href="" className=""> */}
+                <Image src="/images/logo/iexchange-logo.png" alt="iexchange logo" className="h-[50px] w-[300px] lg:w-[170px] " width={150} height={50} onClick={()=>navigation.push("/")} />
+            {/* </Link> */}
             <div className="w-full flex flex-row justify-end lg:justify-between items-center">
                 <div className="hidden lg:flex space-x-1">
                     {renderLinks(navLinks)}

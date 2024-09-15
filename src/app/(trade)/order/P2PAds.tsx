@@ -3,16 +3,11 @@ import ExpandableTable from '@/components/data-grid'
 import { useSearchParams } from 'next/navigation';
 import React, { FC, Suspense, useRef, useState } from 'react'
 import CreateOrder from './create-order';
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
-import Button from "@/components/ui/Button";
 import { useContracts } from '@/common/contexts/ContractContext';
 import { Offer, Token } from '@/common/api/types';
 import { formatCurrency, shortenAddress } from '@/lib/utils';
-
-
-
-
 
 const columns: any = [
   {
@@ -53,14 +48,13 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod }
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
 
   const options = {page: currentPage, offerType, tokenId: token?.id, currency, amount, paymentMethod}
 
-  const { isPending, isError, error, data, isFetching, isPlaceholderData } =
+  const { isPending, error, data } =
     useQuery({
       queryKey: ["ads", indexerUrl, options],
       queryFn: () => fetchAds(indexerUrl, options),

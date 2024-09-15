@@ -52,6 +52,15 @@ const Button: React.FC<ButtonProps> = ({
           </svg>
         </span>
       )}
+      {!loading && iconPosition === "any" && icon && (
+        <span className="">
+          {typeof icon === "string" ? (
+            <img src={icon} alt="icon" className={`h-5 w-5 ${iconClassName}`} />
+          ) : (
+            icon
+          )}
+        </span>
+      )}
       {!loading && iconPosition === "left" && icon && (
         <span className="mr-2">
           {typeof icon === "string" ? (

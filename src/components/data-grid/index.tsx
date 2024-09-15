@@ -100,7 +100,7 @@ const ExpandableTable = forwardRef(
             {actions.length > 0 && <div className="col-span-1 w-full flex justify-end"></div>}
           </div>}
 
-          {isLoading && <Loader className='mt-20' />}
+          {isLoading && <Loader loaderType='text' className='mt-20' />}
 
           {(!isLoading && data) && data.length > 0 && (
             <>

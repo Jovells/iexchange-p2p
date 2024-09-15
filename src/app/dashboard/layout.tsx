@@ -18,20 +18,18 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body className="flex flex-col min-h-screen">
-                <ModalContextProvider>
-                    <MainNav />
-                    <div className="flex flex-1 border-t p-10 pr-6">
-                        <SideNav />
-                        <div className="flex-1 p-4 px-10 pr-0">
-                            {children}
-                        </div>
+        <div className="flex flex-col min-h-screen">
+            <ModalContextProvider>
+                <MainNav />
+                <div className="flex flex-1 border-t p-10 pr-6">
+                    <SideNav />
+                    <div className="flex-1 p-4 px-10 pr-0">
+                        {children}
                     </div>
-                    <ModalManager />
-                    <Footer />
-                </ModalContextProvider>
-            </body>
-        </html>
+                </div>
+                <ModalManager />
+                <Footer />
+            </ModalContextProvider>
+        </div>
     );
 }
