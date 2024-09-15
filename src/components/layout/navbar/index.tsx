@@ -7,11 +7,14 @@ import Image from 'next/image';
 import BecomeAMerchant from "../../merchant";
 import { ThemeToggle } from "@/components/shared";
 import { useRouter } from "next/navigation";
+import { useModal } from "@/common/contexts/ModalContext";
+import ClaimModal from "@/components/modals/ClaimModal";
 
 const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
     const navigation = useRouter()
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const drawerRef = useRef<HTMLDivElement>(null);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const { showModal, hideModal} = useModal();
 
     const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
 
@@ -48,17 +51,22 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
         { href: "/news", label: "News" }
     ];
 
+
+    const showClaimModal = () =>{
+        const modal = <ClaimModal />
+        showModal(modal);
+    }
+
     return (
         <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 px-0 lg:pr-3 lg:pl-0">
-            {/* <Link href="" className=""> */}
-                <Image src="/images/logo/iexchange-logo.png" alt="iexchange logo" className="h-[50px] w-[300px] lg:w-[170px] " width={150} height={50} onClick={()=>navigation.push("/")} />
-            {/* </Link> */}
+            <Image src="/images/logo/iexchange-logo.png" alt="iexchange logo" className="h-[50px] w-[300px] lg:w-[170px] " width={150} height={50} onClick={() => navigation.push("/")} />
             <div className="w-full flex flex-row justify-end lg:justify-between items-center">
                 <div className="hidden lg:flex space-x-1">
                     {renderLinks(navLinks)}
                 </div>
                 <div className="hidden lg:flex flex-row justify-start items-center space-x-6">
                     <BecomeAMerchant />
+                    <Button text="Claim" className="bg-black text-white rounded-xl px-4 py-2" onClick={showClaimModal} />
                     <Button
                         icon="/images/icons/gold.png"
                         iconPosition="any"

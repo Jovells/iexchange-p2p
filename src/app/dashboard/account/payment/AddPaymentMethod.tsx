@@ -10,13 +10,6 @@ import { useContracts } from '@/common/contexts/ContractContext';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPaymentMethods } from '@/common/api/fetchPaymentMethods';
 
-
-type PaymentMethod = {
-    id: number;
-    name: string;
-};
-
-
 interface Props {
     hideModal: () => void
 }
