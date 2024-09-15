@@ -5,13 +5,15 @@ import Button from '../ui/Button';
 import { useModal } from '@/common/contexts/ModalContext';
 
 interface Props {
+    title?:string;
     modalType?: "success" | "error";
     icon?: React.ReactNode | string;
-    text?: string;
+    description?: string;
     buttonClick?: () => Promise<void>;
+    buttonText?:string;
 }
 
-const ModalAlert: React.FC<Props> = ({ modalType, icon, text, buttonClick }) => {
+const ModalAlert: React.FC<Props> = ({ modalType, icon, description, title, buttonClick, buttonText }) => {
     const { hideModal } = useModal()
     const handleClick = async () => {
         if (buttonClick) {
@@ -33,8 +35,9 @@ const ModalAlert: React.FC<Props> = ({ modalType, icon, text, buttonClick }) => 
                 ) : (
                     icon
                 )}
-                <p className='text-md text-gray-400 text-center'>{text}</p>
-                <Button text="OK" onClick={handleClick} className='bg-transparent border rounded-xl border-gray-200 px-10 py-1' />
+                <h1 className='text-center text-lg'>{title}</h1>
+                <p className='text-md text-gray-400 text-center'>{description}</p>
+                <Button text={buttonText} onClick={handleClick} className='bg-transparent border rounded-xl border-gray-200 px-10 py-1' />
             </div>
         </div>
     )
