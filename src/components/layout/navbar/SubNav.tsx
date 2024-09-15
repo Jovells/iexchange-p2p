@@ -7,6 +7,7 @@ import WalletConnect from "@/components/wallet";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import { DASHBOARD_PAGE, MY_ADS_PAGE, ORDER_HISTORY_PAGE } from "@/common/page-links";
+import useIsMerchant from "@/common/hooks/useIsMerchant";
 
 const menuLinks = [
     { href: "/", label: "P2P" },
@@ -36,22 +37,13 @@ const items = [
     { label: "Item 6", value: "Description of item 6" },
 ];
 
-const renderLinks = (links: { href: string; label: string }[]) => (
-    links.map(link => (
-        <Link
-            key={link.href}
-            href={link.href}
-            className="text-[#111315] hover:text-[#01A2E4] font-roboto font-medium text-sm leading-5 tracking-widest block px-2 py-2 rounded-md text-base"
-        >
-            {link.label}
-        </Link>
-    ))
-);
 
 const SubNav = () => {
 
     const { isConnected } = useAccount();
     const [isMounted, setIsMounted] = useState(false);
+    const { isMerchant, isLoading } = useIsMerchant()
+
 
     useEffect(() => {
         setIsMounted(true);
@@ -60,6 +52,18 @@ const SubNav = () => {
     if (!isMounted || !isConnected) {
         return null;
     }
+
+    const renderLinks = (links: { href: string; label: string }[]) => (
+        links.map(link => (
+            <Link
+                key={link.href}
+                href={link.href}
+                className={`text-[#111315] hover:text-[#01A2E4] font-roboto font-medium leading-5 tracking-widest block px-2 py-2 rounded-md text-base ${link.label === "My Ads" && !isMerchant ? "hidden" : "flex"}`}
+            >
+                {link.label}
+            </Link>
+        ))
+    );
 
     const renderMenuDropdowns = () => (
         <div className="flex flex-row">

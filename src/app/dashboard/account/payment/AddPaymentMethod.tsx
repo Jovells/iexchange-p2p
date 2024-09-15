@@ -6,6 +6,9 @@ import { Check, X } from 'lucide-react'
 import React, { FC, Fragment, useEffect, useState } from 'react'
 import { collection, addDoc } from "firebase/firestore";
 import { useAccount } from 'wagmi';
+import { useContracts } from '@/common/contexts/ContractContext';
+import { useQuery } from '@tanstack/react-query';
+import { fetchPaymentMethods } from '@/common/api/fetchPaymentMethods';
 
 
 type PaymentMethod = {
@@ -13,26 +16,24 @@ type PaymentMethod = {
     name: string;
 };
 
-const paymentMethods: PaymentMethod[] = [
-    { id: 1, name: 'Credit Card' },
-    { id: 2, name: 'PayPal' },
-    { id: 3, name: 'Bank Transfer' },
-    { id: 4, name: 'Apple Pay' },
-    { id: 5, name: 'Google Pay' },
-];
 
 interface Props {
     hideModal: () => void
 }
 const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
+    const { indexerUrl } = useContracts();
     const [selectedMethod, setSelectedMethod] = useState<string | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
     const [steps, setSteps] = useState(1)
     const account = useAccount()
     const [details, setDetails] = useState<string | null>(null)
 
+    const { data: paymentMetho } = useQuery({
+        queryKey: ["paymentOptions"],
+        queryFn: () => fetchPaymentMethods(indexerUrl),
+        enabled: !!indexerUrl,
+    });
+
     const handleSearch = () => { }
-    const toggleSelection = () => { }
 
     const handleAdd = () => {
         if (selectedMethod) {
@@ -56,16 +57,6 @@ const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
         }
     }
 
-    useEffect(() => {
-        //simulating loading
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 1000);
-
-        if (selectedMethod) {
-
-        }
-    }, [])
 
     return (
         <div className='w-full lg:w-[800px] h-auto bg-white rounded-xl shadow-md border-2 border-gray-500 flex flex-col gap-4'>
@@ -75,8 +66,8 @@ const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
                     <X onClick={hideModal} className='cursor-pointer' />
                 </div>
             </div>
-            {isLoading && <Loader className='h-[400px]' />}
-            {!isLoading && (
+            {paymentMetho && paymentMetho?.length === 0 && <Loader className='h-[400px]' />}
+            {paymentMetho && paymentMetho?.length > 0 && (
                 <div className='gap-4 flex flex-col p-8 pt-4'>
                     {
                         steps === 1 && (
@@ -88,14 +79,14 @@ const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
                                     buttonText="Go"
                                 />
                                 <ul className="space-y-2">
-                                    {paymentMethods.map((method) => (
+                                    {paymentMetho && paymentMetho.filter(mt => mt.isAccespted).map((method) => (
                                         <li
-                                            key={method?.name}
+                                            key={method?.method}
                                             className="flex justify-between items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100"
-                                            onClick={() => setSelectedMethod(method?.name)}
+                                            onClick={() => setSelectedMethod(method?.method)}
                                         >
-                                            <span>{method.name}</span>
-                                            {selectedMethod === method?.name && (
+                                            <span>{method.method}</span>
+                                            {selectedMethod === method?.method && (
                                                 <div className='bg-black rounded-lg p-1 flex items-center justify-center'>
                                                     <Check className="h-3 w-3 text-white" />
                                                 </div>

@@ -7,6 +7,7 @@ import { Clock, EyeOff, SquareAsterisk } from 'lucide-react'
 import React from 'react'
 
 const Dashboard = () => {
+  
   return (
     <div className='flex flex-col justify-start gap-10'>
       <h1 className='text-2xl font-medium'>Get Started</h1>

@@ -10,6 +10,7 @@ import { fetchAds } from "@/common/api/fetchAds";
 import Button from "@/components/ui/Button";
 import { useContracts } from '@/common/contexts/ContractContext';
 import { useAccount } from 'wagmi';
+import TradeLayout from '../TradeLayout';
 
 
 const columns: any = [
@@ -36,7 +37,7 @@ const columns: any = [
     key: "status",
     label: "Status",
     render: (row: Offer) => (
-      <span className="italic">{row.active? "Active" : "Deactivated"}</span>
+      <span className="italic">{row.active ? "Active" : "Deactivated"}</span>
     ),
   },
 ];
@@ -46,7 +47,7 @@ interface Props {
   merchant?: string;
 }
 const MyAds: FC<Props> = () => {
-  const {indexerUrl} = useContracts();
+  const { indexerUrl } = useContracts();
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -61,7 +62,7 @@ const MyAds: FC<Props> = () => {
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } =
     useQuery({
-      queryKey: ["ads", currentPage, offerType, {merchant: account.address}],
+      queryKey: ["ads", currentPage, offerType, { merchant: account.address }],
       queryFn: () => fetchAds(indexerUrl, currentPage, offerType, {
         merchant: account.address?.toLowerCase()
       }),
@@ -84,13 +85,18 @@ const MyAds: FC<Props> = () => {
   ]
 
 
+  if(isPending){
+    return null;
+  }
 
   return (
-    <div className="container mx-auto p-0 py-4">
-      <div className='py-12 flex flex-col gap-10'>
-        <GridTable columns={columns} data={data?.offers || []} actions={actions} itemsPerPage={50} />
+    <TradeLayout>
+      <div className="container mx-auto p-0 py-4">
+        <div className='py-12 flex flex-col gap-10'>
+          <GridTable columns={columns} data={data?.offers || []} actions={actions} itemsPerPage={50} />
+        </div>
       </div>
-    </div>
+    </TradeLayout>
   );
 };
 

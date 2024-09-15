@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import Stake from './stake';
+import TradeLayout from '../TradeLayout';
 
 const columns: any = [
   {
@@ -66,36 +67,37 @@ const Appealls = () => {
   }
 
   return (
-    <div className="container mx-auto p-0 py-4 pt-0">
-      {!hasStake && (
-        <div className='min-h-[500px] flex justify-center items-center'>
-          <div className='flex flex-col justify-center items-center space-y-4'>
-            <p className='text-xl text-gray-600'>
-              Get to Settle Case and Resolve Trading Problem just by staking $20 and get returns.
-            </p>
-            <Button
-              text='Stake on Platform'
-              iconPosition="right"
-              icon="/images/icons/export.svg"
-              className='border px-3 py-2 rounded-xl text-gray-500'
-              onClick={handleStake}
-            />
+    <TradeLayout>
+      <div className="container mx-auto p-0 py-4 pt-0">
+        {!hasStake && (
+          <div className='min-h-[500px] flex justify-center items-center'>
+            <div className='flex flex-col justify-center items-center space-y-4'>
+              <p className='text-xl text-gray-600'>
+                Get to Settle Case and Resolve Trading Problem just by staking $20 and get returns.
+              </p>
+              <Button
+                text='Stake on Platform'
+                iconPosition="right"
+                icon="/images/icons/export.svg"
+                className='border px-3 py-2 rounded-xl text-gray-500'
+                onClick={handleStake}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {hasStake && (
-        <div className='py-12 flex flex-col gap-10'>
-          <div className='flex flex-col gap-3'>
-            <h1 className='text-gray-600 text-xl'>Awaiting Case</h1>
-            <p className='text-gray-500'>Pick up an Order and Settle cases fairly</p>
+        {hasStake && (
+          <div className='py-12 flex flex-col gap-10'>
+            <div className='flex flex-col gap-3'>
+              <h1 className='text-gray-600 text-xl'>Awaiting Case</h1>
+              <p className='text-gray-500'>Pick up an Order and Settle cases fairly</p>
+            </div>
+            <GridTable columns={columns} data={[]} actions={actions} itemsPerPage={50} />
           </div>
-          <GridTable columns={columns} data={data} actions={actions} itemsPerPage={50} />
-        </div>
-      )}
-
-      <FaqsSection />
-    </div>
+        )}
+        <FaqsSection />
+      </div>
+    </TradeLayout>
   );
 };
 

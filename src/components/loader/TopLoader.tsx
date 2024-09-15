@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 interface Props {
     setIsMounted?: (value: boolean) => void
 }
+
 const TopLoader: React.FC<Props> = ({ setIsMounted }) => {
     const pathname = usePathname();
     const [loading, setLoading] = useState(true);

@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 
 type Row = {
@@ -87,31 +88,35 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
                 </div>
             </div>
             {/* Pagination Controls */}
-            <div className="flex justify-center items-center mt-4 space-x-2">
-                <button
-                    onClick={prevPage}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 border rounded hover:bg-gray-200"
-                >
-                    &larr;
-                </button>
-                {Array.from({ length: totalPages }, (_, idx) => (
-                    <button
-                        key={idx}
-                        onClick={() => setCurrentPage(idx + 1)}
-                        className={`px-3 py-1 border rounded hover:bg-gray-200 ${currentPage === idx + 1 ? 'bg-gray-300' : ''}`}
-                    >
-                        {idx + 1}
-                    </button>
-                ))}
-                <button
-                    onClick={nextPage}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 border rounded hover:bg-gray-200"
-                >
-                    &rarr;
-                </button>
-            </div>
+            {
+                data && data.length > 0 && (
+                    <div className="flex justify-center items-center mt-4 space-x-2">
+                        <button
+                            onClick={prevPage}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1 border rounded"
+                        >
+                            <ChevronLeft />
+                        </button>
+                        {Array.from({ length: totalPages }, (_, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => setCurrentPage(idx + 1)}
+                                className={`px-3 py-1 border rounded ${currentPage === idx + 1 ? 'bg-gray-300' : ''}`}
+                            >
+                                {idx + 1}
+                            </button>
+                        ))}
+                        <button
+                            onClick={nextPage}
+                            disabled={currentPage === totalPages}
+                            className="px-3 py-1 border rounded"
+                        >
+                            <ChevronRight />
+                        </button>
+                    </div>
+                )
+            }
         </div>
     );
 };
