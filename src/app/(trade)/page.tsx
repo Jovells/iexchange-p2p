@@ -48,11 +48,6 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const [activeTab, setActiveTab] = useState<"buy" | "sell" | string>(
     searchParams.get("trade")?.toLowerCase() || "buy"
   );
-  ;
-
-  console.log("paymentMethodpage", paymentMethod);
-
-
 
   const { data: acceptedCurrencies } = useQuery({
     queryKey: ["acceptedCurrencies"],
