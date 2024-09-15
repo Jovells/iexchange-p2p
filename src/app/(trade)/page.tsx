@@ -15,7 +15,7 @@ import { useContracts } from "@/common/contexts/ContractContext";
 import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTokens } from "@/common/api/fetchTokens";
-import { Token } from "@/common/api/types";
+import { PreparedCurrency, Token } from "@/common/api/types";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import { fetchPaymentMethods } from "@/common/api/fetchPaymentMethods";
 import { useAccount } from "wagmi";
@@ -28,19 +28,24 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const searchParams = useSearchParams();
   const { openChainModal } = useChainModal();
   const { currentChain, indexerUrl } = useContracts();
-  const [currencyAmount, setCurrencyAmount] = useState({ currency: "USD", amount: "" });
   const [paymentMethod, setPaymentMethod] = useState("");
-
-  const [activeTab, setActiveTab] = useState<"buy" | "sell" | string>(
-    searchParams.get("trade")?.toLowerCase() || "buy"
-  );
-  const tokenSymbol = searchParams.get("crypto") || "CEDIH";
-
   const { data: tokens } = useQuery({
     queryKey: ["tokens"],
     queryFn: () => fetchTokens(indexerUrl),
     enabled: !!indexerUrl,
   });
+  const [selectedCrypto, setSelectedCrypto] = useState(
+    tokens?.find((t) => t.symbol === searchParams.get("crypto") || "CEDIH")
+  );
+
+  const [activeTab, setActiveTab] = useState<"buy" | "sell" | string>(
+    searchParams.get("trade")?.toLowerCase() || "buy"
+  );
+  ;
+
+  console.log("paymentMethodpage", paymentMethod);
+
+
 
   const { data: acceptedCurrencies } = useQuery({
     queryKey: ["acceptedCurrencies"],
@@ -48,25 +53,33 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     enabled: !!indexerUrl,
   });
 
+  const currencies = acceptedCurrencies?.map((currency) => ({
+    symbol: currency.currency,
+    name: currency.currency,
+    id: currency.id,
+    icon: currency.currency === "GHS" ? <p>₵</p> :currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p> 
+  }));
+
+  const currencyFromUrl = acceptedCurrencies?.find(c => c.currency = searchParams.get("fiat") || "GHS");
+  const [currencyAmount, setCurrencyAmount] = useState({ currency: currencyFromUrl?.currency || "GHS", id: currencyFromUrl?.id, amount: "" });
+
+  
+
   const { data: paymentMethods } = useQuery({
     queryKey: ["paymentOptions"],
     queryFn: () => fetchPaymentMethods(indexerUrl),
     enabled: !!indexerUrl,
   });
 
-  const [selectedCrypto, setSelectedCrypto] = useState(
-    tokens?.find((t) => t.symbol === tokenSymbol)
-  );
 
 
   const handleTabChange = (
     tab: "buy" | "sell" | string,
-    tokenSymbol = selectedCrypto?.symbol,
-    fiat: string = "MDL"
   ) => {
+    const fiat: string = currencyAmount.currency || "CEDIH"
     const query = tab
-      ? `trade=${tab}&crypto=${tokenSymbol}&fiat=${fiat}`
-      : `crypto=${tokenSymbol}&fiat=${fiat}`;
+      ? `trade=${tab}&crypto=${selectedCrypto?.symbol}&fiat=${fiat}`
+      : `crypto=${selectedCrypto?.symbol}&fiat=${fiat}`;
 
     router.push(`${pathname}?${query}`);
     setActiveTab(tab);
@@ -77,7 +90,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     openChainModal?.();
   };
 
-  const isAvailable = !!(tokens && acceptedCurrencies && paymentMethods);
+  const isAvailable = !!(tokens && currencies && paymentMethods);
 
   if (!isAvailable) {
     return <Loader className="mt-20" />;
@@ -105,9 +118,9 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
           currentChain={currentChain}
         />
         <P2PAds offerType={activeTab}
-          paymentMethod={paymentMethod}
+          paymentMethod={paymentMethods.find(method => method.method === paymentMethod)}
           amount={currencyAmount.amount}
-          currency={currencyAmount.currency}
+          currency={currencies.find(c => c.id === currencyAmount.id)}
           token={selectedCrypto} />
         <IExchangeGuide />
         <Faqs />
@@ -117,12 +130,6 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
 };
 
 export default P2PMarket;
-
-const currencies = [
-  { symbol: "GHS", name: "GHS", icon: <p>₵</p> },
-  { symbol: "NGN", name: "NGN", icon: <p>KSh</p> },
-  { symbol: "KES", name: "KES", icon: <p>₦</p> },
-];
 
 
 interface TabSelectorProps {
@@ -200,9 +207,9 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
 );
 
 interface PaymentsSectionProps {
-  currencies: { symbol: string; name: string; icon: JSX.Element }[];
+  currencies: PreparedCurrency[];
   paymentMethods: any;
-  setCurrencyAmount: (value: { currency: string; amount: string }) => void;
+  setCurrencyAmount: (value: { currency: string; amount: string; id: `0x${string}` }) => void;
   setPaymentMethod: (value: string) => void;
   handleOpenChainModal: () => void;
   currentChain: any;
@@ -224,21 +231,22 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
         <div className="w-full lg:w-[300px]">
           <InputAmount
             label=""
-            initialCurrency="USD"
+            placeholder="Enter amount"
+            initialCurrency={currencies[0].symbol}
             currencies={currencies}
-            onValueChange={(value: { currency: string; amount: string }) => {
+            onValueChange={(value: { currency: string; amount: string, id: `0x${string}` }) => {
               setCurrencyAmount(value);
               console.log(value)
             }
             }
             readOnly={false}
-            placeholder="Enter amount"
           />
         </div>
         <div className="w-full lg:w-[300px]">
           <SelectPaymentMethod
             label=""
             initialValue="usd"
+            placeholder="All Payment Methods"
             options={paymentMethods.map((method: any) => ({
               value: method.method,
               label: method.method,

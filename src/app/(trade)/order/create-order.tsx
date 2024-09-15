@@ -11,33 +11,9 @@ import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteCont
 import { decodeEventLog } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
-import { waitForTransactionReceipt } from "viem/actions";
-import { waitForTransactionReceiptQueryKey } from "wagmi/query";
+import { Offer, } from "@/common/api/types";
 
-const currencies = [
-  {
-    symbol: "GHS",
-    name: "Ghanaian Cedi",
-    icon: <DollarSign className="w-4 h-4" />,
-  },
-  {
-    symbol: "USD",
-    name: "US Dollar",
-    icon: <DollarSign className="w-4 h-4" />,
-  },
-  { symbol: "EUR", name: "Euro", icon: <Euro className="w-4 h-4" /> },
-  {
-    symbol: "GBP",
-    name: "British Pound",
-    icon: <DollarSign className="w-4 h-4" />,
-  },
-];
 
-const paymentMethods = [
-  { value: "MOMO", label: "MTN Mobile Money" },
-  { value: "access bank", label: "Access Bank" },
-  { value: "Telecel cash", label: "Telecel Cash" },
-];
 
 interface Props {
   data: Offer; // Consider replacing 'any' with a specific type
@@ -126,7 +102,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       console.log("Already Approved");
     }
 
-    console.log("isSuccess", isSuccess);
+    console.log("isSuccess", isSuccess, "do", (alreadyApproved));
 
     const hash = (alreadyApproved || isSuccess) && await writeContractAsync({
       abi: p2p.abi,
@@ -172,31 +148,29 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       onSubmit={handleSubmit}
       className="w-full border-0 lg:border rounded-xl p-0 lg:p-6 min-h-[400px] flex flex-col flex-col-reverse lg:grid lg:grid-cols-2 bg-white lg:bg-gray-200">
       <div className="bg-transparent rounded-xl p-0 pt-6">
-        <MerchantProfile />
+        <MerchantProfile offer={data} />
       </div>
       <div className="bg-white rounded-xl p-0 lg:p-6 space-y-3 pt-6">
         <InputWithSelect
-          label={orderType.toLowerCase() === "buy" ? "You Pay" : "You Sell"}
-          initialCurrency="USD"
+          placeholder={orderType.toLowerCase() === "buy" ? "You Pay" : "You Sell"}
+          initialCurrency={data.currency.currency}
           name="toPay"
-          currencies={currencies}
+          currencies={[{symbol: data.currency.currency, id: data.currency.id, name: data.currency.currency}]}
           value={toPay}
           onValueChange={(value) => handleFormDateChange("toPay", value.amount)}
           readOnly={false}
-          placeholder="Enter amount"
           selectIsReadOnly={true}
         />
         <InputWithSelect
-          label="You Receive"
-          initialCurrency="USD"
+          placeholder="You Receive"
+          initialCurrency={data.token.symbol}
           name="toReceive"
           value={toReceive}
-          currencies={currencies}
+          currencies={[{symbol: data.token.symbol, id: data.token.id, name: data.token.name}]}
           onValueChange={(value) =>
             handleFormDateChange("toReceive", value.amount)
           }
           readOnly={false}
-          placeholder="Enter amount"
           selectIsReadOnly={true}
         />
         <InputSelect
@@ -205,7 +179,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           value={paymentMethod}
           placeholder="Select Payment Method"
           name="paymentMethod"
-          options={paymentMethods}
+          options={[{value: data.paymentMethod.method, label: data.paymentMethod.method}]}
           onValueChange={(value) =>
             handleFormDateChange("paymentMethod", value)
           }

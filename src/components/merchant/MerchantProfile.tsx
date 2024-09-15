@@ -1,13 +1,17 @@
+import { Offer } from '@/common/api/types'
+import { formatCurrency, shortenAddress } from '@/lib/utils'
 import { BadgeCheck, IndianRupee } from 'lucide-react'
 import React from 'react'
 
-const MerchantProfile = () => {
+const MerchantProfile = ({
+    offer
+}:{offer: Offer}) => {
     return (
         <div className='flex flex-col justify-between h-full px-6 pl-0'>
             <div className='space-y-4'>
                 <div className="flex flex-row items-center">
                     <IndianRupee className='w-4 h-4' />
-                    <span>Crypthority.Gh</span>
+                    <span>{offer.merchant.name} ({shortenAddress(offer.merchant.id)})</span>
                     <BadgeCheck className='w-4 h-4 ml-1' />
                 </div>
                 {/* trades */}
@@ -26,8 +30,8 @@ const MerchantProfile = () => {
                         <span>Avg. Pay Time</span>
                     </div>
                     <div className='flex flex-row-reverse justify-between lg:flex-col w-full lg:w-auto'>
-                        <span>1,200.00USDT</span>
-                        <span>Available</span>
+                        <span>{formatCurrency(offer.maxOrder, offer.currency.currency)}</span>
+                        <span>Limit</span>
                     </div>
                 </div>
             </div>

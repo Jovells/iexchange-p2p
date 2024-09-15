@@ -31,11 +31,15 @@ const InputSelect: React.FC<InputSelectProps> = ({
 
     const toggleDropdown = () => setIsOpen(!isOpen);
 
-    const handleSelect = (value: string ) => {
-        setSelectedValue(value);
+    const handleSelect = (value: string  ) => {
+        setSelectedValue(prevValue => {
+        const newValue = (value === prevValue)? '': value;
         if (onValueChange) {
-            onValueChange(value);
+            onValueChange(newValue);
         }
+        return newValue;
+    }
+        );
         setIsOpen(false);
     };
 
@@ -66,7 +70,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 <div className="flex items-center w-full" onClick={toggleDropdown}>
                     <div className="flex items-center flex-1 space-x-1">
                         {!selectedValue && <span className='text-sm text-gray-500 '>{label}</span>}
-                        {selectedValue && <span>{selectedOption?.label}</span>}
+                        {<span>{selectedOption?.label || <span className=' text-gray-400 '>{placeholder}</span>}</span>}
                     </div>
                     <ChevronDown />
                 </div>

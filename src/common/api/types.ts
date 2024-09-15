@@ -20,6 +20,8 @@ export type Merchant = {
   name?: string;
 }
 
+export type PreparedCurrency = { symbol: string; name: string; id: `0x${string}`,  icon: JSX.Element };
+
 export type PaymentMethod = {
   id: string;
   method: string;

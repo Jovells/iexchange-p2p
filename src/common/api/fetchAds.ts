@@ -12,7 +12,16 @@ import { Offer } from "./types";
   
   
 
-export async function fetchAds(indexerUrl: string, options?: { quantity?: number, merchant?: string, page?: number, offerType: string, tokenId?: string, currency?: string, amount?: string, paymentMethod?: string}) {
+export async function fetchAds(indexerUrl: string, options?: { 
+  quantity?: number, 
+  merchant?: string, 
+  page?: number, 
+  offerType: string, 
+  tokenId?: string, 
+  currency?: string, 
+  amount?: string, 
+  paymentMethod?: string
+}) {
   const {
     quantity = 10,
     page = 0,
@@ -24,6 +33,8 @@ export async function fetchAds(indexerUrl: string, options?: { quantity?: number
     amount
   } = options || {};
 
+  const realAmount = amount && (parseFloat(amount) * 10 ** 18).toString();
+
   const operation = constructAdsQuery({
     first: quantity,
     skip: page * quantity,
@@ -32,7 +43,8 @@ export async function fetchAds(indexerUrl: string, options?: { quantity?: number
       { name: "token", value: tokenId, type: "String" },
       { name: "currency", value: currency, type: "String" },
       { name: "merchant", value: merchant, type: "String" },
-      // { name: "amount", value: amount, type: "Int" },
+       { name: "maxOrder_gt", value: realAmount, type: "String" },
+       { name: "minOrder_lt", value: realAmount, type: "String" },
       { name: "paymentMethod", value: paymentMethod, type: "String" },
     ]
   })

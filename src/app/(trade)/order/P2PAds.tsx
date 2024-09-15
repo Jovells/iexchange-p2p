@@ -6,7 +6,7 @@ import CreateOrder from './create-order';
 import { useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import { useContracts } from '@/common/contexts/ContractContext';
-import { Offer, Token } from '@/common/api/types';
+import { Currency, Offer, PaymentMethod, PreparedCurrency, Token } from '@/common/api/types';
 import { formatCurrency, shortenAddress } from '@/lib/utils';
 
 const columns: any = [
@@ -39,8 +39,8 @@ const columns: any = [
 interface Props {
   offerType: string;
   token?: Token;
-  paymentMethod?: string;
-  currency?: string;
+  paymentMethod?: PaymentMethod;
+  currency?: PreparedCurrency;
   amount?: string;
 }
 const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod }) => {
@@ -52,7 +52,9 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod }
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
 
-  const options = {page: currentPage, offerType, tokenId: token?.id, currency, amount, paymentMethod}
+  console.log("paymentMethod", paymentMethod);
+
+  const options = {page: currentPage, offerType, tokenId: token?.id, currency: currency?.id, amount, paymentMethod: paymentMethod?.id};
 
   const { isPending, error, data } =
     useQuery({
