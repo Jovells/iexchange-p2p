@@ -9,6 +9,7 @@ import { useAccount } from 'wagmi';
 import { db } from '@/common/configs/firebase';
 import { collection, doc, getDoc, getDocs, query } from 'firebase/firestore';
 import fetchPaymentDetails from '@/common/api/fetchPaymentDetails';
+import { parseStringToObject } from '@/lib/utils';
 
 
 type PaymentMethod = {
@@ -30,11 +31,11 @@ const Payment = () => {
 
 
 
-    const { data: paymentMethods, isLoading, isError } = useQuery({
-      queryKey: ['paymentMethods', account.address],
-      queryFn: () => fetchPaymentDetails(account.address!)
-    });
-
+  const { data: methods, isLoading, isError } = useQuery({
+    queryKey: ['paymentMethods', account.address],
+    queryFn: () => fetchPaymentDetails(account.address!)
+  });
+  console.log("methods", methods)
 
 
 
@@ -44,6 +45,7 @@ const Payment = () => {
       <AddPaymentMethod hideModal={hideModal} />
     );
   };
+
 
   return (
     <div className='py-12 pt-0 flex flex-col items-start gap-4'>
@@ -61,12 +63,27 @@ const Payment = () => {
         />
       </div>
       <div>
-        
-      {paymentMethods?.map((method, i) => (
-            <div key={i}>{method.paymentMethod} : {method.details}</div>))}
+
+        {methods?.map((method, i) => {
+          const parsedDetails = parseStringToObject(method.details);
+          return (
+            <div key={i} className="p-2 border-b">
+              <strong>{method.paymentMethod}</strong>
+              <div className="">
+                {Object.entries(parsedDetails).map(([key, value], index) => (
+                  <div key={index}>
+                    <strong>{key}:</strong> {value}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+        <div></div>
       </div>
     </div>
   );
 };
 
 export default Payment;
+

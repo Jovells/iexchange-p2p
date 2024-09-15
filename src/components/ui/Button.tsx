@@ -6,7 +6,7 @@ import clsx from 'clsx';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text?: string | ReactNode;
   icon?: React.ReactNode | string;
-  iconPosition?: "left" | "right";
+  iconPosition?: "left" | "right" | "any";
   iconClassName?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
