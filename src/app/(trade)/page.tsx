@@ -18,6 +18,7 @@ import { fetchTokens } from "@/common/api/fetchTokens";
 import { Token } from "@/common/api/types";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import { fetchPaymentMethods } from "@/common/api/fetchPaymentMethods";
+import { useAccount } from "wagmi";
 
 interface P2PMarketProps { }
 
@@ -214,37 +215,41 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
   setCurrencyAmount,
   setPaymentMethod,
   currentChain,
-}) => (
-  <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
-    <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
-      <Button text={currentChain.name} className="bg-transparent border border-blue-300 px-4 py-2 w-full block lg:hidden" onClick={handleOpenChainModal} icon={<MoveVertical />} />
-      <div className="w-full lg:w-[300px]">
-        <InputAmount
-          label=""
-          initialCurrency="USD"
-          currencies={currencies}
-          onValueChange={(value: { currency: string; amount: string }) => {
-            setCurrencyAmount(value);
-            console.log(value)
-          }
-          }
-          readOnly={false}
-          placeholder="Enter amount"
-        />
+}) => {
+  const { isConnected } = useAccount()
+  return (
+    <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
+      <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
+        <Button text={currentChain.name} className="bg-transparent border border-blue-300 px-4 py-2 w-full block lg:hidden" onClick={handleOpenChainModal} icon={<MoveVertical />} />
+        <div className="w-full lg:w-[300px]">
+          <InputAmount
+            label=""
+            initialCurrency="USD"
+            currencies={currencies}
+            onValueChange={(value: { currency: string; amount: string }) => {
+              setCurrencyAmount(value);
+              console.log(value)
+            }
+            }
+            readOnly={false}
+            placeholder="Enter amount"
+          />
+        </div>
+        <div className="w-full lg:w-[300px]">
+          <SelectPaymentMethod
+            label=""
+            initialValue="usd"
+            options={paymentMethods.map((method: any) => ({
+              value: method.method,
+              label: method.method,
+            }))}
+            onValueChange={(value) => setPaymentMethod(value)}
+          />
+        </div>
+        <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
       </div>
-      <div className="w-full lg:w-[300px]">
-        <SelectPaymentMethod
-          label=""
-          initialValue="usd"
-          options={paymentMethods.map((method: any) => ({
-            value: method.method,
-            label: method.method,
-          }))}
-          onValueChange={(value) => setPaymentMethod(value)}
-        />
-      </div>
-      <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
+      {isConnected && <Button text={currentChain.name} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full lg:w-auto hidden lg:flex" onClick={handleOpenChainModal} icon={<ChevronsUpDown />} />}
     </div>
-    <Button text={currentChain.name} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full lg:w-auto hidden lg:flex" onClick={handleOpenChainModal} icon={<ChevronsUpDown />} />
-  </div>
-);
+
+  )
+};
