@@ -11,8 +11,10 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/navigation'
 import { useContracts } from '@/common/contexts/ContractContext'
 import { POST_AD_PAGE } from '@/common/page-links'
+import useIsMerchant from '@/common/hooks/useIsMerchant'
 
 const BecomeAMerchant = () => {
+    const {isMerchant, isLoading} = useIsMerchant()
     const{indexerUrl} = useContracts();
     const router = useRouter()
     const { openConnectModal } = useConnectModal()
@@ -26,15 +28,15 @@ const BecomeAMerchant = () => {
 
     // const address: any = "0x8db769ccd2f5946a94fce8b3ad9a296d5309c36c"
 
-    const { data: account, error, isLoading, isError, isFetching } = useQuery({
-        queryKey: ['merchantAccount', indexerUrl, address],
-        queryFn: () => fetchAccount(indexerUrl, address),
-        enabled: !!address,
-        retry: 1,
-        refetchOnWindowFocus: false,
-    })
+    // const { data: account, error, isLoading, isError, isFetching } = useQuery({
+    //     queryKey: ['merchantAccount', indexerUrl, address],
+    //     queryFn: () => fetchAccount(indexerUrl, address),
+    //     enabled: !!address,
+    //     retry: 1,
+    //     refetchOnWindowFocus: false,
+    // })
 
-    const isMerchant = account?.account?.isMerchant || false
+    // const isMerchant = account?.account?.isMerchant || false
 
     const handleClick = useCallback(() => {
         if (!isConnected) {
@@ -52,6 +54,7 @@ const BecomeAMerchant = () => {
         showModal(content)
 
     }, [isConnected, isMerchant, showModal, hideModal])
+    
 
     return (
         <Button
@@ -60,6 +63,7 @@ const BecomeAMerchant = () => {
             iconPosition="right"
             className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2"
             onClick={handleClick}
+            loading={isLoading}
         />
     )
 }

@@ -1,13 +1,16 @@
 "use client";
-import  OderStage  from './OderStage';
+import OderStage from './OderStage';
 import { useParams } from "next/navigation";
 import React from "react";
+import TradeLayout from '../../TradeLayout';
 
 const OrderCreated = () => {
   const { orderId } = useParams<{ orderId: string }>();
- 
+
   return (
-    <OderStage toggleExpand={()=>{}} orderId={orderId}/>
+    <TradeLayout>
+      <OderStage toggleExpand={() => { }} orderId={orderId} />
+    </TradeLayout>
   );
 };
 

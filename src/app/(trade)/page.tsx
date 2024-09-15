@@ -1,24 +1,31 @@
 "use client";
 
-import React, { Fragment, useState } from "react";
+import React, { Fragment, Suspense, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronsUpDown, DollarSign, Euro, Filter, MoveVertical } from "lucide-react";
-import SelectPaymentMethod from "@/components/ui/InputSelect";
-import InputAmount from "@/components/ui/InputWithSelect";
-import P2PAds from "./order/P2PAds";
+import { ChevronsUpDown, Filter, MoveVertical } from "lucide-react";
 import WalletConnectSection from "@/components/sections/WalletConnectSection";
-import Faqs from "@/components/sections/Faqs";
 import IExchangeGuide from "@/components/sections/IExchangeGuide";
-import Loader from "@/components/loader/Loader";
 import { useChainModal } from "@rainbow-me/rainbowkit";
 import { useContracts } from "@/common/contexts/ContractContext";
-import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTokens } from "@/common/api/fetchTokens";
 import { PreparedCurrency, Token } from "@/common/api/types";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import { fetchPaymentMethods } from "@/common/api/fetchPaymentMethods";
 import { useAccount } from "wagmi";
+
+
+const Button = React.lazy(() => import('@/components/ui/Button'));
+const Faqs = React.lazy(() => import('@/components/sections/Faqs'));
+const P2PAds = React.lazy(() => import('./order/P2PAds'));
+const InputAmount = React.lazy(() => import('@/components/ui/InputWithSelect'));
+const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect'));
+
+
+import MainNav from "@/components/layout/navbar";
+import SubNav from "@/components/layout/navbar/SubNav";
+import TradeLayout from "./TradeLayout";
+import Loader from "@/components/loader/Loader";
 
 interface P2PMarketProps { }
 
@@ -93,12 +100,12 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const isAvailable = !!(tokens && currencies && paymentMethods);
 
   if (!isAvailable) {
-    return <Loader className="mt-20" />;
+    return null;
   }
 
 
   return (
-    <Fragment>
+    <TradeLayout>
       <WalletConnectSection />
       <div className="container mx-auto p-4 lg:p-0 lg:py-10 flex flex-col items-start space-y-4">
         <div className="flex flex-row items-start gap-4">
@@ -117,15 +124,19 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
           handleOpenChainModal={handleOpenChainModal}
           currentChain={currentChain}
         />
-        <P2PAds offerType={activeTab}
-          paymentMethod={paymentMethods.find(method => method.method === paymentMethod)}
-          amount={currencyAmount.amount}
-          currency={currencies.find(c => c.id === currencyAmount.id)}
-          token={selectedCrypto} />
+        <Suspense fallback={<Loader loaderType="text" className="mt-24" />}>
+          <P2PAds offerType={activeTab}
+            paymentMethod={paymentMethods.find(method => method.method === paymentMethod)}
+            amount={currencyAmount.amount}
+            currency={currencies.find(c => c.id === currencyAmount.id)}
+            token={selectedCrypto} />
+        </Suspense>
         <IExchangeGuide />
-        <Faqs />
+        <Suspense fallback={<Loader loaderType="text" />}>
+          <Faqs />
+        </Suspense>
       </div>
-    </Fragment>
+    </TradeLayout>
   );
 };
 
@@ -227,7 +238,8 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
   return (
     <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
       <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
-        <Button text={currentChain.name} className="bg-transparent border border-blue-300 px-4 py-2 w-full block lg:hidden" onClick={handleOpenChainModal} icon={<MoveVertical />} />
+        <Suspense fallback={<Loader loaderType="text" />}>
+          <Button text={currentChain.name} className="bg-transparent border border-blue-300 px-4 py-2 w-full block lg:hidden" onClick={handleOpenChainModal} icon={<MoveVertical />} /></Suspense>
         <div className="w-full lg:w-[300px]">
           <InputAmount
             label=""
@@ -256,7 +268,11 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
         </div>
         <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
       </div>
-      {isConnected && <Button text={currentChain.name} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full lg:w-auto hidden lg:flex" onClick={handleOpenChainModal} icon={<ChevronsUpDown />} />}
+      {isConnected && (
+        <Suspense fallback={<Loader loaderType="text" />}>
+          <Button text={currentChain.name} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full lg:w-auto hidden lg:flex" onClick={handleOpenChainModal} icon={<ChevronsUpDown />} />
+        </Suspense>
+      )}
     </div>
 
   )
