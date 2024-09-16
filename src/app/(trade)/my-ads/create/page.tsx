@@ -170,7 +170,7 @@ const CreateAd = () => {
             </div>
             <form onSubmit={handleSubmit} className="shadow-lg border border-gray-200 p-10 py-10 bg-white rounded-xl flex flex-col gap-10">
                 <div className='flex flex-col gap-8'>
-                    <h1 className='text-blue-500 font-bold'>Type and Price</h1>
+                    <h1 className='text-[#01a2e4] font-bold'>Type and Price</h1>
                     <div className='flex flex-row items-start   justify-start gap-6'>
                         <div className='flex flex-col'>
                             <InputSelect name='token' options={tokens?.map(token =>({
@@ -195,7 +195,7 @@ const CreateAd = () => {
                     </div>
                 </div>
                 <div className='flex flex-col gap-8'>
-                    <h1 className='text-blue-500 font-bold'>Amount and Method</h1>
+                    <h1 className='text-[#01a2e4] font-bold'>Amount and Method</h1>
                     <div className='flex flex-col gap-3'>
                         <span className='text-gray-700 font-light'>Order Limit</span>
                         <div className='flex flex-row items-start gap-6'>
