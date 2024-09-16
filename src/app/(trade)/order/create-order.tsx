@@ -138,15 +138,16 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           ],
         });
       }
+
     } catch (e) {
       console.log("error", e);
     }
   };
 
-  const id = "create-order";
-  isSuccess && toast.success("Order Created", { id });
 
+  
   if (isSuccess && p2phash) {
+    const id = "create-order";
     let orderId;
     receipt.logs.some((log) => {
       try {

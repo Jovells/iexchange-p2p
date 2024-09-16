@@ -19,15 +19,22 @@ export function OrdersDropdown() {
     quantity: 10,
     merchant: account.address,
     trader: account.address,
+    status_not: OrderState.released
   };
-  const { data: myOrders } = useQuery({
+  const { data: myOrders, isFetching } = useQuery({
     queryKey: ["orders", options],
     queryFn: () => fetchOrders(indexerUrl, options),
     enabled: !!account.address,
   });
 
-  if (!myOrders) {
+  console.log("myOrders", myOrders);
+
+  if (!myOrders && !isFetching  ) {
     return <Loader />;
+  }
+
+  if (!myOrders) {
+    return <div>No orders</div>;
   }
 
   return (

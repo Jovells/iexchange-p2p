@@ -125,15 +125,15 @@ const ClaimModal = () => {
                     <div className='flex flex-col gap-6'>
                         <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
                             <h2 className='text-sm text-gray-500 text-center'>Amount of RMP</h2>
-                            <h2 className='text-xl text-gray-600 text-center'>1000 RMP</h2>
+                            <h2 className='text-xl text-gray-600 text-center'>5000 RMP</h2>
                         </div>
                         <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
                             <h2 className='text-sm text-gray-500 text-center'>Amount of TRK</h2>
-                            <h2 className='text-xl text-gray-600 text-center'>1000 TRK</h2>
+                            <h2 className='text-xl text-gray-600 text-center'>5000 TRK</h2>
                         </div>
                         <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
                             <h2 className='text-sm text-gray-500 text-center'>Amount of CEDITH</h2>
-                            <h2 className='text-xl text-gray-600 text-center'>1000 CEDITH</h2>
+                            <h2 className='text-xl text-gray-600 text-center'>5000 CEDITH</h2>
                         </div>
                     </div>
                 )}

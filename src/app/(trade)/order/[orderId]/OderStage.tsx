@@ -30,16 +30,15 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   const handlePayOrder = async () => {
     console.log("Transfer funds");
     const txHash = await writeContractAsync(
-      {},
+      { },
       {
       address: p2p.address,
       abi: p2p.abi,
       functionName: "payOrder",
       args: [BigInt(orderId)],
-    }, {
-      onSuccess: () => refetch(),
-    }
+    }, 
   );
+  refetch()
     console.log("Transaction Hash", txHash);
   };
 
@@ -50,12 +49,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       abi: p2p.abi,
       functionName: "releaseOrder",
       args: [BigInt(orderId)],
-    }, {
-      onSuccess: () => refetch(),
-    }
+    }, 
   );
     console.log("Transaction Hash", txHash);
   };
+  refetch()
 
   const handleAcceptOrder = async () => {
     console.log("Accept order");
@@ -64,10 +62,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       abi: p2p.abi,
       functionName: "acceptOrder",
       args: [BigInt(orderId)],
-    }, {
-      onSuccess: () => refetch(),
     }
   );
+  refetch()
     console.log("Transaction Hash", txHash);
   };
 
@@ -78,10 +75,10 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       abi: p2p.abi,
       functionName: "cancelOrder",
       args: [BigInt(orderId)],
-    }, {
-      onSuccess: () => refetch(),
-    }
+    }, 
   );
+  refetch()
+
     console.log("Transaction Hash", txHash);
   };
 

@@ -30,6 +30,7 @@ import ModalAlert from '@/components/modals';
     const toastId = toast.loading(loadingMessage || 'Calling ' + args[0].functionName + '...');
     try {
       const result = await writeContractAsync(...args);
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       toast.success(successMessage || args[0].functionName + ' successful', { id: toastId  });
       shouldShowModal && showModal( <ModalAlert buttonText="Done" buttonClick={modalAction} 
       modalType="success" 

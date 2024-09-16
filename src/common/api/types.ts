@@ -70,7 +70,9 @@ export type OrderOptions ={
   trader?: string, 
   page?: number, 
   orderType?: OfferType, 
-  status?: OrderState }
+  status?: OrderState,
+  status_not?: OrderState
+}
 
 export type Order = {
   accountHash: `0x${string}`;
