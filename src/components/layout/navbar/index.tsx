@@ -74,7 +74,8 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
                     />
                     <ThemeToggle />
                 </div>
-                <div className="lg:hidden flex flex-row justify-start items-center" id="mobile-menu">
+                <div className="lg:hidden flex flex-row justify-start items-center gap-4" id="mobile-menu">
+                    <Button text="Claim" className="bg-black text-white rounded-xl px-4 py-2" onClick={showClaimModal} />
                     <Button
                         icon="/images/icons/gold.png"
                         iconPosition="any"
