@@ -18,6 +18,8 @@ export type Merchant = {
   id: `0x${string}`;
   isMerchant: boolean;
   name?: string;
+  terms?: string;
+  timeLimit?: number;
 }
 
 export type PreparedCurrency = { symbol: string; name: string; id: `0x${string}`,  icon: JSX.Element };

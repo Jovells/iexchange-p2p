@@ -66,7 +66,12 @@ export async function fetchAds(indexerUrl: string, options?: {
       const thisMerchantOffer = graphdata.offers.find(
         (offer) => offer.merchant.id === data.address
       );
-      thisMerchantOffer!.merchant.name = data.name;
+      if (thisMerchantOffer) {
+        thisMerchantOffer.merchant = {
+          ...thisMerchantOffer.merchant,
+          ...data
+        };
+      }
     });
     return graphdata;
   }
