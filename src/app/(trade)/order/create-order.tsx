@@ -5,13 +5,14 @@ import InputWithSelect from "@/components/ui/InputWithSelect";
 import InputSelect from "@/components/ui/InputSelect";
 import Button from "@/components/ui/Button";
 import MerchantProfile from "@/components/merchant/MerchantProfile";
-import { DollarSign, Euro } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { decodeEventLog } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
 import { Offer, } from "@/common/api/types";
+import toast from "react-hot-toast";
+import { waitForTransactionReceipt } from "viem/actions";
 
 
 
@@ -27,7 +28,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     toReceive: "",
     paymentMethod: "",
   });
-  const {p2p, tokens, indexerUrl} = useContracts();
+  const {p2p, tokens, currentChain} = useContracts();
   const token = tokens.find((token) => token.address.toLowerCase() === data.token.id.toLowerCase());
   const account = useAccount();
   const prevOrderType = useRef(orderType);
@@ -37,13 +38,13 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
 
-  const { writeContractAsync, data: hash } = useWriteContract();
+  const { writeContractAsync: writeToken, data: approveHash, isSuccess: isApproveSuccess, isPending: isP2pWritePending } = useWriteContract();
+  const { writeContractAsync: writeP2p, data: p2phash, isPending : isApprovePending  } = useWriteContract();
   const {
-    data: receipt,
-    isLoading,
-    isSuccess,
+    data: receipt, isSuccess, 
+    isLoading: isP2pPending,
   } = useWaitForTransactionReceipt({
-    hash,
+    hash: p2phash, 
   });
 
   const { data: allowance } = useReadContract({
@@ -82,15 +83,20 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     }
   }, [orderType, toggleExpand]);
 
+  const valueToPay = BigInt(toPay) * BigInt(10 ** 18);
+  const alreadyApproved = (allowance! >= valueToPay)  || (orderType === "sell");
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const id = toast.loading("Processing Order...");
+
     console.log("submitting form", { toPay, toReceive, paymentMethod, data });
 
-    const valueToPay = BigInt(toPay) * BigInt(10 ** 18);
-
-    const alreadyApproved = allowance! >= valueToPay;
-    if (alreadyApproved) {
-      const approveHash = await writeContractAsync({
+    try {
+      
+    if (!alreadyApproved) {
+      toast.loading("Approving Token...", { id });
+      const approveHash = await writeToken({
       abi: tokens[0].abi,
       address: data.token.id,
       functionName: "approve",
@@ -99,27 +105,39 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       console.log("approveHash", approveHash);
       
     }else{
-      console.log("Already Approved");
+      console.log("Already Approved", alreadyApproved);
+      toast.loading("Creating Order...", { id });
+      const createHash =   await writeP2p({
+        abi: p2p.abi,
+        address: p2p.address,
+        functionName: "createOrder",
+        args: [
+          BigInt(data.id),
+          valueToPay,
+          data.depositAddress.id,
+          data.accountHash,
+        ],
+      });
+      console.log("createHash", createHash);
+
+      toast.success("Order Created", { id });
     }
 
-    console.log("isSuccess", isSuccess, "do", (alreadyApproved));
 
-    const hash = (alreadyApproved || isSuccess) && await writeContractAsync({
-      abi: p2p.abi,
-      address: p2p.address,
-      functionName: "createOrder",
-      args: [
-        BigInt(data.id),
-        valueToPay,
-        data.depositAddress.id,
-        data.accountHash,
-      ],
-    });
-    console.log("p2phash", hash);
+  }
+  catch (e) {
+    console.log("error", e);
+    toast.error("Error Creating Order", { id });
+  }
   };
+  const id = "create-order";
+  console.log("p2phasher", p2phash, "isP2pPending", isP2pPending);
+  isP2pPending && toast.loading("Processing Order...", { id });
+  isSuccess && toast.success("Order Created", { id });
 
-  if (isSuccess) {
-    console.log("success", hash);
+
+  if (isSuccess && p2phash) {
+    console.log("success", p2phash);
     let orderId;
     receipt.logs.some((log) => {
       try {
@@ -191,8 +209,9 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
             onClick={toggleExpand}
           />
           <Button
+            loading={isP2pWritePending || isApprovePending || isP2pPending}
             type="submit"
-            text={`${trade} ${crypto}`}
+            text={alreadyApproved? `${trade} ${crypto}` : "Approve " + data.token.symbol}
             className="bg-[#2D947A] text-white rounded-xl px-4 py-2"
           />
         </div>

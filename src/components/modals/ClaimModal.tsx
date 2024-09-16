@@ -1,19 +1,59 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Button from '../ui/Button';
 import { ArrowRight } from 'lucide-react';
+import { useContracts } from '@/common/contexts/ContractContext';
+import { useAccount, useReadContract, useWriteContract } from 'wagmi';
+import Loader from '../loader/Loader';
+import useWriteContractWithToast from '@/common/hooks/useWriteContractWithToast';
 
 const ClaimModal = () => {
-    const [initialClaimDate, setInitialClaimDate] = useState(new Date('2024-09-15T00:00:00'));
+    const { faucet } = useContracts();
+    const account = useAccount();
+
+    const { data: lastClaimed, isFetching } = useReadContract({
+        abi: faucet.abi,
+        address: faucet.address,
+        functionName: 'lastClaimed',
+        args: [account.address!],
+        query: { enabled: !!account.address }
+    });
+
+    const { writeContractAsync: claim, isPending: isClaiming } = useWriteContractWithToast();
+
     const [isClaimAvailable, setIsClaimAvailable] = useState(false);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [timeElapsed, setTimeElapsed] = useState({
+        days: "0",
+        hours: "00",
+        minutes: "00",
+        seconds: "00"
+    });
 
-    const endDate = new Date(initialClaimDate.getTime() + 24 * 60 * 60 * 1000);
+    function handleClaim() {
 
-    const calculateTimeElapsed = () => {
+        claim({}, {
+            abi: faucet.abi,
+            address: faucet.address,
+            functionName: 'claim',
+            args: []
+        });
+    }
+
+    useEffect(() => {
+        if (lastClaimed !== undefined) {
+            const calculatedEndDate = new Date(Number(lastClaimed) * 1000 + 24 * 60 * 60 * 1000);
+            setEndDate(calculatedEndDate);
+        }
+    }, [lastClaimed]);
+
+    const calculateTimeElapsed = useCallback(() => {
+        if (!endDate) return;
+
         const currentDate = new Date();
         const difference = endDate.getTime() - currentDate.getTime();
-        let timeElapsed = {
+        let newTimeElapsed = {
             days: "0",
             hours: "00",
             minutes: "00",
@@ -21,7 +61,7 @@ const ClaimModal = () => {
         };
 
         if (difference > 0) {
-            timeElapsed = {
+            newTimeElapsed = {
                 days: Math.floor(difference / (1000 * 60 * 60 * 24)).toString(),
                 hours: Math.floor((difference / (1000 * 60 * 60)) % 24).toString().padStart(2, '0'),
                 minutes: Math.floor((difference / 1000 / 60) % 60).toString().padStart(2, '0'),
@@ -31,18 +71,16 @@ const ClaimModal = () => {
             setIsClaimAvailable(true);
         }
 
-        return timeElapsed;
-    };
-
-    const [timeElapsed, setTimeElapsed] = useState(calculateTimeElapsed());
+        setTimeElapsed(newTimeElapsed);
+    }, [endDate]);
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setTimeElapsed(calculateTimeElapsed());
+            calculateTimeElapsed();
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [initialClaimDate]);
+    }, [calculateTimeElapsed]);
 
     const timerComponents: JSX.Element[] = [];
 
@@ -55,6 +93,10 @@ const ClaimModal = () => {
         );
     });
 
+    if (isFetching) {
+        return <Loader />;
+    }
+
     return (
         <div className='w-full lg:w-[500px] min-h-[500px] rounded-xl bg-white p-8 flex flex-col items-center'>
             <div className='flex flex-col gap-8'>
@@ -62,7 +104,7 @@ const ClaimModal = () => {
                     <h1 className='text-center text-2xl font-medium'>Available Tokens</h1>
                     <p className='text-center text-lg text-gray-500'>Claim the number of Tokens you have been allocated below.</p>
                 </div>
-                {!isClaimAvailable && (
+                {!isClaimAvailable ?
                     <div className='flex flex-col gap-6'>
                         <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
                             <p className='text-center text-gray-500 text-xs'>
@@ -79,8 +121,7 @@ const ClaimModal = () => {
                             </p>
                         </div>
                     </div>
-                )}
-                {isClaimAvailable && (
+                : (
                     <div className='flex flex-col gap-6'>
                         <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
                             <h2 className='text-sm text-gray-500 text-center'>Amount of RMP</h2>
@@ -97,11 +138,12 @@ const ClaimModal = () => {
                     </div>
                 )}
                 <Button
-                    text="Claim All"
+                    text={isClaiming ? "Claiming..." : "Claim All"}
                     className='bg-black text-white px-4 py-4 rounded-xl'
                     icon={<ArrowRight />}
                     iconPosition='right'
-                    disabled={!isClaimAvailable}
+                    disabled={!isClaimAvailable || isClaiming}
+                    onClick={() => handleClaim()}
                 />
             </div>
         </div>

@@ -1,4 +1,5 @@
 import { API_ENDPOINT } from "./constants";
+import { AccountDetails } from "./types";
 
 export default  async (accountHash: string) : Promise<AccountDetails> => {
     console.log("fetching account details", accountHash);

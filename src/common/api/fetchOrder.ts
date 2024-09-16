@@ -10,21 +10,33 @@ const operation = `
       quantity
       status
       offer {
-      merchant {
         id
-      }
-      id
-      rate
-      currency {
-        currency 
-        id
-      }
-      paymentMethod {
-        method
-        id
-      }
+        maxOrder
+        minOrder
+        rate
         offerType
-    }
+        depositAddress {
+          id
+        }
+        token {
+          symbol
+          id
+        }
+        active
+        merchant {
+          id
+          isMerchant
+        }
+        paymentMethod {
+          id
+          method
+        }
+        currency {
+          id
+          currency
+          isAccepted
+        }
+      }
       trader {
         id
       }
@@ -42,6 +54,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../configs/firebase";
 import { fetchGraphQL } from ".";
+import { OrderResponse } from "./types";
 
 // Create a query against the collection.
 

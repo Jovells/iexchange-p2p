@@ -1,4 +1,5 @@
 import { API_ENDPOINT } from "./constants";
+import { AccountDetails } from "./types";
 
 
 async function storeAccountDetails(accountDetails: AccountDetails) {

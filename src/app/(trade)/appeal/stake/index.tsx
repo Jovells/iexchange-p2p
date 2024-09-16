@@ -22,7 +22,7 @@ const Stake = ({ hideModal }: { hideModal: () => void }) => {
                 <InputWithSelect
                     label="Stake Amount"
                     initialCurrency="GHS"
-                    currencies={currencies}
+                    currencies={currencies as unknown as { symbol: string; name: string, icon: JSX.Element ; id: `0x${string}`}[]}
                     onValueChange={(value) => console.log(value)}
                     readOnly={false}
                     placeholder="Enter amount"

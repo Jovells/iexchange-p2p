@@ -16,6 +16,7 @@ import { offerTypes, TIME_LIMITS } from '@/common/api/constants'
 import { useRouter } from 'next/navigation'
 import { useAccount, useWriteContract } from 'wagmi'
 import storeAccountDetails from '@/common/api/storeAccountDetails'
+import Loader from '@/components/loader/Loader'
 
 const CreateAd = () => {
     const [activeTab, setActiveTab] = useState<"buy" | "sell" >("buy");
@@ -37,9 +38,6 @@ const CreateAd = () => {
         queryKey: ['paymentMethods'],
         queryFn: () => fetchPaymentMethods(indexerUrl)
     })
-
-
-
 
     const addPaymentMethod =  () =>{}
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -71,13 +69,27 @@ const CreateAd = () => {
         }
         
         const handleContractWrite = async () => {
+
             try {
                 const accountHash = await storeAccountDetails(accountDetails);
+                const args = [
+                    token,
+                    currency,
+                    paymentMethod ,
+                    rate,
+                    minOrder,
+                    maxOrder,
+                    accountHash,
+                    depositAddress,
+                    offerTypes[activeTab],
+                ];
+                console.log('args', args, activeTab);
+
             const response = await writeContractAsync({
                 address: p2p.address,
                 functionName: "createOffer",
                 abi: p2p.abi,
-              args: [
+                args: [
                     token,
                     currency,
                     paymentMethod ,
@@ -100,6 +112,10 @@ const CreateAd = () => {
         };
 
         await handleContractWrite();
+    }
+
+    if (!currencies || !tokens || !paymentMethods) {
+        return <Loader/>;
     }
 
     return (
@@ -126,12 +142,7 @@ const CreateAd = () => {
                             name: currency.currency,
                             value: currency.currency
                         })) || []} label='Fiat' />
-                        <InputWithSelect name='rate' currencies={currencies?.map(currency => ({
-                            label: currency.currency,
-                            symbol: currency.currency,
-                            name: currency.currency,
-                            value: currency.currency
-                        })) || []} label='Rate' />
+                        <Input name='rate' label='Rate' />
                     </div>
                 </div>
                 <div className='flex flex-col gap-8'>

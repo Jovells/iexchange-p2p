@@ -3,6 +3,7 @@ import p2pAbi from "@/common/abis/OptimisticP2P.json";
 import cediHAbi from "@/common/abis/CediH.json";
 import OptimisticP2P from "../abis/OptimisticP2P";
 import CediH from "../abis/CediH";
+import faucet from "../abis/Faucet";
 
 export const MORPH_P2P_ADDRESS = "0x1E7f97Fc8C240D2B26A42d9A50592Fcd78574B41";
 export const MORPH_CEDIH_ADDRESS = "0xE4052c1cCd27C049763fb42D58d612f3C79Bb9FC";
@@ -22,6 +23,10 @@ export type NetworkContractsConfig = {
         address: `0x${string}`;
         abi: typeof OptimisticP2P;
     };
+    faucet: {
+        address: `0x${string}`;
+        abi: typeof faucet;
+    };
     tokens: TokenContract[];
 };
 
@@ -33,6 +38,10 @@ export default {
         p2p: {
             address: MORPH_P2P_ADDRESS,
             abi: OptimisticP2P
+        },
+        faucet: {
+            address: "0x8C49Fd0b3E42DbAE0b13Fde81E3023c626E6f198",
+            abi: faucet
         },
         tokens: [
             {
@@ -63,6 +72,10 @@ export default {
         p2p: {
             address: '0x06E33C181394c4910D078F71855fF6c5ccA0f375',
             abi: OptimisticP2P
+        },
+        faucet: {
+            address: "0x1AE45424C98301e1D05e25fB4dbc748156aB3092",
+            abi: faucet
         },
         tokens: [
             {

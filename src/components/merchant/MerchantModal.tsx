@@ -86,7 +86,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
                     <InputWithSelect
                         label="Stake Amount"
                         initialCurrency="ETH"
-                        currencies={cryptoTokens}
+                        currencies={cryptoTokens as unknown as { symbol: string; name: string, icon: JSX.Element; id: `0x${string}` }[]}
                         onValueChange={(value) => console.log(value)}
                         value="1500"
                         readOnly

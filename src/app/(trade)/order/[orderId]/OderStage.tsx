@@ -9,12 +9,15 @@ import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount, useWriteContract } from "wagmi";
 import { OrderState } from "@/common/api/types";
+import { formatCurrency, formatTimesamp } from "@/lib/utils";
+import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
+import ModalAlert from "@/components/modals";
 
 function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: () => void }) {
   const { indexerUrl, p2p } = useContracts();
   const account = useAccount();
-  const { writeContractAsync } = useWriteContract();
-  const { data: order, error: orderError } = useQuery({
+  const { writeContractAsync, isPending } = useWriteContractWithToast();
+  const { data: order, error: orderError, refetch } = useQuery({
     queryKey: ["order", orderId],
     queryFn: () => fetchOrder(indexerUrl, orderId),
   });
@@ -24,47 +27,61 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
     enabled: !!order,
   });
 
-  const handleTransferFunds = async () => {
+  const handlePayOrder = async () => {
     console.log("Transfer funds");
-    const txHash = await writeContractAsync({
+    const txHash = await writeContractAsync(
+      {},
+      {
       address: p2p.address,
       abi: p2p.abi,
       functionName: "payOrder",
       args: [BigInt(orderId)],
-    });
+    }, {
+      onSuccess: () => refetch(),
+    }
+  );
     console.log("Transaction Hash", txHash);
   };
 
   const handleReleaseFunds = async () => {
     console.log("Release funds");
-    const txHash = await writeContractAsync({
+    const txHash = await writeContractAsync({},{
       address: p2p.address,
       abi: p2p.abi,
       functionName: "releaseOrder",
       args: [BigInt(orderId)],
-    });
+    }, {
+      onSuccess: () => refetch(),
+    }
+  );
     console.log("Transaction Hash", txHash);
   };
 
   const handleAcceptOrder = async () => {
     console.log("Accept order");
-    const txHash = await writeContractAsync({
+    const txHash = await writeContractAsync({},{
       address: p2p.address,
       abi: p2p.abi,
       functionName: "acceptOrder",
       args: [BigInt(orderId)],
-    });
+    }, {
+      onSuccess: () => refetch(),
+    }
+  );
     console.log("Transaction Hash", txHash);
   };
 
   const handleCancelOrder = async () => {
     console.log("Cancel Order");
-    const txHash = await writeContractAsync({
+    const txHash = await writeContractAsync({},{
       address: p2p.address,
       abi: p2p.abi,
       functionName: "cancelOrder",
       args: [BigInt(orderId)],
-    });
+    }, {
+      onSuccess: () => refetch(),
+    }
+  );
     console.log("Transaction Hash", txHash);
   };
 
@@ -76,22 +93,31 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   const isTrader = order.trader.id.toLowerCase() === account.address?.toLowerCase();
   const isMerchant = order.offer.merchant.id.toLowerCase() === account.address?.toLowerCase();
 
+  const isBuyer = ((order.offer.offerType === offerTypes.buy) && isTrader) || ((order.offer.offerType === offerTypes.sell) && isMerchant);
+
+  console.log("Is Buyer", isBuyer);
+
   const getButtonConfig = () => {
     if (!order) return { text: "", onClick: () => {}, disabled: true };
 
-    const isBuyer = order.offer.offerType === offerTypes.sell && isTrader;
-    const isSeller = !isBuyer;
+  
 
     switch (order.status) {
       case OrderState.pending:
         if (isBuyer) {
-          return { text: "Waiting for Merchant", onClick: handleTransferFunds, disabled: true };
+          if (order.offer.offerType === offerTypes.buy) {
+            return { text: "Waiting for Merchant to Accept", onClick: () => {}, disabled: true };
+          }
+          else return { text: "Transfer funds", onClick: handlePayOrder, disabled: false };
         } else {
-          return { text: "Accept Order", onClick: handleAcceptOrder, disabled: false };
+          if (order.offer.offerType === offerTypes.sell) {
+            return { text: "Waiting for Buyer to Pay", onClick: () => {}, disabled: true };
+          }
+          return { text: "Mark Paid", onClick: handlePayOrder, disabled: false };
         }
       case OrderState.accepted:
         if (isBuyer) {
-          return { text: "Mark Paid", onClick: handleTransferFunds, disabled: false };
+          return { text: "Mark Paid", onClick: handlePayOrder, disabled: false };
         } else {
           return { text: "Waiting for Buyer to Make Payment", onClick: () => {}, disabled: true };
         }
@@ -126,6 +152,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
 
 
   const { text, onClick, disabled } = getButtonConfig();
+  const buyAmount = formatCurrency(Number(order?.quantity) * Number(order?.offer.rate), isBuyer ? order.offer.currency.currency : order.offer.token.symbol)
+  const sellAmount = formatCurrency(Number(order?.quantity), isBuyer ? order?.offer.token.symbol : order.offer.currency.currency)
 
   return (
     <>
@@ -153,7 +181,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
             </div>
             <div className="flex flex-row items-center space-x-2">
               <span className="text-gray-500">Date created:</span>
-              <span className="text-black text-sm">{order?.blockTimestamp}</span>
+              <span className="text-black text-sm">{formatTimesamp(order?.blockTimestamp)}</span>
             </div>
           </div>
         </div>
@@ -167,7 +195,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
                 <div className="text-sm text-gray-600 font-light">Amount</div>
                 <div className="text-green-700 text-lg font-medium">
-                  {Number(order?.quantity) * Number(order?.offer.rate)}
+                  {isBuyer ? buyAmount : sellAmount}
                 </div>
               </div>
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
@@ -176,7 +204,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
               </div>
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
                 <div className="text-sm text-gray-600 font-light">Receive Quantity</div>
-                <div className="text-gray-700 text-lg font-light">{order?.quantity}</div>
+                <div className="text-gray-700 text-lg font-light">{isBuyer? sellAmount : buyAmount}</div>
               </div>
             </div>
             <div>
@@ -203,13 +231,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
               </p>
             </div>
             <div className="flex flex-col lg:flex-row gap-6">
-              <Button text={text} className="bg-[#000000] text-white rounded-xl px-4 py-2" onClick={onClick} disabled={disabled} />
-              {order.status === OrderState.pending && (
-                <Button text="Cancel Order" className="bg-gray-50 text-black rounded-xl px-4 py-2" onClick={handleCancelOrder} />
-              )}
-              {toggleExpand && (
-                <Button text="Minimize" className="bg-gray-50 text-black rounded-xl px-4 py-2" onClick={toggleExpand} />
-              )}
+              <Button loading ={isPending} text={text} className={`${disabled ? "bg-slate-100 text-gray-500" :"bg-[#000000] text-white"}  rounded-xl px-4 py-2`} onClick={onClick} disabled={disabled} />
+                {order.status === OrderState.pending  && (
+                <Button text="Cancel Order" className="bg-red-200 text-black rounded-xl px-4 py-2 hover:bg-red-300" onClick={handleCancelOrder} />
+                )}
+              
             </div>
           </div>
         </div>

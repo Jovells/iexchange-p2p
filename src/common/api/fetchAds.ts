@@ -33,7 +33,7 @@ export async function fetchAds(indexerUrl: string, options?: {
     amount
   } = options || {};
 
-  const realAmount = amount && (parseFloat(amount) * 10 ** 18).toString();
+  const realAmount = amount ? (parseFloat(amount) * 10 ** 18).toString() :  undefined;
 
   const operation = constructAdsQuery({
     first: quantity,
@@ -80,7 +80,7 @@ export function constructAdsQuery(params: {
 
 
   const whereClauses = options.map((option) => {
-    if (!option.value) {
+    if (option.value === null || option.value === undefined) {
       return undefined;
     }
     return `${option.name}: $${option.name}`;
@@ -88,7 +88,7 @@ export function constructAdsQuery(params: {
   }).filter(Boolean).join(", ");
 
   const queryVariables = options.map((option) => {
-    if (!option.value) {
+    if (option.value === null || option.value === undefined) {
       return undefined;
     }
     variables[option.name] = option.value;

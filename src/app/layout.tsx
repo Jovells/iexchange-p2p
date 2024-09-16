@@ -7,6 +7,7 @@ import TopLoader from "@/components/loader/TopLoader";
 import { Metadata } from "next/types";
 import { Inter } from "next/font/google";
 import ErrorBoundary from "@/components/error/ErrorBoundary";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +34,7 @@ export default async function RootLayout({
           <SessionProvider refetchInterval={0} session={session}>
             <WalletProvider>
               <ModalContextProvider>
+                <Toaster/>
                 {children}
                 <ModalManager />
               </ModalContextProvider>

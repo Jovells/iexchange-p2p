@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, Suspense, useState } from "react";
+import React, { Fragment, Suspense, useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ChevronsUpDown, Filter, MoveVertical } from "lucide-react";
 import WalletConnectSection from "@/components/sections/WalletConnectSection";
@@ -20,10 +20,6 @@ const Faqs = React.lazy(() => import('@/components/sections/Faqs'));
 const P2PAds = React.lazy(() => import('./order/P2PAds'));
 const InputAmount = React.lazy(() => import('@/components/ui/InputWithSelect'));
 const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect'));
-
-
-import MainNav from "@/components/layout/navbar";
-import SubNav from "@/components/layout/navbar/SubNav";
 import TradeLayout from "./TradeLayout";
 import Loader from "@/components/loader/Loader";
 
@@ -78,14 +74,18 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const handleTabChange = (
     tab: "buy" | "sell" | string,
   ) => {
-    const fiat: string = currencyAmount.currency || "CEDIH"
-    const query = tab
-      ? `trade=${tab}&crypto=${selectedCrypto?.symbol}&fiat=${fiat}`
-      : `crypto=${selectedCrypto?.symbol}&fiat=${fiat}`;
 
-    router.push(`${pathname}?${query}`);
     setActiveTab(tab);
   };
+
+  useEffect(() => {
+    const fiat: string = currencyAmount.currency || "CEDIH"
+    const query = activeTab
+    ? `trade=${activeTab}&crypto=${selectedCrypto?.symbol || "RMP" }&fiat=${fiat}`
+    : `crypto=${selectedCrypto?.symbol}&fiat=${fiat}`;
+  router.push(`${pathname}?${query}`);
+  
+  }, [selectedCrypto, activeTab]);
 
   const handleOpenChainModal = () => {
     console.log("open chain modal", openChainModal);
@@ -97,7 +97,6 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   if (!isAvailable) {
     return null;
   }
-
 
   return (
     <TradeLayout>
@@ -241,6 +240,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
             placeholder="Enter amount"
             initialCurrency={currencies[0].symbol}
             currencies={currencies}
+            //@ts-ignore
             onValueChange={(value: { currency: string; amount: string, id: `0x${string}` }) => {
               setCurrencyAmount(value);
               console.log(value)

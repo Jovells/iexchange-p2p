@@ -11,6 +11,7 @@ import Button from "@/components/ui/Button";
 import { useContracts } from '@/common/contexts/ContractContext';
 import { useAccount } from 'wagmi';
 import TradeLayout from '../TradeLayout';
+import { Offer } from '@/common/api/types';
 
 
 const columns: any = [
@@ -42,11 +43,7 @@ const columns: any = [
   },
 ];
 
-interface Props {
-  offerType: string;
-  merchant?: string;
-}
-const MyAds: FC<Props> = () => {
+const MyAds = () => {
   const { indexerUrl } = useContracts();
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
@@ -63,7 +60,7 @@ const MyAds: FC<Props> = () => {
   const { isPending, isError, error, data, isFetching, isPlaceholderData } =
     useQuery({
       queryKey: ["ads", currentPage, offerType, { merchant: account.address }],
-      queryFn: () => fetchAds(indexerUrl, currentPage, offerType, {
+      queryFn: () => fetchAds(indexerUrl, { page :currentPage, offerType, 
         merchant: account.address?.toLowerCase()
       }),
       // placeholderData: keepPreviousData,

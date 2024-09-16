@@ -79,17 +79,7 @@ export type Order = {
   orderType: number;
   quantity: string;
   status: OrderState;
-  offer: {
-    merchant: Merchant;
-    id: string;
-    currency: Currency;
-    rate: string;
-    paymentMethod: {
-      method: string;
-      id: string;
-    }
-    offerType: OfferType;
-  };
+  offer: Offer;
   trader: {
     id: `0x${string}`;
   };

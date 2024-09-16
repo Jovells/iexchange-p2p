@@ -18,7 +18,7 @@ const Tabs: FC<Props> = ({ onTabChange }) => {
             <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl p-1 min-w-[150px]">
                 <button
                     type="button"
-                    onClick={() => handleTabChange("Buy")}
+                    onClick={() => handleTabChange("sell")}
                     className={`w-auto rounded-xl text-center text-md py-1 px-6 ${activeTab.toLowerCase() === "buy"
                         ? "text-white bg-blue-500"
                         : "text-gray-600"
@@ -26,7 +26,7 @@ const Tabs: FC<Props> = ({ onTabChange }) => {
                     I want to Buy
                 </button>
                 <button
-                    onClick={() => handleTabChange("Sell")}
+                    onClick={() => handleTabChange("buy")}
                     className={`w-auto rounded-xl text-center text-md py-1 px-6 ${activeTab.toLowerCase() === "sell"
                         ? "text-white bg-blue-500"
                         : "text-gray-600"

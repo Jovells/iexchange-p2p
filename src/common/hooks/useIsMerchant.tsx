@@ -7,15 +7,6 @@ const useIsMerchant = () => {
     const { indexerUrl } = useContracts();
     const { isConnected, address } = useAccount();
 
-    // Return default values if not connected
-    if (!isConnected || !address) {
-        return {
-            isMerchant: false,
-            isLoading: false,
-            isError: false,
-            error: null,
-        };
-    }
 
     const { data: account, error, isLoading, isError } = useQuery({
         queryKey: ['merchantAccount', indexerUrl, address],
@@ -24,6 +15,17 @@ const useIsMerchant = () => {
         retry: 1,
         refetchOnWindowFocus: false,
     });
+
+        // Return default values if not connected
+        if (!isConnected || !address) {
+            return {
+                isMerchant: false,
+                isLoading: false,
+                isError: false,
+                error: null,
+            };
+        }
+    
 
     const isMerchant = account?.account?.isMerchant || false;
 

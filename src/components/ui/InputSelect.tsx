@@ -81,6 +81,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                         <div
                             key={option.value}
                             className="flex justify-between p-2 border-b last:border-b-0 hover:bg-gray-100"
+                            //@ts-ignore
                             onClick={() => handleSelect(option.value)}
                         >
                             <div className="flex items-center space-x-4">

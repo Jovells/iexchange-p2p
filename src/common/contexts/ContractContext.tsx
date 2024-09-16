@@ -8,6 +8,7 @@ import { Chain } from "viem";
 
 interface ContractsContextType {
   p2p: NetworkContractsConfig["p2p"];
+  faucet: NetworkContractsConfig["faucet"];
   tokens: TokenContract[];
   indexerUrl: string;
   currentChain: Chain
@@ -35,9 +36,10 @@ export const ContractsProvider: FC<{ children: ReactNode }> = ({
   const p2p = contracts[chainId].p2p;
   const tokens = contracts[chainId].tokens;
   const indexerUrl = contracts[chainId].indexerUrl;
+  const faucet = contracts[chainId].faucet;
 
   return (
-    <ContractsContext.Provider value={{ p2p, tokens, indexerUrl, currentChain }}>
+    <ContractsContext.Provider value={{ p2p, faucet, tokens, indexerUrl, currentChain }}>
       {children}
     </ContractsContext.Provider>
   );

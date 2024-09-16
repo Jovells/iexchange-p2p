@@ -15,7 +15,7 @@ interface InputSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
   initialCurrency?: string;
   initialAmount?: any;
   currencies: Currency[];
-  onValueChange?: (value: { currency: string; amount: string, id: `0x${string}` }) => void;
+  onValueChange?: (value: { currency: string; amount: string, id: `0x${string}` | null }) => void;
   readOnly?: boolean;
   placeholder?: string;
   selectIsReadOnly?: boolean;
@@ -34,7 +34,7 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
   ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [insideValue, setValue] = useState({
+  const [insideValue, setValue] = useState<{ currency: string; amount: string, id: `0x${string}` | null }>({
     currency: initialCurrency,
     amount: initialAmount,
     id: currencies[0].id
@@ -45,7 +45,9 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
 
   const handleSelect = (currency: Currency) => {
     setValue((prevState) => {
-      const newValue = { ...prevState, currency: currency.symbol, id: currency.id };
+      const newCurrencySymbol = prevState.currency === currency.symbol ? "" : currency.symbol;
+      const newCurrencyId = prevState.currency === currency.symbol ? null : currency.id;
+      const newValue = { ...prevState, currency: newCurrencySymbol, id: newCurrencyId };
       if (onValueChange) {
         onValueChange(newValue);
       }
@@ -110,7 +112,7 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
           <div className="flex items-center space-x-1" onClick={toggleDropdown}>
             {currencies.find((c) => c.symbol === valueToDisplay.currency)
               ?.icon}
-            <span>{valueToDisplay.currency}</span>
+            <span>{valueToDisplay.currency || <span className=" text-gray-500 mb-1">All</span>}</span>
             {currencies.length > 1 && <ChevronDown />}
           </div>
         </div>
