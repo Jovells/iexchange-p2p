@@ -65,7 +65,7 @@ export default {
         ]
     },
     1802203764: {
-        indexerUrl: "https://query.kakarot.protofire.io/subgraphs/id/QmQ7Cgqc2ttm6yRSsxznFscr4XwwvG5mUVV62KEgb416SC",
+        indexerUrl: "https://query.kakarot.protofire.io/subgraphs/name/kakarot/iexchange",
         name: "Kakarot Sepolia",
         explorerUrl: "https://sepolia.kakarotscan.org",
         rpcUrl: "https://sepolia-rpc.kakarot.org",
