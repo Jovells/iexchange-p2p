@@ -1,12 +1,11 @@
 'use client'
 
-import { columns, data } from '@/common/data/table-data'
 import CustomTab from '@/common/tab'
-import GridTable from '@/components/datatable'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import OrdersTable from './table'
 import { OrderState } from '@/common/api/types'
+import DashboardLayout from '../../DashboardLayout'
 
 const P2POrderHistory = () => {
   const route = useRouter()
@@ -30,12 +29,14 @@ const P2POrderHistory = () => {
   ]
 
   return (
-    <div className='py-12 pt-0 flex flex-col gap-4'>
-      <div className="w-full lg:w-fit">
-        <CustomTab tabs={tabs as any} activeTab={activeTab} onTabChange={handleTabChange} />
+    <DashboardLayout>
+      <div className='py-12 pt-0 flex flex-col gap-4'>
+        <div className="w-full lg:w-fit">
+          <CustomTab tabs={tabs as any} activeTab={activeTab} onTabChange={handleTabChange} />
+        </div>
+        <OrdersTable status={activeTab} />
       </div>
-      <OrdersTable status={activeTab} />
-    </div>
+    </DashboardLayout>
   )
 }
 

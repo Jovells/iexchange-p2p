@@ -1,3 +1,5 @@
+import "@/styles/globals.css";
+import "@/styles/custom.css";
 import { WalletProvider } from "@/common/contexts";
 import ModalManager from "@/components/shared/modal/Modal";
 import { ModalContextProvider } from "@/common/contexts/ModalContext";
