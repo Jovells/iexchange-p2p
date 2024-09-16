@@ -1,9 +1,11 @@
 'use client'
 
+import { Merchant } from '@/common/api/types';
+import { shortenAddress } from '@/lib/utils';
 import { Send } from 'lucide-react';
 import React, { useState } from 'react';
 
-const ChatWithMerchant = () => {
+const ChatWithMerchant = ({otherParty}:{otherParty: {id: `0x${string}`, name?: string}}) => {
     const [messages, setMessages] = useState([
         { sender: 'Merchant', text: 'Hi there! How can I help you?' }
     ]);
@@ -31,7 +33,7 @@ const ChatWithMerchant = () => {
         <div className="w-full h-full border rounded-xl flex flex-col">
 
             <div className="w-full bg-gray-100 p-3 rounded-t-xl">
-                Merchant name
+                {otherParty.name} {shortenAddress(otherParty.id)}
             </div>
 
             <div className="flex-1 p-3 overflow-y-auto">

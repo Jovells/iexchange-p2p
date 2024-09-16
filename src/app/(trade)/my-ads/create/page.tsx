@@ -3,7 +3,6 @@
 import Tabs from '@/components/tabs'
 import Button from '@/components/ui/Button'
 import InputSelect from '@/components/ui/InputSelect'
-import InputWithSelect from '@/components/ui/InputWithSelect'
 import Input from '@/components/ui/input'
 import React, { useState } from 'react'
 import RenderAddedPaymentMethod from './RenderAddedPaymentMethod'
@@ -17,6 +16,28 @@ import { useRouter } from 'next/navigation'
 import { useAccount, useWriteContract } from 'wagmi'
 import storeAccountDetails from '@/common/api/storeAccountDetails'
 import Loader from '@/components/loader/Loader'
+import { z } from 'zod'
+import toast from 'react-hot-toast'
+
+const formSchema = z.object({
+  token: z.string().startsWith('0x'),
+  currency: z.string().min(1, 'Currency is required'),
+  minOrder: z.bigint().positive('Minimum order must be positive'),
+  maxOrder: z.bigint().positive('Maximum order must be positive'),
+  paymentMethod: z.string().min(1, 'Payment method is required'),
+  accountName: z.string().min(1, 'Account name is required'),
+  accountNumber: z.string().min(1, 'Account number is required'),
+  timeLimit: z.number().positive('Time limit must be positive'),
+  terms: z.string().optional(),
+  depositAddress: z.string().startsWith('0x'),
+  rate: z.bigint().positive('Rate must be positive'),
+  offerType: z.enum(['buy', 'sell']),
+}).refine((data) => data.minOrder <= data.maxOrder, {
+  message: "Minimum order cannot be higher than maximum order",
+  path: ["minOrder"],
+});
+
+type FormData = z.infer<typeof formSchema>
 
 const CreateAd = () => {
     const [activeTab, setActiveTab] = useState<"buy" | "sell" >("buy");
@@ -25,6 +46,7 @@ const CreateAd = () => {
     const account = useAccount();
     const [submitting, setSubmitting] = useState(false);
     const {writeContractAsync} = useWriteContract()
+    const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
 
     const {data: currencies } = useQuery({
         queryKey: ['currencies'],
@@ -43,12 +65,11 @@ const CreateAd = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmitting(true);
-        console.log('submitting', submitting);
+        setErrors({});
         const formData = new FormData(e.currentTarget);
         const data = {
             token: formData.get('token') as `0x${string}`,
             currency: formData.get('currency') as string,
-            amount: Number(formData.get('amount')),
             minOrder: BigInt(formData.get('minOrder') as string) * BigInt(10**18),
             maxOrder: BigInt(formData.get('maxOrder') as string) * BigInt(10**18),
             paymentMethod: formData.get('paymentMethod') as string,
@@ -58,18 +79,37 @@ const CreateAd = () => {
             terms: formData.get('terms') as string,
             depositAddress: formData.get('depositAddress') as `0x${string}`,
             rate: BigInt(formData.get('rate') as string),
-            offerType: formData.get('offerType') as string,
+            offerType: activeTab,
         };
-        console.log('data', data);
+
+        try {
+            formSchema.parse(data);
+        } catch (error) {
+            console.log(error)
+            if (error instanceof z.ZodError) {
+                const fieldErrors: Partial<Record<keyof FormData, string>> = {};
+                error.errors.forEach((err) => {
+                    if (err.path) {
+                        fieldErrors[err.path[0] as keyof FormData] = err.message;
+                    }
+                });
+                setErrors(fieldErrors);
+                setSubmitting(false);
+                toast.error('Please correct the errors in the form');
+                return;
+            }
+        }
+
         const { token, currency, minOrder, maxOrder, paymentMethod, accountName, accountNumber, timeLimit, terms, depositAddress, rate, offerType } = data;
         const accountDetails = {
             name: accountName,
             number: accountNumber,
+            terms: terms,
+            timeLimit: timeLimit,
             address: account?.address?.toLowerCase() as string,
         }
         
         const handleContractWrite = async () => {
-
             try {
                 const accountHash = await storeAccountDetails(accountDetails);
                 const args = [
@@ -102,10 +142,11 @@ const CreateAd = () => {
                 ],
             });
             console.log('Transaction successful:', response);
+            toast.success('Ad created successfully');
             router.push('/my-ads'); // Redirect or handle success
             } catch (error) {
             console.error('Transaction failed:', error);
-            // Handle error (e.g., show a notification)
+            toast.error('Failed to create ad. Please try again.');
             } finally {
             setSubmitting(false);
             }
@@ -130,37 +171,44 @@ const CreateAd = () => {
             <form onSubmit={handleSubmit} className="shadow-lg border border-gray-200 p-10 py-10 bg-white rounded-xl flex flex-col gap-10">
                 <div className='flex flex-col gap-8'>
                     <h1 className='text-blue-500 font-bold'>Type and Price</h1>
-                    <div className='flex flex-row items-start justify-center gap-6'>
-                        <InputSelect name='token' options={tokens?.map(token =>({
-                            label: token.name,
-                            value: token.id
-                            })) || []} label='Asset' />
-                            
-                        <InputSelect name='currency' options ={currencies?.map(currency => ({
-                            label: currency.currency,
-                            symbol: currency.currency,
-                            name: currency.currency,
-                            value: currency.currency
-                        })) || []} label='Fiat' />
-                        <Input name='rate' label='Rate' />
+                    <div className='flex flex-row items-start   justify-start gap-6'>
+                        <div className='flex flex-col'>
+                            <InputSelect name='token' options={tokens?.map(token =>({
+                                label: token.name,
+                                value: token.id
+                                })) || []} label='Asset' />
+                            {errors.token && <span className="text-red-500 text-sm">{errors.token}</span>}
+                        </div>
+                        <div className='flex flex-col'>
+                            <InputSelect name='currency' options ={currencies?.map(currency => ({
+                                label: currency.currency,
+                                symbol: currency.currency,
+                                name: currency.currency,
+                                value: currency.currency
+                            })) || []} label='Fiat' />
+                            {errors.currency && <span className="text-red-500 text-sm">{errors.currency}</span>}
+                        </div>
+                        <div className='flex flex-col'>
+                            <Input name='rate' label='Rate' />
+                            {errors.rate && <span className="text-red-500 text-sm">{errors.rate}</span>}
+                        </div>
                     </div>
                 </div>
                 <div className='flex flex-col gap-8'>
                     <h1 className='text-blue-500 font-bold'>Amount and Method</h1>
-                    <div className='flex flex-col gap-2'>
-                       
-                    </div>
                     <div className='flex flex-col gap-3'>
                         <span className='text-gray-700 font-light'>Order Limit</span>
                         <div className='flex flex-row items-start gap-6'>
                             <div className='flex flex-col gap-2 flex-1'>
-                                <div className='flex flex-row items-start justify-center gap-6'>
+                                <div className='flex flex-col'>
                                     <Input name='minOrder' label="Minimum" />
+                                    {errors.minOrder && <span className="text-red-500 text-sm">{errors.minOrder}</span>}
                                 </div>
                             </div>
                             <div className='flex flex-col gap-2 flex-1'>
-                                <div className='flex flex-row items-start justify-center gap-6'>
-                                    <Input name = "maxOrder" label="Maximum" />
+                                <div className='flex flex-col'>
+                                    <Input name="maxOrder" label="Maximum" />
+                                    {errors.maxOrder && <span className="text-red-500 text-sm">{errors.maxOrder}</span>}
                                 </div>
                             </div>
                         </div>
@@ -168,20 +216,23 @@ const CreateAd = () => {
                     <div className='flex flex-col gap-3'>
                         <span className='text-gray-700 font-light'>Payment Methods</span>
                         <div className='flex flex-row items-start gap-6'>
-                            <div className="flex-1">
-                                <InputSelect name = "paymentMethod" options={paymentMethods?.map(method => ({
+                            <div className="flex-1 flex flex-col">
+                                <InputSelect name="paymentMethod" options={paymentMethods?.map(method => ({
                                     label: method.method,
                                     value: method.method
                                 })) || []} label='Method' />
+                                {errors.paymentMethod && <span className="text-red-500 text-sm">{errors.paymentMethod}</span>}
                             </div>
                             <div className='flex flex-col gap-2 flex-1'>
-                                <div className='flex flex-row items-start justify-center gap-6'>
-                                    <Input name ='accountName' label="Account Name" />
+                                <div className='flex flex-col'>
+                                    <Input name='accountName' label="Account Name" />
+                                    {errors.accountName && <span className="text-red-500 text-sm">{errors.accountName}</span>}
                                 </div>
                             </div>
                             <div className='flex flex-col gap-2 flex-1'>
-                                <div className='flex flex-row items-start justify-center gap-6'>
-                                    <Input name = "accountNumber" label="Account Number" />
+                                <div className='flex flex-col'>
+                                    <Input name="accountNumber" label="Account Number" />
+                                    {errors.accountNumber && <span className="text-red-500 text-sm">{errors.accountNumber}</span>}
                                 </div>
                             </div>
                         </div>
@@ -197,17 +248,22 @@ const CreateAd = () => {
                             <RenderAddedPaymentMethod paymentMethod={[]} handleDelete={() => { }} />
                         </div>
                         
-                        <InputSelect name = "timeLimit" options={ TIME_LIMITS.map(timeLimit => ({
-                            label: timeLimit.label,
-                            value: timeLimit.value
-                        })) || []} label='Payment Time Limit' />
+                        <div className='flex flex-col'>
+                            <InputSelect name="timeLimit" options={ TIME_LIMITS.map(timeLimit => ({
+                                label: timeLimit.label,
+                                value: timeLimit.value
+                            })) || []} label='Payment Time Limit' />
+                            {errors.timeLimit && <span className="text-red-500 text-sm">{errors.timeLimit}</span>}
+                        </div>
                          <span className='text-gray-700 font-light'>Deposit Address</span>
-                        <div className='flex flex-row items-start justify-center gap-6'>
-                            <Input defaultValue={account.address} name = "depositAddress" label="Deposit Address" />
+                        <div className='flex flex-col'>
+                            <Input defaultValue={account.address} name="depositAddress" label="Deposit Address" />
+                            {errors.depositAddress && <span className="text-red-500 text-sm">{errors.depositAddress}</span>}
                         </div>
                         <div className='flex flex-col gap-4 my-4'>
                             <span className='text-sm text-gray-500'>Terms (Optional)</span>
-                            <textarea name = "terms" rows={10} className='resize-none w-full border border-gray-200 rounded-xl' />
+                            <textarea name="terms" rows={10} className='resize-none w-full border p-5 border-gray-200 rounded-xl' />
+                            {errors.terms && <span className="text-red-500 text-sm">{errors.terms}</span>}
                         </div>
                     </div>
                     <div className="flex flex-row justify-end gap-6">
@@ -219,7 +275,7 @@ const CreateAd = () => {
                             onClick={()=>{ router.back()}}
                         />
                         <Button
-                        loading={submitting}
+                            loading={submitting}
                             text="Add Post"
                             icon='/images/icons/add-circle.png'
                             iconPosition="right"

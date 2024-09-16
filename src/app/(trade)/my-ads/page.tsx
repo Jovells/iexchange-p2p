@@ -10,7 +10,7 @@ import { fetchAds } from "@/common/api/fetchAds";
 import Button from "@/components/ui/Button";
 import { useContracts } from '@/common/contexts/ContractContext';
 import { useAccount } from 'wagmi';
-import TradeLayout from '../TradeLayout';
+import TradeLayout from '../layout';
 import { Offer } from '@/common/api/types';
 
 
@@ -76,7 +76,7 @@ const MyAds = () => {
   }
 
   const actions = [
-    { onClick: (row: any) => router.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <Eye /> },
+    { onClick: (row: any) => router.push('/order/order'), classNames: "bg-transparent text-black", icon: <Eye /> },
     { onClick: (row: any) => router.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <Trash2 /> },
     { onClick: (row: any) => router.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <CircleCheck /> },
   ]
@@ -87,13 +87,11 @@ const MyAds = () => {
   }
 
   return (
-    <TradeLayout>
       <div className="container mx-auto p-0 py-4">
         <div className='py-12 flex flex-col gap-10'>
           <GridTable columns={columns} data={data?.offers || []} actions={actions} itemsPerPage={50} />
         </div>
       </div>
-    </TradeLayout>
   );
 };
 

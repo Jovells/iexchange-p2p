@@ -9,9 +9,12 @@ export const shortenAddress = (address: string | any, chars = 4): string => {
   return `${address.slice(0, chars + 2)}...${address.slice(-chars)}`;
 }
 
-export const formatTimesamp = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
-  return date.toDateString();
+export const formatBlockTimesamp = (timestamp: number | BigInt): string => {
+  const date = new Date(Number(timestamp) * 1000);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear().toString();
+  return `${day}/${month}/${year}`;
 }
 
 //esport a function which takes the a number and amount and return a currency value. juse prepend the currenty with the string, and divide the number by 10^18  to two decimal places

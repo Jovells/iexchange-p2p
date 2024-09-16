@@ -49,30 +49,46 @@ export async function fetchOrders(indexerUrl: string,  options?: OrderOptions) {
   const operation = `
   query orders($first: Int!, $skip: Int, $orderType: Int, $trader: String, $merchant: String, $status: String) {
     orders(first: $first, skip: $skip, where: { ${orderType ? 'orderType: $orderType,' : ''}  ${orClause} ${status ? ', status: $status' : ''} }) {    
+      accountHash
+      depositAddress {
+        id
+      }
+      id
       orderType
       quantity
-      blockTimestamp
-      id
+      status
+      offer {
+        id
+        maxOrder
+        minOrder
+        rate
+        offerType
+        depositAddress {
+          id
+        }
+        token {
+          symbol
+          id
+        }
+        active
+        merchant {
+          id
+          isMerchant
+        }
+        paymentMethod {
+          id
+          method
+        }
+        currency {
+          id
+          currency
+          isAccepted
+        }
+      }
       trader {
         id
       }
-      offer {
-        rate
-        currency {
-        currency
-        id
-        isAccepted
-      }
-      paymentMethod {
-          id
-          method
-          isAccepted
-        }
-      merchant {
-        id
-      }
-      }
-      accountHash
+      blockTimestamp
     }
   }
 `;
@@ -94,5 +110,5 @@ export async function fetchOrders(indexerUrl: string,  options?: OrderOptions) {
       );
       thisMerchantOrder!.offer.merchant.name = data.name;
     });
-    return graphdata;
+    return graphdata.orders;
   }

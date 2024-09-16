@@ -156,13 +156,12 @@ const authOptions: NextAuthConfig = {
             JSON.parse((credentials?.message || "{}") as string)
           );
           const id = siwe.address;
-          const nextAuthUrl = new URL(process.env.NEXTAUTH_URL as string);
-
+          const host = req.headers.get('host') as string;
           let nonce = extractCsrfToken(req);
 
           const result = await siwe.verify({
             signature: (credentials?.signature || "") as string,
-            domain: nextAuthUrl.host,
+            domain: host,
             nonce,
           });
           

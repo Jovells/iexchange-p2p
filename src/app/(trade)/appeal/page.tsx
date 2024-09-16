@@ -6,7 +6,7 @@ import Button from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import Stake from './stake';
-import TradeLayout from '../TradeLayout';
+import TradeLayout from '../layout';
 
 const columns: any = [
   {

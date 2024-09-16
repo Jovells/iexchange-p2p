@@ -20,7 +20,8 @@ export async function fetchAds(indexerUrl: string, options?: {
   tokenId?: string, 
   currency?: string, 
   amount?: string, 
-  paymentMethod?: string
+  paymentMethod?: string,
+  isActive?: boolean
 }) {
   const {
     quantity = 10,
@@ -30,7 +31,8 @@ export async function fetchAds(indexerUrl: string, options?: {
     merchant,
     paymentMethod,
     currency,
-    amount
+    amount,
+    isActive
   } = options || {};
 
   const realAmount = amount ? (parseFloat(amount) * 10 ** 18).toString() :  undefined;
@@ -42,6 +44,7 @@ export async function fetchAds(indexerUrl: string, options?: {
       { name: "offerType", value: OFFER_TYPES[offerType as keyof typeof OFFER_TYPES], type: "Int" },
       { name: "token", value: tokenId, type: "String" },
       { name: "currency", value: currency, type: "String" },
+      { name: "active", value: isActive, type: "Boolean" },
       { name: "merchant", value: merchant, type: "String" },
        { name: "maxOrder_gt", value: realAmount, type: "String" },
        { name: "minOrder_lt", value: realAmount, type: "String" },
@@ -72,7 +75,7 @@ export async function fetchAds(indexerUrl: string, options?: {
 export function constructAdsQuery(params: {
   first: number;
   skip: number;
-  options: { name: string, value: string | number |undefined, type: string }[];
+  options: { name: string, value: string | number | Boolean | undefined, type: string }[];
 }) {
   const { first, skip, options } = params;
 

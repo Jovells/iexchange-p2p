@@ -15,7 +15,7 @@ export type Token = {
 }
 
 export type Merchant = {
-  id: string | `0x${string}`;
+  id: `0x${string}`;
   isMerchant: boolean;
   name?: string;
 }

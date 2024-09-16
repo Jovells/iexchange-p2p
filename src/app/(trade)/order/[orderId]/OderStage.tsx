@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount, useWriteContract } from "wagmi";
 import { OrderState } from "@/common/api/types";
-import { formatCurrency, formatTimesamp } from "@/lib/utils";
+import { formatCurrency, formatBlockTimesamp } from "@/lib/utils";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import ModalAlert from "@/components/modals";
 
@@ -113,7 +113,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
           if (order.offer.offerType === offerTypes.sell) {
             return { text: "Waiting for Buyer to Pay", onClick: () => {}, disabled: true };
           }
-          return { text: "Mark Paid", onClick: handlePayOrder, disabled: false };
+          return { text: "Accept Order", onClick: handleAcceptOrder, disabled: false };
         }
       case OrderState.accepted:
         if (isBuyer) {
@@ -181,14 +181,14 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
             </div>
             <div className="flex flex-row items-center space-x-2">
               <span className="text-gray-500">Date created:</span>
-              <span className="text-black text-sm">{formatTimesamp(order?.blockTimestamp)}</span>
+              <span className="text-black text-sm">{formatBlockTimesamp(order?.blockTimestamp)}</span>
             </div>
           </div>
         </div>
       </div>
       <div className="container mx-auto px-0 py-4">
         <div className="w-full h-[500px] grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
-          <ChatWithMerchant />
+          <ChatWithMerchant otherParty = {isTrader? order.offer.merchant : order.trader} />
           <div className="p-6 h-full shadow-lg border border-gray-300 rounded-xl space-y-6">
             <h2 className="text-lg text-gray-500">Order Info</h2>
             <div className="flex flex-col justify-start items-start lg:flex-row lg:justify-between gap-3 lg:gap-10 mt-6">

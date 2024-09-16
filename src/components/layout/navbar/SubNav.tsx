@@ -1,5 +1,5 @@
 'use client'
-
+import { OrdersDropdown } from './OrdersDropdown';
 import IsVerifiedButton from "@/components/ui/IsVerifiedButton";
 import MenuDropdown from "../../ui/MenuDropdown";
 import Link from 'next/link';
@@ -77,14 +77,7 @@ const SubNav = () => {
                 icon="/images/icons/orders.png"
                 dropdownItems={[]}
             >
-                <div className="w-[400px] p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {items.map((item, index) => (
-                        <div key={index} className="border-b p-4">
-                            <h3 className="text-lg font-semibold">{item.label}</h3>
-                            <p className="text-gray-600">{item.value}</p>
-                        </div>
-                    ))}
-                </div>
+              <OrdersDropdown />
             </MenuDropdown>
             <MenuDropdown
                 title="Account"

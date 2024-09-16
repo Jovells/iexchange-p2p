@@ -20,7 +20,6 @@ const Faqs = React.lazy(() => import('@/components/sections/Faqs'));
 const P2PAds = React.lazy(() => import('./order/P2PAds'));
 const InputAmount = React.lazy(() => import('@/components/ui/InputWithSelect'));
 const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect'));
-import TradeLayout from "./TradeLayout";
 import Loader from "@/components/loader/Loader";
 
 interface P2PMarketProps { }
@@ -99,7 +98,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   }
 
   return (
-    <TradeLayout>
+    <>
       <WalletConnectSection />
       <div className="container mx-auto p-4 lg:p-0 lg:py-10 flex flex-col items-start space-y-4">
         <div className="flex flex-row items-start gap-4">
@@ -120,6 +119,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
         />
         <Suspense fallback={<Loader loaderType="text" className="mt-24" />}>
           <P2PAds offerType={activeTab}
+            isActive={true}
             paymentMethod={paymentMethods.find(method => method.method === paymentMethod)}
             amount={currencyAmount.amount}
             currency={currencies.find(c => c.id === currencyAmount.id)}
@@ -130,7 +130,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
           <Faqs />
         </Suspense>
       </div>
-    </TradeLayout>
+    </>
   );
 };
 

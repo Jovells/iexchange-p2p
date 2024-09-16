@@ -1,5 +1,4 @@
 'use client'
-
 import Link from "next/link";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import Button from "../../ui/Button";

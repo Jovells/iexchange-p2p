@@ -42,8 +42,9 @@ interface Props {
   paymentMethod?: PaymentMethod;
   currency?: PreparedCurrency;
   amount?: string;
+  isActive?: boolean;
 }
-const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod }) => {
+const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, isActive }) => {
   const {indexerUrl} = useContracts();
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
@@ -54,7 +55,7 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod }
 
   console.log("paymentMethod", paymentMethod);
 
-  const options = {page: currentPage, offerType, tokenId: token?.id, currency: currency?.id, amount, paymentMethod: paymentMethod?.id};
+  const options = {page: currentPage, isActive, offerType, tokenId: token?.id, currency: currency?.id, amount, paymentMethod: paymentMethod?.id};
 
   const { isPending, error, data } =
     useQuery({

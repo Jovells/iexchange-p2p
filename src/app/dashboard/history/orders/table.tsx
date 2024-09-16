@@ -95,7 +95,7 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({orderType, }) => {
         <ExpandableTable
           ref={tableRef}
           columns={columns}
-          data={data?.orders || []}
+          data={data || []}
           actions={actions}
           isLoading={isPending}
           pageSize={50}
