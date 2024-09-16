@@ -5,6 +5,7 @@ import CustomTab from '@/common/tab'
 import GridTable from '@/components/datatable'
 import { useRouter } from 'next/navigation'
 import React from 'react'
+import DashboardLayout from '../../DashboardLayout'
 
 const AppealedOrderHistory = () => {
   const route = useRouter()
@@ -28,12 +29,14 @@ const AppealedOrderHistory = () => {
   ]
 
   return (
-    <div className='py-12 pt-0 flex flex-col gap-4'>
-      <div className="w-full lg:w-fit">
-        <CustomTab tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
+    <DashboardLayout>
+      <div className='py-12 pt-0 flex flex-col gap-4'>
+        <div className="w-full lg:w-fit">
+          <CustomTab tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
+        </div>
+        <GridTable columns={columns} data={data} actions={actions} itemsPerPage={50} />
       </div>
-      <GridTable columns={columns} data={data} actions={actions} itemsPerPage={50} />
-    </div>
+    </DashboardLayout>
   )
 }
 

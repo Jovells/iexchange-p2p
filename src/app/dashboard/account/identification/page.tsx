@@ -1,8 +1,11 @@
 import React from 'react'
+import DashboardLayout from '../../DashboardLayout'
 
 const Identification = () => {
   return (
-    <div>Identification</div>
+    <DashboardLayout>
+      <div>Identification</div>
+    </DashboardLayout>
   )
 }
 
