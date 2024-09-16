@@ -9,6 +9,7 @@ import SideNav from "@/components/layout/SideNav";
 import Footer from "@/components/layout/footer";
 import { useState } from "react";
 import { Menu } from "lucide-react";
+import SubNav from "@/components/layout/navbar/SubNav";
 
 export default function DashboardLayout({
     children,
@@ -26,6 +27,7 @@ export default function DashboardLayout({
         <div className="flex flex-col min-h-screen">
             <ModalContextProvider>
                 <MainNav />
+                <SubNav />
                 <div className="lg:hidden px-4 py-2 bg-white text-gray-600 border-t">
                     <button onClick={toggleDrawer} className="text-gray-600 flex items-center">
                         <Menu className="mr-2 h-10 w-10" />
