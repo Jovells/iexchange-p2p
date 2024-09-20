@@ -5,12 +5,14 @@ import { shortenAddress } from '@/lib/utils';
 import { useModal } from '@/common/contexts/ModalContext';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
+import { useUser } from '@/common/contexts/UserContext';
 
 
 
 
 const WalletConnect = () => {
-    const { address: walletAddress, isConnected } = useAccount();
+    const { address: walletAddress } = useAccount();
+    const {session } = useUser();
     const { disconnect, isPending } = useDisconnect();
     const { showModal, hideModal } = useModal();
 
@@ -30,7 +32,7 @@ const WalletConnect = () => {
 
     return (
         <Fragment>
-            {isConnected ? (
+            {session.status === "authenticated" ? (
                 <div className="flex justify-between items-center space-x-2 text-black py-2">
                     <span>{shortenAddress(walletAddress)}</span>
                     <div onClick={() => disconnect()}>

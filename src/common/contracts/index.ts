@@ -5,11 +5,9 @@ import OptimisticP2P from "../abis/OptimisticP2P";
 import CediH from "../abis/CediH";
 import faucet from "../abis/Faucet";
 
-export const MORPH_P2P_ADDRESS = "0x1E7f97Fc8C240D2B26A42d9A50592Fcd78574B41";
-export const MORPH_CEDIH_ADDRESS = "0xE4052c1cCd27C049763fb42D58d612f3C79Bb9FC";
 
 export type TokenContract = {
-    address: string;
+    address: `0x${string}`;
     abi: typeof CediH;
     name: string;
     symbol: string;
@@ -36,7 +34,7 @@ export default {
         name: "Morph Holesky",
         rpcUrl: "https://rpc-quicknode-holesky.morphl2.io",
         p2p: {
-            address: MORPH_P2P_ADDRESS,
+            address: "0x1E7f97Fc8C240D2B26A42d9A50592Fcd78574B41",
             abi: OptimisticP2P
         },
         faucet: {
@@ -45,7 +43,7 @@ export default {
         },
         tokens: [
             {
-                address: "0x1E7f97Fc8C240D2B26A42d9A50592Fcd78574B41",
+                address: "0xE4052c1cCd27C049763fb42D58d612f3C79Bb9FC",
                 abi: CediH,
                 name: "CediH",
                 symbol: "CEDIH"
@@ -60,7 +58,7 @@ export default {
                 address: "0x1840BD3e5636Ab619B1A4399b1C60d71b9FEB3a3",
                 abi: CediH,
                 name: "RAMP",
-                symbol: "RAMP"
+                symbol: "RMP"
             }
         ]
     },
@@ -91,10 +89,10 @@ export default {
                 symbol: "TRK"
             },
             {
-                address: "address/0x39a7f0a342a0509C1aC248F379ba283e99c36Ae5",
+                address: "0x39a7f0a342a0509C1aC248F379ba283e99c36Ae5",
                 abi: CediH,
                 name: "RAMP",
-                symbol: "RAMP"
+                symbol: "RMP"
             }
         ]
     }

@@ -8,6 +8,7 @@ import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import { DASHBOARD_PAGE, MY_ADS_PAGE, ORDER_HISTORY_PAGE } from "@/common/page-links";
 import useIsMerchant from "@/common/hooks/useIsMerchant";
+import { useUser } from '@/common/contexts/UserContext';
 
 const menuLinks = [
     { href: "/", label: "P2P" },
@@ -40,16 +41,18 @@ const items = [
 
 const SubNav = () => {
 
-    const { isConnected } = useAccount();
+    const { session } = useUser();
     const [isMounted, setIsMounted] = useState(false);
     const { isMerchant, isLoading } = useIsMerchant()
+
+    const isAuthenticated = session?.status === "authenticated";
 
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
-    if (!isMounted || !isConnected) {
+    if (!isMounted || !isAuthenticated) {
         return null;
     }
 
@@ -82,10 +85,10 @@ const SubNav = () => {
             <MenuDropdown
                 title="Account"
                 icon="/images/icons/profile.png"
-                dropdownItems={isConnected ? accountLinks : []}
+                dropdownItems={isAuthenticated ? accountLinks : []}
             >
                 <WalletConnect />
-                {isConnected && <IsVerifiedButton />}
+                {isAuthenticated && <IsVerifiedButton />}
             </MenuDropdown>
         </div>
     );

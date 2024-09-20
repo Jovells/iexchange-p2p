@@ -2,10 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useContracts } from "../contexts/ContractContext";
 import { useAccount, useReadContract } from "wagmi";
 import { fetchAccount } from "../api/fetchAccount";
+import { useUser } from "../contexts/UserContext";
 
 const useIsMerchant = () => {
     const { p2p } = useContracts();
-    const { isConnected, address } = useAccount();
+    const { address } = useAccount();
+    const {session } = useUser();
 
     const {data: isMerchant, isError, isLoading, error} = useReadContract({
         address: p2p.address,
@@ -24,7 +26,7 @@ const useIsMerchant = () => {
 
 
         // Return default values if not connected
-        if (!isConnected || !address) {
+        if (session.status === "unauthenticated" || !address) {
             return {
                 isMerchant: false,
                 isLoading: false,

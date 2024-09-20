@@ -11,14 +11,10 @@ import { useAccount } from "wagmi";
 
 
 
-type User = {
-  uid: string;
-} | undefined ;
-
 type Session = {status: "authenticated" | "unauthenticated", jwt: string}
 
 interface UserContextType {
-  user: User;
+  address: `0x${string}` | undefined;
   session: Session;
   signUserOut: () => void;
   signUserIn: (firebaseToken: string) => void;
@@ -41,12 +37,10 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const auth = getAuth(app);
-  const [firebaseToken, setFirebaseToken] =  useState("");
   const [session, setSession]  = useState<Session>({status: auth.currentUser ? "authenticated" : "unauthenticated", jwt: "",}); 
-  const {address} = useAccount(); 
+  const {address: mixedCaseAddress} = useAccount(); 
 
-  const [user, setUser] = useState<User>();
-
+  const address = mixedCaseAddress?.toLocaleLowerCase() as `0x${string}` | undefined;
   
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
@@ -101,7 +95,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
         }
         const verifyJson = await verifyRes.json();
         console.log('Verify response:',verifyJson);
-        setFirebaseToken(verifyJson.token)
+        await signUserIn(verifyJson.token)
         return Boolean(verifyRes.ok);
       } catch (error) {
         console.log('Error verifying message:', error);
@@ -119,25 +113,6 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
     },
   });
   
-  
-
-useEffect(
-  () => {
-    console.log("session status", session.status);
-    if (firebaseToken && !auth.currentUser?.uid) {
-      console.log("signing in user");
-      signUserIn(firebaseToken);
-    }
-
-    if (session.status !== "authenticated" && auth.currentUser) {
-      console.log("signing out user");
-      signUserOut();
-    }
-
-
-  },
-  [session.jwt, firebaseToken]
-);
 
 
   const signUserIn = async (firebaseToken: string) => {
@@ -145,9 +120,6 @@ useEffect(
       const userCredential = await signInWithCustomToken(auth, firebaseToken);
       const jwt = await userCredential.user.getIdToken();
       setSession({status: "authenticated", jwt: jwt});
-      setUser({
-        uid: userCredential.user.uid,
-      });
       // ...
     } catch (error) {
       console.error(error);
@@ -159,12 +131,14 @@ useEffect(
   const signUserOut = async () => {
       await auth.signOut();
       setSession({status: "unauthenticated", jwt: ""});
-      setUser(undefined);
       return;
   }
 
+  console.log("session 45", session);
+
+
   return (
-    <UserContext.Provider value={{ user, session, signUserOut, signUserIn }}>
+    <UserContext.Provider value={{ address, session, signUserOut, signUserIn }}>
           <RainbowKitAuthenticationProvider  status ={session.status} adapter = {authenticationAdapter}>
         <RainbowKitProvider theme={darkTheme({
           accentColor: '#000000',

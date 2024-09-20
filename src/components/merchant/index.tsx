@@ -12,15 +12,18 @@ import { useRouter } from 'next/navigation'
 import { useContracts } from '@/common/contexts/ContractContext'
 import { POST_AD_PAGE } from '@/common/page-links'
 import useIsMerchant from '@/common/hooks/useIsMerchant'
+import { useUser } from '@/common/contexts/UserContext'
 
 const BecomeAMerchant = () => {
     const {isMerchant, isLoading} = useIsMerchant()
     const{indexerUrl} = useContracts();
     const router = useRouter()
     const { openConnectModal } = useConnectModal()
-    const { isConnected, address } = useAccount()
+    const {session} = useUser();
     const { showModal, hideModal } = useModal()
     const [isMounted, setIsMounted] = useState(false);
+    
+    const isAuthenticated = session?.status === "authenticated";
 
     useEffect(() => {
         setIsMounted(true);
@@ -39,7 +42,7 @@ const BecomeAMerchant = () => {
     // const isMerchant = account?.account?.isMerchant || false
 
     const handleClick = useCallback(() => {
-        if (!isConnected) {
+        if (!isAuthenticated) {
             openConnectModal?.()
             return
         }
@@ -53,7 +56,7 @@ const BecomeAMerchant = () => {
 
         showModal(content)
 
-    }, [isConnected, isMerchant, showModal, hideModal])
+    }, [isAuthenticated, isMerchant, showModal, hideModal])
     
 
     return (

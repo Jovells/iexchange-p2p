@@ -20,7 +20,15 @@ const mHolesky = {
     },
   },
 };
-export const chains = [mHolesky, kakarotSepolia] as const;
+const kSepolia = {
+  ...kakarotSepolia,
+  rpcUrls: {
+    default: {
+      http: ["https://sepolia-rpc.kakarot.org"],
+    },
+  },
+};
+export const chains = [mHolesky, kSepolia] as const;
 export const config = getDefaultConfig({
   appName: "IExchange",
   chains,

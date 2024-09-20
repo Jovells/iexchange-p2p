@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import WalletConnect from '../wallet';
 import { useAccount } from 'wagmi';
+import { useUser } from '@/common/contexts/UserContext';
 
 const WalletConnectSection: React.FC = () => {
-    const { isConnected } = useAccount();
+    const { session } = useUser();
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
-    if (!isMounted || isConnected) {
+    if (!isMounted || session?.status === "authenticated") {
         return null;
     }
 

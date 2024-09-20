@@ -6,10 +6,12 @@ import InputWithSelect from "../ui/InputWithSelect";
 import { cryptoTokens } from "@/common/data/currencies";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import CediH from "@/common/abis/CediH";
-import { MORPH_CEDIH_ADDRESS, MORPH_P2P_ADDRESS } from "@/common/contracts";
 import OptimisticP2P from "@/common/abis/OptimisticP2P";
 import { useModal } from "@/common/contexts/ModalContext";
 import ModalAlert from "../modals";
+import { useContracts } from "@/common/contexts/ContractContext";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface MerchantModalProps {
     hideModal: () => void;
@@ -19,25 +21,29 @@ interface MerchantModalProps {
 const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     const { writeContractAsync } = useWriteContract();
     const account = useAccount();
+    const [isStaking, setIsStaking] = useState(false);
     const { showModal } = useModal()
+    const {p2p, tokens} = useContracts();
 
 
     const { data: allowance } = useReadContract({
         abi: CediH,
-        address: MORPH_CEDIH_ADDRESS,
+        address: tokens[0].address,
         functionName: "allowance",
-        args: [account.address!, MORPH_P2P_ADDRESS],
+        args: [account.address!, p2p.address],
     })
 
     const handleStake = async () => {
+        setIsStaking(true);
+        const id = toast.loading("Staking...");
         try {
             const stakeAmount = BigInt(1500 * 1e18);
             if (allowance! < stakeAmount) {
                 const approveHash = await writeContractAsync({
                     abi: CediH,
-                    address: MORPH_CEDIH_ADDRESS,
+                    address: tokens[0].address,
                     functionName: "approve",
-                    args: [MORPH_P2P_ADDRESS, stakeAmount],
+                    args: [p2p.address, stakeAmount],
                 });
                 console.log("Approved:", approveHash);
             }
@@ -48,14 +54,20 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
 
             const registerHash = await writeContractAsync({
                 abi: OptimisticP2P,
-                address: MORPH_P2P_ADDRESS,
+                address: p2p.address,
                 functionName: "registerMerchant",
             });
             console.log("Registered:", registerHash);
             const content = <ModalAlert buttonText="Done" buttonClick={async () => { }} modalType="success" title="Successfully Staked" description="You have successfully secured a merchant placement." icon="../../images/icons/success.png" />
             showModal(content)
+            
         } catch (error) {
+            toast.error("Error staking", { id });
             console.error("Error handling stake:", error);
+        }
+        finally{
+            toast.dismiss(id);
+            setIsStaking(false);
         }
     }
 
@@ -95,6 +107,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
                     />
                     <Button
                         text="Proceed"
+                        loading={isStaking}
                         className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2 mt-6 w-full"
                         onClick={handleStake}
                     />

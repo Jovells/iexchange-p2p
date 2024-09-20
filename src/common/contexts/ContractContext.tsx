@@ -4,6 +4,7 @@ import { createContext, useContext, ReactNode, FC, useState, useEffect } from "r
 import { useChainId, useChains, useSwitchChain } from "wagmi";
 import contracts, { NetworkContractsConfig, TokenContract } from "../contracts";
 import { Chain } from "viem";
+import { chains } from "../configs";
 
 
 interface ContractsContextType {
@@ -34,12 +35,11 @@ export const ContractsProvider: FC<{ children: ReactNode }> = ({
 }) => {
   const chainId = useChainId();
   const [currentChainId, setCurrentChainId] = useState(chainId);
-  const chains = useChains();
   const currentChain = chains.find((chain) => chain.id === currentChainId) || null;
-  const p2p = contracts[chainId].p2p;
-  const tokens = contracts[chainId].tokens;
-  const indexerUrl = contracts[chainId].indexerUrl;
-  const faucet = contracts[chainId].faucet;
+  const p2p = contracts[currentChain?.id || chains[0].id].p2p;
+  const tokens = contracts[currentChain?.id || chains[0].id].tokens;
+  const indexerUrl = contracts[currentChain?.id || chains[0].id].indexerUrl;
+  const faucet = contracts[currentChain?.id || chains[0].id].faucet;
   const isCorrectChain = !!currentChain;
 
 
@@ -51,9 +51,15 @@ export const ContractsProvider: FC<{ children: ReactNode }> = ({
     })
     return () =>{}
    }, [])
+
+   useEffect(() => {
+    setCurrentChainId(chainId)
+   }, [chainId])
  
 
-  console.log('chainid', chainId, chains)
+  console.log('chainid', currentChain?.id, chains)
+  console.log('chainIdwagmi', indexerUrl)
+
 
 
   return (

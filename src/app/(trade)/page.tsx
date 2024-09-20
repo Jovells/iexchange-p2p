@@ -23,6 +23,7 @@ const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect
 import Loader from "@/components/loader/Loader";
 import CryptoSelector from "./cryptoSelector";
 import NetworkSwitcher from "@/components/networkSwitcher";
+import { useUser } from "@/common/contexts/UserContext";
 
 interface P2PMarketProps { }
 
@@ -181,7 +182,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
   setCurrencyAmount,
   setPaymentMethod,
 }) => {
-  const { isConnected } = useAccount()
+  const { session } = useUser()
   return (
     <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
       <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
@@ -217,7 +218,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
         </div>
         <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
       </div>
-      {isConnected && (
+      {session.status === "authenticated" && (
         <div className="lg:w-auto hidden lg:flex">
   <NetworkSwitcher />
         </div>

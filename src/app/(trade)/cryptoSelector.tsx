@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import ClaimModal from "@/components/modals/ClaimModal";
 import { useModal } from "@/common/contexts/ModalContext";
 import { Dispatch, SetStateAction } from "react";
+import Loader from "@/components/loader/Loader";
 
 
 interface CryptoSelectorProps {
@@ -38,7 +39,6 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
         token={token}
         selectedCrypto={selectedCrypto}
         setSelectedCrypto={setSelectedCrypto}
-        address={address}
           />
         ))}
         <Button text="Claim" 
@@ -71,23 +71,24 @@ interface CryptoButtonProps {
   token: Token;
   selectedCrypto?: Token;
   setSelectedCrypto: Dispatch<SetStateAction<Token | undefined>>;
-  address: string | undefined;
 }
 
 const CryptoButton: React.FC<CryptoButtonProps> = ({
   token,
   selectedCrypto,
   setSelectedCrypto,
-  address,
 }) => {
     const {tokens} = useContracts()
-  const { data: balance } = useReadContract({
+  const { address } = useAccount();
+  const { data: balance , isLoading} = useReadContract({
     address: token.id as `0x${string}`,
     abi: tokens[0].abi,
     functionName: "balanceOf",
     args: [address as `0x${string}`],
-    query: {enabled: !!address}
+    query: {enabled: !!address, }
   });
+
+  console.log( "selector ",tokens[0].address, "balance ", balance, "address" ,address  )
 
 
   const formattedBalance = balance ? parseFloat(formatUnits(balance, 18)).toFixed(2) : "0.00";
@@ -102,8 +103,8 @@ const CryptoButton: React.FC<CryptoButtonProps> = ({
         }`}
     >
       <span>{token.symbol}</span>
-      <span className="bg-gray-200 text-xs text-gray-700 rounded-full px-2 py-1">
-        Balance: {formattedBalance}
+       <span className="bg-gray-200 text-xs text-gray-700 rounded-full px-2 py-1">
+      {!isLoading ? "Balance: " + formattedBalance : <Loader loaderType="text"/>}
       </span>
     </button>
   );

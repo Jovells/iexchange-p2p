@@ -5,10 +5,10 @@ import { fetchAccount } from "../api/fetchAccount";
 import fetchPaymentDetails from "../api/fetchPaymentDetails";
 
 const useUserPaymentMethods = () => {
-    const { isConnected, address } = useAccount();
+    const { address } = useAccount();
 
 
-    const { data: paymentMethods, error, isFetching, isError, refetch } = useQuery({
+    const { data: paymentMethods, isFetching, refetch } = useQuery({
         queryKey: ['userPaymentMethods', address],
         queryFn: () => fetchPaymentDetails(address as string),
         enabled: !!address, // Ensures that address is truthy before making the query
