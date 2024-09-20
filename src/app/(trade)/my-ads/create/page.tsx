@@ -101,6 +101,7 @@ const CreateAd = () => {
         }
 
         const { token, currency, minOrder, maxOrder, paymentMethod, accountName, accountNumber, timeLimit, terms, depositAddress, rate, offerType } = data;
+        console.log('create-data', data);
         const accountDetails = {
             name: accountName,
             number: accountNumber,

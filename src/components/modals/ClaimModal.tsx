@@ -31,9 +31,9 @@ const ClaimModal = () => {
         seconds: "00"
     });
 
-    function handleClaim() {
+    async function handleClaim() {
 
-        claim({}, {
+        await claim({}, {
             abi: faucet.abi,
             address: faucet.address,
             functionName: 'claim',
