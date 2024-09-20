@@ -8,6 +8,7 @@ import { fetchAds } from "@/common/api/fetchAds";
 import { useContracts } from '@/common/contexts/ContractContext';
 import { Currency, Offer, PaymentMethod, PreparedCurrency, Token } from '@/common/api/types';
 import { formatCurrency, shortenAddress } from '@/lib/utils';
+import { offerTypes } from '@/common/api/constants';
 
 const columns: any = [
   {
@@ -51,7 +52,7 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
   const [currentPage, setCurrentPage] = useState<number>(0);
 
   const trade = searchParams.get("trade") || "Buy";
-  const crypto = searchParams.get("crypto") || "USDT";
+  const crypto = searchParams.get("crypto") || "";
 
   console.log("paymentMethod", paymentMethod);
 
@@ -70,7 +71,7 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
   };
 
   const actions = [
-    { label: trade + " " + crypto, onClick: (row: any) => console.log(row) },
+    { label: (row: Offer) => (row.offerType === offerTypes.buy ? "Buy " : "Sell ") + row.token.symbol, onClick: (row: any) => console.log(row) },
   ];
 
   if (error) {

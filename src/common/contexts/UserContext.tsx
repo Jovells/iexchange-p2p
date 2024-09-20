@@ -1,19 +1,25 @@
 'use client'
 
 import { getAuth, signInWithCustomToken } from "firebase/auth";
-import { useSession } from "next-auth/react";
 import { createContext, useContext, ReactNode, FC, useState, useEffect } from "react";
-import { useAccount } from "wagmi";
-import { UserSession } from "../types";
 import { app } from "../configs/firebase";
+import { darkTheme, RainbowKitAuthenticationProvider, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
+import { SiweMessage } from 'siwe';
+import { API_ENDPOINT } from '@/common/api/constants';
+import { useAccount } from "wagmi";
+
+
 
 type User = {
   uid: string;
 } | undefined ;
 
+type Session = {status: "authenticated" | "unauthenticated", jwt: string}
+
 interface UserContextType {
   user: User;
-  session: UserSession;
+  session: Session;
   signUserOut: () => void;
   signUserIn: (firebaseToken: string) => void;
 }
@@ -34,17 +40,93 @@ export const useUser = () => {
 export const UserProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const session = useSession() as UserSession;
   const auth = getAuth(app);
+  const [firebaseToken, setFirebaseToken] =  useState("");
+  const [session, setSession]  = useState<Session>({status: auth.currentUser ? "authenticated" : "unauthenticated", jwt: "",}); 
+  const {address} = useAccount(); 
 
   const [user, setUser] = useState<User>();
+
+  
+  const authenticationAdapter = createAuthenticationAdapter({
+    getNonce: async () => {
+      try {
+        const response = await fetch(API_ENDPOINT + '/siwe/nonce/'+ address?.toLocaleLowerCase());
+        const nonce = await response.json();
+        console.log('Nonce:', nonce);
+        return nonce.nonce;
+      } catch (error) {
+        console.error('Error fetching nonce:', error);
+        throw error;
+      }
+    },
+    createMessage: ({ nonce, address, chainId }) => {
+      try {
+        const message = new SiweMessage({
+          domain: window.location.host,
+          address,
+          statement: 'Sign in with Ethereum to the app.',
+          uri: window.location.origin,
+          version: '1',
+          chainId,
+          nonce,
+        });
+        console.log('Message:', message);
+        return message;
+      } catch (error) {
+        console.error('Error creating message:', error);
+        throw error;
+      }
+    },
+    getMessageBody: ({ message }) => {
+      try {
+        const messageBody = message.prepareMessage();
+        console.log('Message Body:', messageBody);
+        return messageBody;
+      } catch (error) {
+        console.error('Error preparing message body:', error);
+        throw error;
+      }
+    },
+    verify: async ({ message, signature }: { message: SiweMessage, signature: string }) => {
+      console.log('Verify request:', { message, signature });
+      try {
+        const verifyRes = await fetch(API_ENDPOINT + '/siwe/verify/'+ address?.toLowerCase(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, signature }),
+        });
+        if (!verifyRes.ok) {
+          throw new Error('Verification failed');
+        }
+        const verifyJson = await verifyRes.json();
+        console.log('Verify response:',verifyJson);
+        setFirebaseToken(verifyJson.token)
+        return Boolean(verifyRes.ok);
+      } catch (error) {
+        console.log('Error verifying message:', error);
+        throw error;
+      }
+    },
+    signOut: async () => {
+      try {
+        await fetch(API_ENDPOINT + '/logout');
+        console.log('Signed out successfully');
+      } catch (error) {
+        console.error('Error signing out:', error);
+        throw error;
+      }
+    },
+  });
+  
+  
 
 useEffect(
   () => {
     console.log("session status", session.status);
-    if (session.data?.firebaseToken && !auth.currentUser?.uid) {
+    if (firebaseToken && !auth.currentUser?.uid) {
       console.log("signing in user");
-      signUserIn(session.data.firebaseToken);
+      signUserIn(firebaseToken);
     }
 
     if (session.status !== "authenticated" && auth.currentUser) {
@@ -54,13 +136,15 @@ useEffect(
 
 
   },
-  [session.status]
+  [session.jwt, firebaseToken]
 );
 
 
   const signUserIn = async (firebaseToken: string) => {
     try {
       const userCredential = await signInWithCustomToken(auth, firebaseToken);
+      const jwt = await userCredential.user.getIdToken();
+      setSession({status: "authenticated", jwt: jwt});
       setUser({
         uid: userCredential.user.uid,
       });
@@ -80,7 +164,17 @@ useEffect(
 
   return (
     <UserContext.Provider value={{ user, session, signUserOut, signUserIn }}>
+          <RainbowKitAuthenticationProvider  status ="unauthenticated" adapter = {authenticationAdapter}>
+        <RainbowKitProvider theme={darkTheme({
+          accentColor: '#000000',
+          // accentColorForeground: '#',
+          borderRadius: 'medium',
+          fontStack: "system"
+        })}>
+          
       {children}
+        </RainbowKitProvider>
+        </RainbowKitAuthenticationProvider>
     </UserContext.Provider>
   );
 };

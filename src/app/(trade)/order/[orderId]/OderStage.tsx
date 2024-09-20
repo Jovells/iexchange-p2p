@@ -8,7 +8,7 @@ import ChatWithMerchant from "@/components/merchant/ChatWithMerchant";
 import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount, useWriteContract } from "wagmi";
-import { OrderState } from "@/common/api/types";
+import { Order, OrderState } from "@/common/api/types";
 import { formatCurrency, formatBlockTimesamp } from "@/lib/utils";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import ModalAlert from "@/components/modals";
@@ -95,43 +95,38 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   console.log("Is Buyer", isBuyer);
 
   const getButtonConfig = () => {
-    if (!order) return { text: "", onClick: () => {}, disabled: true };
+    if (!order) return { text: "", buttonText: "", onClick: () => {}, disabled: true };
 
-  
-
-    switch (order.status) {
-      case OrderState.pending:
-        if (isBuyer) {
-          if (order.offer.offerType === offerTypes.buy) {
-            return { text: "Waiting for Merchant to Accept", onClick: () => {}, disabled: true };
+      const getDisabledAction = (buttonText: string, text: string) => ({ buttonText, text, onClick: () => {}, disabled: true });
+      const getEnabledAction = (buttonText: string, text: string, onClick : ()=>{}) => ({ buttonText, text, onClick, disabled: false });
+    
+      switch (order.status) {
+        case OrderState.pending:
+          if (isBuyer) {
+            return order.offer.offerType === offerTypes.buy
+              ? getDisabledAction("Waiting for Merchant", "Please wait for the merchant to accept your order and send the tokens to the escrow account")
+              : getEnabledAction("Done With Payment","Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order", handlePayOrder);
+          } else {
+            return order.offer.offerType === offerTypes.sell
+              ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
+              : getEnabledAction("Accept Order", "Click “Accept Order” your order and send the tokens to the escrow account ", handleAcceptOrder);
           }
-          else return { text: "Transfer funds", onClick: handlePayOrder, disabled: false };
-        } else {
-          if (order.offer.offerType === offerTypes.sell) {
-            return { text: "Waiting for Buyer to Pay", onClick: () => {}, disabled: true };
-          }
-          return { text: "Accept Order", onClick: handleAcceptOrder, disabled: false };
-        }
-      case OrderState.accepted:
-        if (isBuyer) {
-          return { text: "Mark Paid", onClick: handlePayOrder, disabled: false };
-        } else {
-          return { text: "Waiting for Buyer to Make Payment", onClick: () => {}, disabled: true };
-        }
-      case OrderState.paid:
-        if (isBuyer) {
-          return { text: "Waiting for Seller to Release", onClick: () => {}, disabled: true };
-        } else {
-          return { text: "Release Funds", onClick: handleReleaseFunds, disabled: false };
-        }
-      case OrderState.released:
-        return { text: "Completed", onClick: () => {}, disabled: true };
-      case OrderState.cancelled:
-        return { text: "Cancelled", onClick: () => {}, disabled: true };
-      default:
-        return { text: "", onClick: () => {}, disabled: true };
-    }
-  };
+        case OrderState.accepted:
+          return isBuyer
+            ? getEnabledAction("Done With Payment", "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order", handlePayOrder)
+            : getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment");
+        case OrderState.paid:
+            return isBuyer
+            ? getDisabledAction("Waiting for Seller to Release", "Please wait for the seller to release")
+            : getEnabledAction("Release Funds", "Click “Release Funds” to release the funds to the buyer", handleReleaseFunds);
+        case OrderState.released:
+          return getDisabledAction("Completed", "Order has been completed");
+        case OrderState.cancelled:
+          return getDisabledAction("Cancelled", "Order has been cancelled");
+        default:
+          return getDisabledAction("", "");
+      }
+    };
 
   if (orderError) {
     console.log("Error fetching order", orderError);
@@ -148,7 +143,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   }
 
 
-  const { text, onClick, disabled } = getButtonConfig();
+  const { text, onClick, disabled, buttonText  } = getButtonConfig();
   const buyAmount = formatCurrency(Number(order?.quantity) * Number(order?.offer.rate), isBuyer ? order.offer.currency.currency : order.offer.token.symbol)
   const sellAmount = formatCurrency(Number(order?.quantity), isBuyer ? order?.offer.token.symbol : order.offer.currency.currency)
 
@@ -163,7 +158,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
               <div className="flex flex-row justify-start items-start space-x-1">
                 <span className="bg-blue-500 rounded-lg w-6 h-6 p-1 flex justify-center items-center px-3 text-white text-sm">
                   15
-                </span>
+                </span>x
                 <span>:</span>
                 <span className="bg-blue-500 rounded-lg w-6 h-6 p-1 flex justify-center items-center px-3 text-white text-sm">
                   00
@@ -205,7 +200,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
               </div>
             </div>
             <div>
-              <h2 className="font-bold">Make Payment</h2>
+              <h2 className=" text-gray-500 mb-1">Payment Details</h2>
               <div className="w-full border rounded-xl p-4 h-auto space-y-4">
                 <div>
                   <div className="font-light text-gray-500 text-sm">Payment Method</div>
@@ -222,13 +217,13 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
               </div>
             </div>
             <div>
-              <h2 className="text-gray-700">Proceed Transaction</h2>
+              <h2 className="text-gray-700">Proceed:</h2>
               <p className="text-gray-500">
-                Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order
+                {text}
               </p>
             </div>
             <div className="flex flex-col lg:flex-row gap-6">
-              <Button loading ={isPending} text={text} className={`${disabled ? "bg-slate-100 text-gray-500" :"bg-[#000000] text-white"}  rounded-xl px-4 py-2`} onClick={onClick} disabled={disabled} />
+              <Button loading ={isPending} text={buttonText} className={`${disabled ? "bg-slate-100 text-gray-500" :"bg-[#000000] text-white"}  rounded-xl px-4 py-2`} onClick={onClick} disabled={disabled} />
                 {order.status === OrderState.pending  && (
                 <Button text="Cancel Order" className="bg-red-200 text-black rounded-xl px-4 py-2 hover:bg-red-300" onClick={handleCancelOrder} />
                 )}

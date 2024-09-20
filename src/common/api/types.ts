@@ -1,3 +1,5 @@
+import { Serializable } from "worker_threads";
+
 export type Token = {
   symbol: string;
   id: `0x${string}`;
@@ -25,9 +27,10 @@ export type Merchant = {
 export type PreparedCurrency = { symbol: string; name: string; id: `0x${string}`,  icon: JSX.Element };
 
 export type PaymentMethod = {
-  id: string;
+  id?: string;
   method: string;
-  isAccespted: boolean;
+  isAccespted?: boolean;
+  details?: string;
 }
 
 enum OfferType {
@@ -99,4 +102,6 @@ export type AccountDetails = {
   number: string;
   address: string;
   hash?: string;
+  paymentMethod?: string;
+  details?: string;
 }

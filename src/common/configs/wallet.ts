@@ -20,7 +20,7 @@ const mHolesky = {
     },
   },
 };
-const chains = [mHolesky, kakarotSepolia] as const;
+export const chains = [mHolesky, kakarotSepolia] as const;
 export const config = getDefaultConfig({
   appName: "IExchange",
   chains,

@@ -9,6 +9,7 @@ import React, {
 import Loader from '../loader/Loader';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Offer } from '@/common/api/types';
+import { offerTypes } from '@/common/api/constants';
 
 type Column = {
   key: string;
@@ -17,7 +18,7 @@ type Column = {
 };
 
 type Action = {
-  label: string;
+  label: ((row: Offer) => ReactNode) | string;
   onClick: (row: Offer) => void;
 };
 
@@ -106,7 +107,7 @@ const ExpandableTable = forwardRef(
             <>
               {isMobile ? (
                 <div>
-                  {data.map((row, index) => (
+                  {data.map((row: Offer, index) => (
                     <div key={index} className="bg-white mb-4 p-4 rounded-lg border-b">
                       {columns.map((column) => (
                         <div key={column.key} className="mb-2">
@@ -119,7 +120,11 @@ const ExpandableTable = forwardRef(
                       ))}
                       {actions.length > 0 && (
                         <div className="mt-4 flex justify-end">
-                          {actions.map((action, actionIndex) => (
+    
+                          {actions.map((action, actionIndex) => {
+                            let label = typeof action.label === "function" ? action.label(row) : action.label;
+                            
+                            return (
                             <button
                               key={actionIndex}
                               onClick={(e) => {
@@ -127,14 +132,14 @@ const ExpandableTable = forwardRef(
                                 handleRowClick(index);
                                 action.onClick(row);
                               }}
-                              className={`${action.label.toLowerCase().includes('buy')
+                              className={`${row.offerType === offerTypes.buy
                                 ? 'bg-[#2D947A]'
                                 : 'bg-[#F14E4E]'
                                 } text-white text-sm px-4 py-3 rounded-xl`}
                             >
-                              {action.label}
+                              {label}
                             </button>
-                          ))}
+                          )})}
                         </div>
                       )}
                     </div>
@@ -169,21 +174,23 @@ const ExpandableTable = forwardRef(
                           ))}
                           {actions.length > 0 && (
                             <div className="col-span-1 w-full flex justify-end">
-                              {actions.map((action, actionIndex) => (
-                                <button
+                              {actions.map((action, actionIndex) => {
+                                  const label = typeof action.label === "function" ? action.label(row) : action.label;
+                               return  <button
                                   key={actionIndex}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     action.onClick(row);
                                     handleRowClick(index);
                                   }}
-                                  className={`${action.label.toLowerCase().includes("buy")
+                                  className={`${row.offerType === offerTypes.buy
                                       ? "bg-[#2D947A]"
                                       : "bg-[#F14E4E]"
                                     } text-white text-sm px-4 py-3 rounded-xl`}>
-                                  {action.label}
+                                  {label}
                                 </button>
-                              ))}
+  }
+                              )}
                             </div>
                           )}
                         </div>

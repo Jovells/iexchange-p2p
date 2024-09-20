@@ -10,12 +10,18 @@ import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteCont
 import { decodeEventLog } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
-import { Offer, } from "@/common/api/types";
+import { Offer, PaymentMethod, } from "@/common/api/types";
 import toast from "react-hot-toast";
 import { waitForTransactionReceipt } from "viem/actions";
-import { z } from "zod";
+import  z  from "zod";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
-
+import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
+import storeAccountDetails from "@/common/api/storeAccountDetails";
+import { Link } from "lucide-react";
+import AddPaymentMethod from "@/app/dashboard/account/payment/AddPaymentMethod";
+import { useModal } from "@/common/contexts/ModalContext";
+import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
+ 
 const formSchema = z.object({
   toPay: z.string().min(1, "Please enter a valid amount").refine(val => !isNaN(Number(val)) && Number(val) > 0, {
     message: "Must be a valid positive number"
@@ -36,18 +42,20 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   const [{ toPay, toReceive, paymentMethod }, setFormData] = useState({
     toPay: "",
     toReceive: "",
-    paymentMethod: "",
+    paymentMethod: data.paymentMethod,
   });
   const [errors, setErrors] = useState<z.ZodIssue[]>([]);
-  const {p2p, tokens, currentChain} = useContracts();
+  const {p2p, tokens} = useContracts();
   const token = tokens.find((token) => token.address.toLowerCase() === data.token.id.toLowerCase());
   const account = useAccount();
   const prevOrderType = useRef(orderType);
   const searchParams = useSearchParams();
   const navigate = useRouter();
+  const {paymentMethods : userPaymentMethods, isFetching, refetch} = useUserPaymentMethods();
+  const {showModal, hideModal} = useModal();
 
-  const trade = searchParams.get("trade") || "Buy";
-  const crypto = searchParams.get("crypto") || "USDT";
+  const trade = orderType === "buy" ? "Buy" : "Sell";
+  const crypto = data.token.symbol
 
   const { writeContractAsync: writeToken, data: approveHash, isSuccess: isApproveSuccess, isPending: isP2pWritePending } = useWriteContractWithToast();
   const { writeContractAsync: writeP2p, data: p2phash, isPending : isApprovePending  } = useWriteContractWithToast();
@@ -64,25 +72,34 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     functionName: "allowance",
     args: [account.address!, p2p.address],
   });
+  const isBuy = orderType.toLowerCase() === "buy"
 
-  function handleFormDateChange(name: string, value: string) {
+  function handleFormDateChange(name: string, value: string | PaymentMethod) {
+    console.log('name', name, 'orderType', orderType, 'isbuy', isBuy, )
     // Prevent non-numeric input for toPay and toReceive fields
-    if ((name === "toPay" || name === "toReceive") && !/^\d*\.?\d*$/.test(value)) {
+    if ((name === "toPay" || name === "toReceive") && !/^\d*\.?\d*$/.test(value as string)) {
       return;
     }
 
     if (name === "toPay") {
-      const newToReceive = Number(value) * Number(data.rate);
+
+      let newToReceive
+       
+        newToReceive = Number(value) / Number(data.rate);
+   
       setFormData((prev) => ({
         ...prev,
-        [name]: value,
+        toPay: value as string,
         toReceive: newToReceive.toFixed(8),  // Limit to 8 decimal places
       }));
     } else if (name === "toReceive") {
-      const newToPay = Number(value) / Number(data.rate);
+      let newToPay
+       
+        newToPay = Number(value) * Number(data.rate);
+      
       setFormData((prev) => ({
         ...prev,
-        [name]: value,
+        toReceive: value as string,
         toPay: newToPay.toFixed(8),  // Limit to 8 decimal places
       }));
     } else {
@@ -97,16 +114,17 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     }
   }, [orderType, toggleExpand]);
 
-  const valueToPay = toPay ? BigInt(Math.floor(Number(toPay) * 10 ** 18)) : BigInt(0);
-  const alreadyApproved = (allowance! >= valueToPay)  || (orderType === "buy");
-
+  const tokensAmount = toReceive ? BigInt(Math.floor(Number(toReceive) * 10 ** 18)) : BigInt(0);
+  const alreadyApproved = (allowance! >= tokensAmount)  || (orderType === "buy");
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('orderType', orderType)
-
+    console.log('orderType', orderType, "paymentMethod", paymentMethod,)
+    
     e.preventDefault();
-
+    
+    
     // Validate the form before submission
-    const formData = { toPay, toReceive, paymentMethod };
+    const formData = { toPay, toReceive, paymentMethod : paymentMethod.method }; 
     const result = formSchema.safeParse(formData);
     if (!result.success) {
       setErrors(result.error.issues);
@@ -115,16 +133,27 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     } else {
       setErrors([]);
     }
+    
+    const depositAddress = isBuy ? data.depositAddress.id : account.address;
 
+    const accountHash = isBuy ? data.accountHash : await storeAccountDetails({
+      name: "" as string,
+      address: account.address as string,
+      number: "" as string,
+      paymentMethod: paymentMethod.method,
+      details: paymentMethod.details,
+      });
+  
     try {
       if (!alreadyApproved) {
-        const approveHash = await writeToken({},{
+        const approveHash = await writeToken({
+        },{
           abi: tokens[0].abi,
           address: data.token.id,
           functionName: "approve",
-          args: [p2p.address, valueToPay],
+          args: [p2p.address, tokensAmount],
         });
-      } else {
+      } 
         const createHash = await writeP2p({
         },{
           abi: p2p.abi,
@@ -132,50 +161,66 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           functionName: "createOrder",
           args: [
             BigInt(data.id),
-            valueToPay,
-            data.depositAddress.id,
-            data.accountHash,
+            tokensAmount,
+            depositAddress,
+            accountHash,
           ],
         });
-      }
+      
 
     } catch (e) {
       console.log("error", e);
     }
   };
 
-
+  useEffect(()=>{
+    if (isSuccess && p2phash) {
+      const id = "create-order";
+      let orderId;
+      receipt.logs.some((log) => {
+        try {
+          const decoded = decodeEventLog({
+            abi: p2p.abi,
+            data: log.data,
+            topics: log.topics,
+            eventName: "NewOrder",
+          });
+          const args = decoded?.args as unknown as { orderId: string };
+          orderId = args.orderId;
+          return true;
+        } catch (e) {
+          return false;
+        }
+      });
   
-  if (isSuccess && p2phash) {
-    const id = "create-order";
-    let orderId;
-    receipt.logs.some((log) => {
-      try {
-        const decoded = decodeEventLog({
-          abi: p2p.abi,
-          data: log.data,
-          topics: log.topics,
-          eventName: "NewOrder",
-        });
-        const args = decoded?.args as unknown as { orderId: string };
-        orderId = args.orderId;
-        return true;
-      } catch (e) {
-        return false;
-      }
-    });
+      navigate.push("/order/" + orderId);
+    }
+  }, [isSuccess, receipt, p2phash, navigate])
 
-    navigate.push("/order/" + orderId);
-  }
+  let paymentsMethods = isBuy ? 
+  [data.paymentMethod] :
+    userPaymentMethods?.map((method) => {
+    if (method.paymentMethod === data.paymentMethod.method) {
+      return { 
+        method: method.paymentMethod,
+        details: method.details,
+      };
+    }
+    return null;
+  }).filter(Boolean) as {method: string, details: string}[];
+  
 
-  const isBuy = orderType.toLowerCase() === "buy"
+  const handleAddPaymentMethodClick = () => {
+    showModal(
+<AddPaymentMethod method={data.paymentMethod.method}  hideModal={hideModal} onSuccess={refetch} /> );
+  };
 
 
   return (
     <Suspense>
       <form
         onSubmit={handleSubmit}
-        className="w-full border-0 lg:border rounded-xl p-0 lg:p-6 min-h-[400px] flex flex-col flex-col-reverse lg:grid lg:grid-cols-2 bg-white lg:bg-gray-200">
+        className="w-full border-0 lg:border rounded-xl p-0 lg:p-6 min-h-[400px] flex  flex-col-reverse lg:grid lg:grid-cols-2 bg-white lg:bg-gray-200">
         <div className="bg-transparent rounded-xl p-0 pt-6">
           <MerchantProfile offer={data} />
         </div>
@@ -193,6 +238,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           {errors.find(e => e.path[0] === "toPay") && (
             <p className="text-red-500">{errors.find(e => e.path[0] === "toPay")?.message}</p>
           )}
+
           <InputWithSelect
             placeholder={isBuy ? "You Receive" : "You Pay"}
             initialCurrency={data.token.symbol}
@@ -206,15 +252,22 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           {errors.find(e => e.path[0] === "toReceive") && (
             <p className="text-red-500">{errors.find(e => e.path[0] === "toReceive")?.message}</p>
           )}
-          <InputSelect
+          {
+          <PaymentMethodSelect
+            addButton={
+              <>
+              <Button icon='/images/icons/add-circle.png'
+     className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2" text={"Add " + data.paymentMethod.method + " details"} onClick = {handleAddPaymentMethodClick}/>
+              </>
+            }
             label=""
             initialValue=""
-            value={paymentMethod}
+            selectedMethod={paymentMethod}
             placeholder="Select Payment Method"
             name="paymentMethod"
-            options={[{value: data.paymentMethod.method, label: data.paymentMethod.method}]}
+            options={paymentsMethods}
             onValueChange={(value) => handleFormDateChange("paymentMethod", value)}
-          />
+          />}
           {errors.find(e => e.path[0] === "paymentMethod") && (
             <p className="text-red-500">{errors.find(e => e.path[0] === "paymentMethod")?.message}</p>
           )}
@@ -227,7 +280,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
             <Button
               loading={isP2pWritePending || isApprovePending || isP2pPending}
               type="submit"
-              text={alreadyApproved? `${trade} ${crypto}` : "Approve " + data.token.symbol}
+              text={alreadyApproved? `${trade} ${crypto}` : `Approve and ${trade} ${crypto}`}
               className={`${isBuy ? "bg-[#2D947A]" : "bg-[#f14e4e]"} text-white rounded-xl px-4 py-2`}
             />
           </div>

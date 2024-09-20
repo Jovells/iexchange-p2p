@@ -10,7 +10,7 @@ import { useContracts } from '@/common/contexts/ContractContext'
 import { useQuery } from '@tanstack/react-query'
 import { fetchCurrencies } from '@/common/api/fetchCurrencies'
 import { fetchTokens } from '@/common/api/fetchTokens'
-import { fetchPaymentMethods } from '@/common/api/fetchPaymentMethods'
+import fetchContractPaymentMethods from '@/common/api/fetchContractPaymentMethods'
 import { offerTypes, TIME_LIMITS } from '@/common/api/constants'
 import { useRouter } from 'next/navigation'
 import { useAccount, useWriteContract } from 'wagmi'
@@ -58,7 +58,7 @@ const CreateAd = () => {
     })
     const {data: paymentMethods } = useQuery({
         queryKey: ['paymentMethods'],
-        queryFn: () => fetchPaymentMethods(indexerUrl)
+        queryFn: () => fetchContractPaymentMethods(indexerUrl)
     })
 
     const addPaymentMethod =  () =>{}

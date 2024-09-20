@@ -19,7 +19,9 @@ import ModalAlert from '@/components/modals';
     { shouldShowModal = false,
       modalAction,
       loadingMessage,
+      timeTimeToWait = 5000,
     successMessage} : {
+      timeTimeToWait?: number,
       shouldShowModal?: boolean,
       modalAction?: any,
       loadingMessage?: string,
@@ -30,26 +32,19 @@ import ModalAlert from '@/components/modals';
     const toastId = toast.loading(loadingMessage || 'Calling ' + args[0].functionName + '...');
     try {
       const result = await writeContractAsync(...args);
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      toast.success(successMessage || args[0].functionName + ' successful', { id: toastId  });
+      await new Promise((resolve) => setTimeout(resolve, timeTimeToWait));
+      
       shouldShowModal && showModal( <ModalAlert buttonText="Done" buttonClick={modalAction} 
       modalType="success" 
       title="Successful" 
       description= {successMessage || args[0].functionName + ' successful'}   
       icon="../../images/icons/success.png" />);
 
-      while (!(isSuccess || isError)) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-
-      if(isSuccess) {
-        return receipt;
-      }else{
-        throw new Error(error as any)
-      };
+      toast.success(successMessage || args[0].functionName + ' successful', { id: toastId  });
+      return receipt;
     } catch (error: any) {
       toast.error(`Transaction Failed: ${error.message}`, { id: toastId });
-      throw error;
+      throw new Error(error);
     }
   };
 

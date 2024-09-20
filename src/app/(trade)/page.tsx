@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTokens } from "@/common/api/fetchTokens";
 import { PreparedCurrency, Token } from "@/common/api/types";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
-import { fetchPaymentMethods } from "@/common/api/fetchPaymentMethods";
+import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
 import { useAccount } from "wagmi";
 
 
@@ -21,6 +21,8 @@ const P2PAds = React.lazy(() => import('./order/P2PAds'));
 const InputAmount = React.lazy(() => import('@/components/ui/InputWithSelect'));
 const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect'));
 import Loader from "@/components/loader/Loader";
+import CryptoSelector from "./cryptoSelector";
+import NetworkSwitcher from "@/components/networkSwitcher";
 
 interface P2PMarketProps { }
 
@@ -64,7 +66,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
 
   const { data: paymentMethods } = useQuery({
     queryKey: ["paymentOptions"],
-    queryFn: () => fetchPaymentMethods(indexerUrl),
+    queryFn: () => fetchContractPaymentMethods(indexerUrl),
     enabled: !!indexerUrl,
   });
 
@@ -80,16 +82,12 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   useEffect(() => {
     const fiat: string = currencyAmount.currency || "CEDIH"
     const query = activeTab
-    ? `trade=${activeTab}&crypto=${selectedCrypto?.symbol || "RMP" }&fiat=${fiat}`
+    ? `trade=${activeTab}&crypto=${selectedCrypto?.symbol || "" }&fiat=${fiat}`
     : `crypto=${selectedCrypto?.symbol}&fiat=${fiat}`;
   router.push(`${pathname}?${query}`);
   
   }, [selectedCrypto, activeTab]);
 
-  const handleOpenChainModal = () => {
-    console.log("open chain modal", openChainModal);
-    openChainModal?.();
-  };
 
   const isAvailable = !!(tokens && currencies && paymentMethods);
 
@@ -114,7 +112,6 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
           setPaymentMethod={setPaymentMethod}
           currencies={currencies}
           paymentMethods={paymentMethods}
-          handleOpenChainModal={handleOpenChainModal}
           currentChain={currentChain}
         />
         <Suspense fallback={<Loader loaderType="text" className="mt-24" />}>
@@ -168,72 +165,29 @@ const TabSelector: React.FC<TabSelectorProps> = ({
   </div>
 );
 
-interface CryptoSelectorProps {
-  tokens: Token[];
-  selectedCrypto?: Token;
-  setSelectedCrypto: (token: Token) => void;
-}
 
-const CryptoSelector: React.FC<CryptoSelectorProps> = ({
-  tokens,
-  selectedCrypto,
-  setSelectedCrypto,
-}) => (
-  <div className="bg-white border-0 border-gray-200 rounded-xl">
-    <div className="hidden sm:flex justify-start items-center space-x-4 p-1 px-3">
-      {tokens.map((token) => (
-        <button
-          key={token.id}
-          onClick={() => setSelectedCrypto(token)}
-          className={`p-1 rounded-full text-md ${selectedCrypto?.symbol === token.symbol ? " text-blue-500" : "text-black"
-            }`}
-        >
-          {token.symbol}
-        </button>
-      ))}
-    </div>
-    <div className="sm:hidden flex flex-row items-center space-x-6">
-      <select
-        value={selectedCrypto?.symbol}
-        onChange={(e) =>
-          setSelectedCrypto(tokens.find((t) => t.symbol === e.target.value)!)
-        }
-        className="w-full px-6 py-2 rounded-xl text-md bg-white border border-gray-300 text-gray-600 outline-none"
-      >
-        {tokens.map((crypto) => (
-          <option key={crypto.id} value={crypto.symbol}>
-            {crypto.symbol}
-          </option>
-        ))}
-      </select>
-      <Filter className="cursor-pointer w-10 h-10" onClick={() => { }} />
-    </div>
-  </div>
-);
 
 interface PaymentsSectionProps {
   currencies: PreparedCurrency[];
   paymentMethods: any;
   setCurrencyAmount: (value: { currency: string; amount: string; id: `0x${string}` }) => void;
   setPaymentMethod: (value: string) => void;
-  handleOpenChainModal: () => void;
   currentChain: any;
 }
 
 const PaymentsSection: React.FC<PaymentsSectionProps> = ({
   currencies,
   paymentMethods,
-  handleOpenChainModal,
   setCurrencyAmount,
   setPaymentMethod,
-  currentChain,
 }) => {
   const { isConnected } = useAccount()
   return (
     <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
       <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
-        <Suspense fallback={<Loader loaderType="text" />}>
-          <Button text={currentChain.name} className="bg-transparent border border-blue-300 px-4 py-2 w-full block lg:hidden" onClick={handleOpenChainModal} icon={<MoveVertical />} /></Suspense>
+        <div className="w-full block lg:hidden">
+        <NetworkSwitcher />
+        </div>
         <div className="w-full lg:w-[300px]">
           <InputAmount
             label=""
@@ -264,11 +218,12 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
         <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
       </div>
       {isConnected && (
-        <Suspense fallback={<Loader loaderType="text" />}>
-          <Button text={currentChain.name} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full lg:w-auto hidden lg:flex" onClick={handleOpenChainModal} icon={<ChevronsUpDown />} />
-        </Suspense>
+        <div className="lg:w-auto hidden lg:flex">
+  <NetworkSwitcher />
+        </div>
       )}
     </div>
 
   )
-};
+
+  };

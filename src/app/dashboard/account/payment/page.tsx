@@ -9,6 +9,8 @@ import { useAccount } from 'wagmi';
 import fetchPaymentDetails from '@/common/api/fetchPaymentDetails';
 import { parseStringToObject } from '@/lib/utils';
 import DashboardLayout from '../../DashboardLayout';
+import useUserPaymentMethods from '@/common/hooks/useUserPaymentMenthods';
+import Loader from '@/components/loader/Loader';
 
 
 type PaymentMethod = {
@@ -27,21 +29,13 @@ const paymentMethods: PaymentMethod[] = [
 const Payment = () => {
   const { showModal, hideModal } = useModal();
   const account = useAccount();
-
-
-
-  const { data: methods, isLoading, isError } = useQuery({
-    queryKey: ['paymentMethods', account.address],
-    queryFn: () => fetchPaymentDetails(account.address!)
-  });
-  console.log("methods", methods)
-
+  const {paymentMethods, isFetching, refetch} = useUserPaymentMethods();
 
 
   // Function to show the modal with the correct content
   const handleClick = () => {
     showModal(
-      <AddPaymentMethod hideModal={hideModal} />
+      <AddPaymentMethod onSuccess ={refetch} hideModal={hideModal} />
     );
   };
 
@@ -63,8 +57,9 @@ const Payment = () => {
           />
         </div>
         <div>
+          {isFetching && <Loader loaderType='text'/>}
 
-          {methods?.map((method, i) => {
+          {paymentMethods?.map((method, i) => {
             const parsedDetails = parseStringToObject(method.details);
             return (
               <div key={i} className="p-2 border-b">

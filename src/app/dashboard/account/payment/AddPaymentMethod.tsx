@@ -8,21 +8,27 @@ import { collection, addDoc } from "firebase/firestore";
 import { useAccount } from 'wagmi';
 import { useContracts } from '@/common/contexts/ContractContext';
 import { useQuery } from '@tanstack/react-query';
-import { fetchPaymentMethods } from '@/common/api/fetchPaymentMethods';
+import  fetchContractPaymentMethods from '@/common/api/fetchContractPaymentMethods';
+import Input from '@/components/ui/input';
 
 interface Props {
     hideModal: () => void
+    buttonText?: string
+    method?: string
+    onSuccess?: () => void
 }
-const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
+const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess}) => {
     const { indexerUrl } = useContracts();
-    const [selectedMethod, setSelectedMethod] = useState<string | null>(null)
-    const [steps, setSteps] = useState(1)
+    const [selectedMethod, setSelectedMethod] = useState<string | null | undefined>(method)
+    const [steps, setSteps] = useState(method ? 2: 1)
     const account = useAccount()
-    const [details, setDetails] = useState<string | null>(null)
+    const [details, setDetails] = useState<string>("")
+    const [name, setName] = useState<string>("")
+    const [number, setNumber] = useState<string>("")
 
     const { data: paymentMetho } = useQuery({
         queryKey: ["paymentOptions"],
-        queryFn: () => fetchPaymentMethods(indexerUrl),
+        queryFn: () => fetchContractPaymentMethods(indexerUrl),
         enabled: !!indexerUrl,
     });
 
@@ -34,12 +40,13 @@ const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
             // Add the payment method details to the "accounts" collection
             addDoc(collection(db, `Users/${account.address}/paymentMethods`), {
                 paymentMethod: selectedMethod,
+                name,
+                number,
                 details
                 // Add other payment method details here
             })
                 .then(() => {
-                    // Payment method added successfully
-                    // You can perform any necessary actions here
+                    onSuccess?.();
                     hideModal();
                 })
                 .catch((error) => {
@@ -108,10 +115,13 @@ const AddPaymentMethod: FC<Props> = ({ hideModal }) => {
                     {
                         steps === 2 && (
                             <Fragment>
-                                <div>
-                                    <p>Provide your <span className="font-bold">{selectedMethod}</span> details. Prefix it with either of the below.</p>
+                                <div className='space-y-3'>
+                                    <p>Provide your <span className="font-bold">{selectedMethod}</span> details. </p>
                                     <p>(Name, account number, MOMO number etc)</p>
-                                    <textarea onChange={(e) => setDetails(e.target.value)} rows={10} className='w-full p-4 border border-gray-300 rounded-xl outline-none resize-none ' />
+                                    <Input value={name} onChange={e=> setName(e.target.value)} label='Name'/>
+                                    <Input value={number} onChange={e=> setNumber(e.target.value)}  label='Number'/>
+                                    <textarea onChange={(e) => setDetails(e.target.value)} 
+                                    rows={10} className='w-full p-4 border border-gray-300 rounded-xl outline-none resize-none ' />
                                 </div>
                                 <div className='flex flex-row items-center gap-4 p-4 px-0'>
                                     <Button

@@ -1,20 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import { useContracts } from "../contexts/ContractContext";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { fetchAccount } from "../api/fetchAccount";
 
 const useIsMerchant = () => {
-    const { indexerUrl } = useContracts();
+    const { p2p } = useContracts();
     const { isConnected, address } = useAccount();
 
+    const {data: isMerchant, isError, isLoading, error} = useReadContract({
+        address: p2p.address,
+        abi: p2p.abi,
+        functionName: "merchants",
+        args: [address!],
+        query: {
+            retry: 1,
+            refetchOnWindowFocus: false,
+            enabled: !!address,
+        }
+    })
 
-    const { data: account, error, isLoading, isError } = useQuery({
-        queryKey: ['merchantAccount', indexerUrl, address],
-        queryFn: () => fetchAccount(indexerUrl, address),
-        enabled: !!address, // Ensures that address is truthy before making the query
-        retry: 1,
-        refetchOnWindowFocus: false,
-    });
+    console.log("isMerchant", isMerchant);
+
+
 
         // Return default values if not connected
         if (!isConnected || !address) {
@@ -26,8 +33,6 @@ const useIsMerchant = () => {
             };
         }
     
-
-    const isMerchant = account?.account?.isMerchant || false;
 
     return {
         isMerchant,

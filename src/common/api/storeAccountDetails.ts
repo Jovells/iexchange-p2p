@@ -3,6 +3,7 @@ import { AccountDetails } from "./types";
 
 
 async function storeAccountDetails(accountDetails: AccountDetails) {
+    console.log('Storing account details:', accountDetails);
     try {
         const response = await fetch(API_ENDPOINT + '/account', {
             method: 'POST',

@@ -27,8 +27,10 @@ query paymentMethods {
 `;
 
 
-export async function fetchPaymentMethods(indexerUrl: string) {
+async function fetchPaymentMethods(indexerUrl: string) {
     const graphdata = (await fetchGraphQL(indexerUrl, operation, "paymentMethods",{})) as { paymentMethods: PaymentMethod[] };
 
     return graphdata.paymentMethods;
   }
+
+export default fetchPaymentMethods;

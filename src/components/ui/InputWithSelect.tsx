@@ -23,7 +23,7 @@ interface InputSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const InputWithSelect: React.FC<InputSelectProps> = ({
   label,
-  initialCurrency = "CEDIH",
+  initialCurrency = "GHS",
   initialAmount,
   currencies,
   onValueChange,
@@ -121,7 +121,7 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
         <div className="absolute w-full bg-gray-50 p-2 border rounded-lg shadow-md z-10">
           {currencies.map((currency) => (
             <div
-              key={currency.symbol}
+              key={currency.id}
               className="flex justify-between p-2 border-b last:border-b-0 hover:bg-gray-100"
               onClick={() => handleSelect(currency)}>
               <div className="flex items-center space-x-2">

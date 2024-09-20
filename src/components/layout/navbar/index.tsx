@@ -7,13 +7,11 @@ import BecomeAMerchant from "../../merchant";
 import { ThemeToggle } from "@/components/shared";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/common/contexts/ModalContext";
-import ClaimModal from "@/components/modals/ClaimModal";
 
 const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
     const navigation = useRouter()
     const drawerRef = useRef<HTMLDivElement>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const { showModal, hideModal} = useModal();
 
     const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
 
@@ -51,10 +49,7 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
     ];
 
 
-    const showClaimModal = () =>{
-        const modal = <ClaimModal />
-        showModal(modal);
-    }
+
 
     return (
         <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 px-0 lg:pr-3 lg:pl-0">
@@ -65,7 +60,6 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
                 </div>
                 <div className="hidden lg:flex flex-row justify-start items-center space-x-6">
                     <BecomeAMerchant />
-                    <Button text="Claim" className="bg-black text-white rounded-xl px-4 py-2" onClick={showClaimModal} />
                     <Button
                         icon="/images/icons/gold.png"
                         iconPosition="any"
@@ -75,7 +69,6 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
                     <ThemeToggle />
                 </div>
                 <div className="lg:hidden flex flex-row justify-start items-center gap-4" id="mobile-menu">
-                    <Button text="Claim" className="bg-black text-white rounded-xl px-4 py-2" onClick={showClaimModal} />
                     <Button
                         icon="/images/icons/gold.png"
                         iconPosition="any"
