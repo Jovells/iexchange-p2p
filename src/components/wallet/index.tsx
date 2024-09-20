@@ -5,9 +5,6 @@ import { shortenAddress } from '@/lib/utils';
 import { useModal } from '@/common/contexts/ModalContext';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
-import { useSession } from 'next-auth/react';
-import { getAuth, signInWithCustomToken, signOut } from "firebase/auth";
-import { UserSession } from '@/common/types';
 
 
 

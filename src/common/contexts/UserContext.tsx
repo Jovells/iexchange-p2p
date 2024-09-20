@@ -110,7 +110,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
     },
     signOut: async () => {
       try {
-        await fetch(API_ENDPOINT + '/logout');
+        await signUserOut();
         console.log('Signed out successfully');
       } catch (error) {
         console.error('Error signing out:', error);
@@ -158,13 +158,14 @@ useEffect(
 
   const signUserOut = async () => {
       await auth.signOut();
+      setSession({status: "unauthenticated", jwt: ""});
       setUser(undefined);
       return;
   }
 
   return (
     <UserContext.Provider value={{ user, session, signUserOut, signUserIn }}>
-          <RainbowKitAuthenticationProvider  status ="unauthenticated" adapter = {authenticationAdapter}>
+          <RainbowKitAuthenticationProvider  status ={session.status} adapter = {authenticationAdapter}>
         <RainbowKitProvider theme={darkTheme({
           accentColor: '#000000',
           // accentColorForeground: '#',

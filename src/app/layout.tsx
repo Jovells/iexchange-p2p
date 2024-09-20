@@ -3,8 +3,6 @@ import "@/styles/custom.css";
 import { WalletProvider } from "@/common/contexts";
 import ModalManager from "@/components/shared/modal/Modal";
 import { ModalContextProvider } from "@/common/contexts/ModalContext";
-import { auth } from "../auth";
-import { SessionProvider } from "next-auth/react";
 import TopLoader from "@/components/loader/TopLoader";
 import { Metadata } from "next/types";
 import { Inter } from "next/font/google";
@@ -25,15 +23,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Ensure `auth` function is server-side compatible
-  const session = await auth();
 
   return (
     <html lang="en">
       <body className={inter.className}>
         <ErrorBoundary>
           <TopLoader />
-          <SessionProvider refetchInterval={0} session={session}>
             <WalletProvider>
               <ModalContextProvider>
                 <Toaster/>
@@ -41,7 +36,6 @@ export default async function RootLayout({
                 <ModalManager />
               </ModalContextProvider>
             </WalletProvider>
-          </SessionProvider>
         </ErrorBoundary>
       </body>
     </html>
