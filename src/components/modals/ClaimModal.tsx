@@ -2,13 +2,15 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Button from '../ui/Button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import { useContracts } from '@/common/contexts/ContractContext';
-import { useAccount, useReadContract, useWriteContract } from 'wagmi';
+import { useAccount, useReadContract } from 'wagmi';
 import Loader from '../loader/Loader';
 import useWriteContractWithToast from '@/common/hooks/useWriteContractWithToast';
+import { useModal } from '@/common/contexts/ModalContext';
 
 const ClaimModal = () => {
+    const { hideModal } = useModal()
     const { faucet } = useContracts();
     const account = useAccount();
 
@@ -39,6 +41,8 @@ const ClaimModal = () => {
             functionName: 'claim',
             args: []
         });
+
+        hideModal()
     }
 
     useEffect(() => {
@@ -100,6 +104,15 @@ const ClaimModal = () => {
     return (
         <div className='w-full lg:w-[500px] min-h-[500px] rounded-xl bg-white p-8 flex flex-col items-center'>
             <div className='flex flex-col gap-8'>
+            <div className="flex justify-end items-center">
+                <button
+                    className=""
+                    onClick={hideModal}
+                    aria-label="Close modal"
+                >
+                    <X />
+                </button>
+            </div>
                 <div>
                     <h1 className='text-center text-2xl font-medium'>Available Tokens</h1>
                     <p className='text-center text-lg text-gray-500'>Claim the number of Tokens you have been allocated below.</p>
@@ -121,22 +134,22 @@ const ClaimModal = () => {
                             </p>
                         </div>
                     </div>
-                : (
-                    <div className='flex flex-col gap-6'>
-                        <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
-                            <h2 className='text-sm text-gray-500 text-center'>Amount of RMP</h2>
-                            <h2 className='text-xl text-gray-600 text-center'>5000 RMP</h2>
+                    : (
+                        <div className='flex flex-col gap-6'>
+                            <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
+                                <h2 className='text-sm text-gray-500 text-center'>Amount of RMP</h2>
+                                <h2 className='text-xl text-gray-600 text-center'>5000 RMP</h2>
+                            </div>
+                            <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
+                                <h2 className='text-sm text-gray-500 text-center'>Amount of TRK</h2>
+                                <h2 className='text-xl text-gray-600 text-center'>5000 TRK</h2>
+                            </div>
+                            <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
+                                <h2 className='text-sm text-gray-500 text-center'>Amount of CEDIH</h2>
+                                <h2 className='text-xl text-gray-600 text-center'>5000 CEDIH</h2>
+                            </div>
                         </div>
-                        <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
-                            <h2 className='text-sm text-gray-500 text-center'>Amount of TRK</h2>
-                            <h2 className='text-xl text-gray-600 text-center'>5000 TRK</h2>
-                        </div>
-                        <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
-                            <h2 className='text-sm text-gray-500 text-center'>Amount of CEDIH</h2>
-                            <h2 className='text-xl text-gray-600 text-center'>5000 CEDIH</h2>
-                        </div>
-                    </div>
-                )}
+                    )}
                 <Button
                     text={isClaiming ? "Claiming..." : "Claim All"}
                     className='bg-black text-white px-4 py-4 rounded-xl'

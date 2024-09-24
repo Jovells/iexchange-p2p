@@ -82,19 +82,19 @@ const IExchangeGuide = () => {
                     )
                 }
                 {
-                    activeTab === 'merchandise' && (
+                    activeTab === 'settle' && (
                         <>
                             <div className='flex flex-col justify-start items-start bg-gray-100 border rounded-xl p-6 min-h-[200px]'>
                                 <div className='p-3 space-y-3'>
                                     <div className="flex justify-center items-center">
-                                        <Image src="/images/icons/place-order.png" alt="icon" width={100} height={100} />
+                                        <Image src="/images/icons/verify-kyc.png" alt="icon" width={100} height={100} />
                                     </div>
                                     <h1 className='text-2xl font-medium'>
-                                        Place an Order or Receive an Order
+                                        Verify your Account with KYC
                                     </h1>
                                     <p className='text-gray-500'>
-                                        Click on Buy or Sell to initiate a trade. Review the trade terms and conditions.
-                                        Specify the amount of cryptocurrency you want to buy or sell.
+                                        Click on become a Stake on Platform pn the Appealed Orders Page. Proceed with KYC to access KYC Verification.
+                                        This will Direct you to a third Party Web app for neccesary information
                                     </p>
                                 </div>
                             </div>
@@ -104,25 +104,23 @@ const IExchangeGuide = () => {
                                         <Image src="/images/icons/pay.png" alt="icon" width={100} height={100} />
                                     </div>
                                     <h1 className='text-2xl font-medium'>
-                                        Place an Order or Receive an Order
+                                        Stake on Platform
                                     </h1>
                                     <p className='text-gray-500'>
-                                        Click on Buy or Sell to initiate a trade. Review the trade terms and conditions.
-                                        Specify the amount of cryptocurrency you want to buy or sell.
+                                        Once you are Done with your KYC. You’re back to iExchange to Stake Funds. Select and Deposit Funds by Entering Amount and selecting currency. You’re now a Settler!
                                     </p>
                                 </div>
                             </div>
                             <div className='flex flex-col justify-start items-start bg-gray-100 border rounded-xl p-6 min-h-[200px]'>
                                 <div className='p-3 space-y-3'>
                                     <div className="flex justify-center items-center">
-                                        <Image src="/images/icons/receive-crypto.png" alt="icon" width={100} height={100} />
+                                        <Image src="/images/icons/pick-case.png" alt="icon" width={100} height={100} />
                                     </div>
                                     <h1 className='text-2xl font-medium'>
-                                        Place an Order or Receive an Order
+                                        Pick a Case to Settle
                                     </h1>
                                     <p className='text-gray-500'>
-                                        Click on Buy or Sell to initiate a trade. Review the trade terms and conditions.
-                                        Specify the amount of cryptocurrency you want to buy or sell.
+                                        On the Appealed Order Page there are Several Cases Available. You have to click on a particular Case you please to settle. Every Case has 3 rounds and you can participate in judgement in only a round in a case.
                                     </p>
                                 </div>
                             </div>
@@ -130,19 +128,19 @@ const IExchangeGuide = () => {
                     )
                 }
                 {
-                    activeTab === 'settle' && (
+                    activeTab === 'merchandise' && (
                         <>
                             <div className='flex flex-col justify-start items-start bg-gray-100 border rounded-xl p-6 min-h-[200px]'>
                                 <div className='p-3 space-y-3'>
                                     <div className="flex justify-center items-center">
-                                        <Image src="/images/icons/place-order.png" alt="icon" width={100} height={100} />
+                                        <Image src="/images/icons/verify-kyc.png" alt="icon" width={100} height={100} />
                                     </div>
                                     <h1 className='text-2xl font-medium'>
-                                        Place an Order or Receive an Order
+                                        Verify your Account with KYC
                                     </h1>
                                     <p className='text-gray-500'>
-                                        Click on Buy or Sell to initiate a trade. Review the trade terms and conditions.
-                                        Specify the amount of cryptocurrency you want to buy or sell.
+                                        Click on become a Merchant. Proceed with KYC to access KYC Verification.
+                                        This will Direct you to a third Party Web app for neccesary information
                                     </p>
                                 </div>
                             </div>
@@ -152,25 +150,23 @@ const IExchangeGuide = () => {
                                         <Image src="/images/icons/pay.png" alt="icon" width={100} height={100} />
                                     </div>
                                     <h1 className='text-2xl font-medium'>
-                                        Place an Order or Receive an Order
+                                        Stake on Platform
                                     </h1>
                                     <p className='text-gray-500'>
-                                        Click on Buy or Sell to initiate a trade. Review the trade terms and conditions.
-                                        Specify the amount of cryptocurrency you want to buy or sell.
+                                        Once you are Done with your KYC. You’re back to iExchange to Stake Funds. Select and Deposit Funds by Entering Amount and selecting currency. You’re now a Merchant!
                                     </p>
                                 </div>
                             </div>
                             <div className='flex flex-col justify-start items-start bg-gray-100 border rounded-xl p-6 min-h-[200px]'>
                                 <div className='p-3 space-y-3'>
                                     <div className="flex justify-center items-center">
-                                        <Image src="/images/icons/receive-crypto.png" alt="icon" width={100} height={100} />
+                                        <Image src="/images/icons/post-ad.png" alt="icon" width={100} height={100} />
                                     </div>
                                     <h1 className='text-2xl font-medium'>
-                                        Place an Order or Receive an Order
+                                        Create and Post an Ad
                                     </h1>
                                     <p className='text-gray-500'>
-                                        Click on Buy or Sell to initiate a trade. Review the trade terms and conditions.
-                                        Specify the amount of cryptocurrency you want to buy or sell.
+                                        Click on Post Ad. This Directs you to a form to fill in the right information about your advertisement. Enter the amount of cryptocurrency you wish to trade and etc. and click Add Post.
                                     </p>
                                 </div>
                             </div>

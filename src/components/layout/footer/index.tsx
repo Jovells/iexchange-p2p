@@ -12,19 +12,37 @@ import { ThemeToggle } from "@/components/shared";
 import { footerNavSections, socials } from "@/common/data";
 
 const Footer = () => {
-  
+
   return (
     <footer className="bg-secondary border-t border-[#C3C9D0] dark:border-[#3D4651]">
-      <div className="container py-8">
+      <div className="container mx-auto py-8">
         {/* socials and theme toggle */}
-        <div className="pt-10 pb-14 lg:px-20">
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 items-start sm:justify-center gap-10">
+        <div className="pt-10 pb-14 ">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:justify-center gap-10">
             <div className="flex flex-col gap-4">
               {/* socials */}
-              <div className="flex flex-row items-center gap-10">
-                {socials.map((social) => (
+              <div className="flex flex-row items-center gap-4">
+                <Image
+                  src="/images/icons/x.png"
+                  alt="social icon"
+                  width={24}
+                  height={24}
+                />
+                <Image
+                  src="/images/icons/telegram.png"
+                  alt="social icon"
+                  width={24}
+                  height={24}
+                />
+                <Image
+                  src="/images/icons/youtube.png"
+                  alt="social icon"
+                  width={24}
+                  height={24}
+                />
+                {/* {socials.map((social) => (
                   <FooterSocialLink key={social.name} social={social} />
-                ))}
+                ))} */}
               </div>
               {/* theme toggle */}
               <div className="w-full">
@@ -54,7 +72,7 @@ const Footer = () => {
         <hr className="border:[#DFE2E7] dark:border-[#3D4651]" />
         {/* copyright and terms */}
         <div className="py-5">
-          <div className="grid lg:grid-cols-[1fr-auto] items-center lg:items-start justify-center gap-5">
+          <div className="grid lg:grid-cols-2 items-center lg:items-start justify-center gap-5">
             <Image
               src="/images/logo/iexchange-logo.png"
               alt="logo"
