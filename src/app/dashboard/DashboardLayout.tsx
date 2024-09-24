@@ -35,7 +35,7 @@ export default function DashboardLayout({
                 </div>
                 <div className="flex flex-1 border-t p-0 pt-0 lg:pt-6">
                     <SideNav isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
-                    <div className="flex-1 p-6">
+                    <div className="flex-1 p-6 min-h-[700px]">
                         {children}
                     </div>
                 </div>

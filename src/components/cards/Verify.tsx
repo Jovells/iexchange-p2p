@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 const Verify = () => {
     return (
-        <div className='flex flex-col flex-col-reverse lg:flex-row border border-blue-700 rounded-xl p-6 bg-blue-50 w-full'>
+        <div className='flex flex-col-reverse lg:flex-row border border-blue-700 rounded-xl p-6 bg-blue-50 w-full lg:w-auto'>
             <div className='flex flex-col justify-start items-start gap-6'>
                 <div className='flex flex-col gap-2'>
                     <h1 className='text-xl font-medium'>Verify Your Account</h1>
