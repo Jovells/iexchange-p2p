@@ -1,18 +1,17 @@
 "use client";
 
-import React, { Fragment, Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { ChevronsUpDown, Filter, MoveVertical } from "lucide-react";
+import { Filter } from "lucide-react";
 import WalletConnectSection from "@/components/sections/WalletConnectSection";
 import IExchangeGuide from "@/components/sections/IExchangeGuide";
 import { useChainModal } from "@rainbow-me/rainbowkit";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTokens } from "@/common/api/fetchTokens";
-import { PreparedCurrency, Token } from "@/common/api/types";
+import { PreparedCurrency } from "@/common/api/types";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
-import { useAccount } from "wagmi";
 
 
 const Button = React.lazy(() => import('@/components/ui/Button'));
@@ -57,13 +56,13 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     symbol: currency.currency,
     name: currency.currency,
     id: currency.id,
-    icon: currency.currency === "GHS" ? <p>₵</p> :currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p> 
+    icon: currency.currency === "GHS" ? <p>₵</p> : currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p>
   }));
 
   const currencyFromUrl = acceptedCurrencies?.find(c => c.currency = searchParams.get("fiat") || "GHS");
   const [currencyAmount, setCurrencyAmount] = useState({ currency: currencyFromUrl?.currency || "GHS", id: currencyFromUrl?.id, amount: "" });
 
-  
+
 
   const { data: paymentMethods } = useQuery({
     queryKey: ["paymentOptions"],
@@ -83,10 +82,10 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   useEffect(() => {
     const fiat: string = currencyAmount.currency || "CEDIH"
     const query = activeTab
-    ? `trade=${activeTab}&crypto=${selectedCrypto?.symbol || "" }&fiat=${fiat}`
-    : `crypto=${selectedCrypto?.symbol}&fiat=${fiat}`;
-  router.push(`${pathname}?${query}`);
-  
+      ? `trade=${activeTab}&crypto=${selectedCrypto?.symbol || ""}&fiat=${fiat}`
+      : `crypto=${selectedCrypto?.symbol}&fiat=${fiat}`;
+    router.push(`${pathname}?${query}`);
+
   }, [selectedCrypto, activeTab]);
 
 
@@ -187,7 +186,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
     <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
       <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
         <div className="w-full block lg:hidden">
-        <NetworkSwitcher />
+          <NetworkSwitcher />
         </div>
         <div className="w-full lg:w-[300px]">
           <InputAmount
@@ -220,11 +219,11 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
       </div>
       {session.status === "authenticated" && (
         <div className="lg:w-auto hidden lg:flex">
-  <NetworkSwitcher />
+          <NetworkSwitcher />
         </div>
       )}
     </div>
 
   )
 
-  };
+};
