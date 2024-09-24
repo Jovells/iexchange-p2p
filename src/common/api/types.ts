@@ -94,7 +94,7 @@ export type Order = {
 }
 
 export type OrderResponse = {
-  order: Order;
+  order: Order | null;
 }
 
 export type AccountDetails = {

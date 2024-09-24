@@ -204,10 +204,10 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       return { 
         method: method.paymentMethod,
         details: method.details,
-      };
+      } satisfies PaymentMethod as PaymentMethod;
     }
-    return null;
-  }).filter(Boolean) as {method: string, details: string}[];
+    return undefined as unknown as PaymentMethod;
+  }).filter(Boolean) || [];
   
 
   const handleAddPaymentMethodClick = () => {

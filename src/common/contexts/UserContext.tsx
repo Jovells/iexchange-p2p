@@ -1,7 +1,7 @@
 'use client'
 
 import { getAuth, signInWithCustomToken } from "firebase/auth";
-import { createContext, useContext, ReactNode, FC, useState, useEffect } from "react";
+import { createContext, useContext, ReactNode, FC, useState, useEffect, useLayoutEffect } from "react";
 import { app } from "../configs/firebase";
 import { darkTheme, RainbowKitAuthenticationProvider, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
@@ -11,7 +11,7 @@ import { useAccount } from "wagmi";
 
 
 
-type Session = {status: "authenticated" | "unauthenticated", jwt: string}
+type Session = {status: "authenticated" | "unauthenticated"}
 
 interface UserContextType {
   address: `0x${string}` | undefined;
@@ -37,7 +37,8 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const auth = getAuth(app);
-  const [session, setSession]  = useState<Session>({status: auth.currentUser ? "authenticated" : "unauthenticated", jwt: "",}); 
+  console.log('auth', {...auth});
+  const [session, setSession]  = useState<Session>({status: auth.currentUser ? "authenticated" : "unauthenticated"}); 
   const {address: mixedCaseAddress} = useAccount(); 
 
   const address = mixedCaseAddress?.toLocaleLowerCase() as `0x${string}` | undefined;
@@ -112,14 +113,26 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
       }
     },
   });
+
+  useLayoutEffect(()=>{
+    const unsubscribe = auth.onAuthStateChanged((an) => {
+      if(an){
+        setSession({status: "authenticated"});
+      }
+    })
+
+    return () => unsubscribe();
+
+  }, [])
   
 
 
   const signUserIn = async (firebaseToken: string) => {
     try {
       const userCredential = await signInWithCustomToken(auth, firebaseToken);
-      const jwt = await userCredential.user.getIdToken();
-      setSession({status: "authenticated", jwt: jwt});
+      // const jwt = await userCredential.user.getIdToken();
+      //TODO@Jovells add jwt to requests
+      setSession({status: "authenticated"});
       // ...
     } catch (error) {
       console.error(error);
@@ -130,7 +143,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
 
   const signUserOut = async () => {
       await auth.signOut();
-      setSession({status: "unauthenticated", jwt: ""});
+      setSession({status: "unauthenticated"});
       return;
   }
 

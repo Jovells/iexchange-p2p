@@ -65,6 +65,9 @@ export default async function fetchOrder(indexerUrl: string, orderId: string) {
   })) as OrderResponse;
 
   const data = graphdata.order;
+  if (!data) {
+    return data
+  }
   const docRef = doc(db, "Account", data.accountHash);
   const docSnap = await getDoc(docRef);
   const merchant = docSnap.data();

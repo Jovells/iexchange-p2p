@@ -10,7 +10,7 @@ interface PaymentMethodSelectProps extends React.InputHTMLAttributes<HTMLInputEl
   label?: string;
   selectedMethod?: PaymentMethod;
   initialValue?: string;
-  options: PaymentMethod[];
+  options: PaymentMethod[] | [];
   onValueChange?: (value: PaymentMethod) => void;
   placeholder?: string;
   addButton?: React.ReactNode;
@@ -95,13 +95,13 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
                             //@ts-ignore
                             onClick={() => handleSelect(option)}
                         >
-                            <div className="flex justify-between">
+                            <div className="flex w-full justify-between">
                             <div className="flex items-center space-x-4">
                                 {/* {option.icon} */}
                                 {option === selectedValue ? <Check className='bg-black text-white w-4 h-4 rounded-lg' /> : <Check className='w-4 h-4 opacity-0' />}
                                 <span className='border-l-4 border-blue-500 pl-2'>{option.method}</span>
                             </div>
-                            <span>
+                            <span className="text-gray-500">
                                 {option.details}
                             </span>
                             </div>

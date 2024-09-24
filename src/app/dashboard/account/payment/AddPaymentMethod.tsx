@@ -117,10 +117,10 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess}) => {
                             <Fragment>
                                 <div className='space-y-3'>
                                     <p>Provide your <span className="font-bold">{selectedMethod}</span> details. </p>
-                                    <p>(Name, account number, MOMO number etc)</p>
-                                    <Input value={name} onChange={e=> setName(e.target.value)} label='Name'/>
-                                    <Input value={number} onChange={e=> setNumber(e.target.value)}  label='Number'/>
-                                    <textarea onChange={(e) => setDetails(e.target.value)} 
+                                    <Input value={name} required onChange={e=> setName(e.target.value)} label='Name'/>
+                                    <Input value={number} required onChange={e=> setNumber(e.target.value)}  label='Number'/>
+                                    {/* TODO@mbawon make this text are look like the input */}
+                                    <textarea placeholder='Extra details?' onChange={(e) => setDetails(e.target.value)} 
                                     rows={10} className='w-full p-4 border border-gray-300 rounded-xl outline-none resize-none ' />
                                 </div>
                                 <div className='flex flex-row items-center gap-4 p-4 px-0'>

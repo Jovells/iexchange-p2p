@@ -7,24 +7,40 @@ import Loader from "@/components/loader/Loader";
 import ChatWithMerchant from "@/components/merchant/ChatWithMerchant";
 import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { Order, OrderState } from "@/common/api/types";
 import { formatCurrency, formatBlockTimesamp } from "@/lib/utils";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import ModalAlert from "@/components/modals";
+import CediH from "@/common/abis/CediH";
+import Link from "next/link";
 
 function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: () => void }) {
-  const { indexerUrl, p2p } = useContracts();
+  const { indexerUrl, p2p, tokens } = useContracts();
   const account = useAccount();
   const { writeContractAsync, isPending } = useWriteContractWithToast();
-  const { data: order, error: orderError, refetch } = useQuery({
+  const { writeContractAsync: writeToken, data: approveHash, isSuccess: isApproveSuccess, isPending: isP2pWritePending } = useWriteContractWithToast();
+  
+  const { data: order, error: orderError, refetch, isLoading: orderLoading} = useQuery({
     queryKey: ["order", orderId],
     queryFn: () => fetchOrder(indexerUrl, orderId),
+    retry: 3,
+    staleTime: 0,
   });
+
+  const { data: allowance } = useReadContract({
+    abi: CediH,
+    address: order?.offer.token.id,
+    functionName: "allowance",
+    args: [account.address!, p2p.address],
+  });
+
+
   const { data: accountDetails, error: accountDetailsError } = useQuery({
     queryKey: ["fetchAccountDetails", order?.accountHash],
     queryFn: () => fetchAccountDetails(order?.accountHash as string),
     enabled: !!order,
+    staleTime: 0,
   });
 
   const handlePayOrder = async () => {
@@ -51,12 +67,27 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       args: [BigInt(orderId)],
     }, 
   );
+  refetch()
+
     console.log("Transaction Hash", txHash);
   };
-  refetch()
 
   const handleAcceptOrder = async () => {
     console.log("Accept order");
+
+    const alreadyApproved = (allowance! >= BigInt(order?.quantity||0));  
+
+
+    if (!alreadyApproved) {
+      const approveHash = await writeToken({
+      },{
+        abi: tokens[0].abi,
+        address: order?.offer.token.id as `0x${string}`,
+        functionName: "approve",
+        args: [p2p.address, order?.quantity],
+      });
+    } 
+
     const txHash = await writeContractAsync({},{
       address: p2p.address,
       abi: p2p.abi,
@@ -82,9 +113,24 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
     console.log("Transaction Hash", txHash);
   };
 
-  if (!order) {
+  if (!order && (orderLoading)) {
+    console.log("Loading order", order, orderLoading);
     return <Loader />;
   }
+
+  if(!order) {
+    //TODO@mbawon Add a 404 page 
+   return  <div className="flex flex-col items-center justify-center h-screen">
+      <h2 className="text-2xl font-semibold text-gray-700">Order Not Found</h2>
+      <p className="text-gray-500 mt-2">The order you are looking for does not exist</p>
+      <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-blue-600">
+        Go Home
+      </Link>
+    </div>
+  }
+
+
+
 
 
   const isTrader = order.trader.id.toLowerCase() === account.address?.toLowerCase();
