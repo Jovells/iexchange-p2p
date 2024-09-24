@@ -67,7 +67,7 @@ const Appealls = () => {
   }
 
   return (
-    <TradeLayout>
+    // <TradeLayout>
       <div className="container mx-auto p-0 py-4 pt-0">
         {!hasStake && (
           <div className='min-h-[500px] flex justify-center items-center'>
@@ -97,7 +97,7 @@ const Appealls = () => {
         )}
         <FaqsSection />
       </div>
-    </TradeLayout>
+    // </TradeLayout>
   );
 };
 

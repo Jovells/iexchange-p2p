@@ -44,7 +44,7 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
             onClick={toggleDropdown}
         >
             <button
-                className="inline-flex items-center px-4 py-2 pl-1 pr-0 lg:pl-0 bg-transparent text-[#33343E] font-roboto font-medium text-sm leading-5 tracking-widest rounded-md focus:outline-none"
+                className="inline-flex items-center px-4 py-2 pl-1 pr-0 lg:pl-0 bg-transparent text-[#33343E] font-medium text-sm leading-5 tracking-widest rounded-md focus:outline-none"
             >
                 <img src={icon} alt="icon" className="w-5 h-5 ml-2 lg:ml-6 mr-2" />
                 <span className="hidden lg:flex">{title}</span>
@@ -64,7 +64,7 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
 
             {isOpen && (
                 <div
-                    className="w-auto absolute right-0 w-48 mt-0 py-4 t-6 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg z-10"
+                    className="absolute right-0 w-48 mt-0 py-4 t-6 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg z-10"
                 >
                     <div className="px-3">
                         {children}
