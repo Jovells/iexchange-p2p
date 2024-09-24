@@ -3,7 +3,7 @@ import Loader from '@/components/loader/Loader'
 import Button from '@/components/ui/Button';
 import SearchInput from '@/components/ui/SearchInput'
 import { Check, X } from 'lucide-react'
-import React, { FC, Fragment, useEffect, useState } from 'react'
+import React, { FC, Fragment, useState } from 'react'
 import { collection, addDoc } from "firebase/firestore";
 import { useAccount } from 'wagmi';
 import { useContracts } from '@/common/contexts/ContractContext';
