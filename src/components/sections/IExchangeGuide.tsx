@@ -6,9 +6,9 @@ const IExchangeGuide = () => {
 
     return (
         <div className='w-full py-3 lg:py-16'>
-            <div className="flex flex-row justify-between items-center flex-wrap lg:flex-nowrap p-6 lg:p-0 gap-6 lg:gap-0">
+            <div className="flex flex-row justify-between items-center flex-wrap lg:flex-nowrap lg:p-0 gap-6 lg:gap-0 mt-6">
                 <h1 className='text-3xl font-bold'>How iExchange Works</h1>
-                <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl p-1 min-w-[150px]">
+                <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl min-w-[150px]">
                     <button
                         onClick={() => setActiveTab("trade")}
                         className={`w-full rounded-xl text-center text-md p-1 px-6 ${activeTab.toLowerCase() === 'trade' ? 'text-black bg-gray-300' : 'text-gray-600'
@@ -32,7 +32,7 @@ const IExchangeGuide = () => {
                     </button>
                 </div>
             </div>
-            <div className='grid grid-cols-1 lg:grid-cols-3 py-4 lg:py-12 gap-6 p-6 lg:p-0'>
+            <div className='grid grid-cols-1 lg:grid-cols-3 py-4 lg:py-12 gap-6 lg:p-0'>
                 {
                     activeTab === 'trade' && (
                         <>
