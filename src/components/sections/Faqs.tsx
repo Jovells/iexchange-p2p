@@ -15,7 +15,7 @@ const FaqsSection = () => {
                 Frequently Asked Questions
             </h2>
             <div>
-                <Accordion type="multiple" className="w-full flex flex-col gap-5 lg:gap-6 px-6 lg:px-0">
+                <Accordion type="multiple" className="w-full flex flex-col gap-5 lg:gap-6 lg:px-0">
                     {
                         FAQs.map((faq, index) => (
                             <AccordionItem key={index} value={`question-${index + 1}`} className="border-none px-1.5 rounded-lg hover:bg-secondary">
