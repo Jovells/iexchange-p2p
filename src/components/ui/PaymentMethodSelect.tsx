@@ -71,17 +71,19 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
                 <div className="flex items-center w-full" onClick={toggleDropdown}>
                     <div className="flex items-center flex-1 space-x-1">
                         {!selectedValue && <span className='text-sm text-gray-500 '>{label}</span>}
-                        {<span>{selectedValue?.method?
-                        <div className="flex justify-between">
+                        {<>{selectedValue?.method?
+                        <div className="flex w-full justify-between">
                         <div className="flex items-center space-x-4">
                             {/* {option.icon} */}
                             <span className='border-l-4 border-blue-500 pl-2'>{selectedValue.method}</span>
                         </div>
-                        <span>
-                            {selectedValue.details}
-                        </span>
+                        <div className="pr-2 flex items-center text-sm text-gray-500">
+                               <div>
+                                {selectedValue.number}
+                                </div> 
+                            </div>
                         </div>
-                        : <span className=' text-gray-400 '>{placeholder}</span>}</span>}
+                        : <span className=' text-gray-400 '>{placeholder}</span>}</>}
                     </div>
                     <ChevronDown />
                 </div>
@@ -101,9 +103,17 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
                                 {option === selectedValue ? <Check className='bg-black text-white w-4 h-4 rounded-lg' /> : <Check className='w-4 h-4 opacity-0' />}
                                 <span className='border-l-4 border-blue-500 pl-2'>{option.method}</span>
                             </div>
-                            <span className="text-gray-500">
+                            <div className="min-w-40 text-sm text-gray-500">
+                               <div>
+                                {option.name}
+                                </div> 
+                               <div>
+                                {option.number}
+                                </div> 
+                               <div>
                                 {option.details}
-                            </span>
+                                </div> 
+                            </div>
                             </div>
                         </div>
                     ))}

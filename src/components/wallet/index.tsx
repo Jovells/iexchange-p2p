@@ -6,6 +6,8 @@ import { useModal } from '@/common/contexts/ModalContext';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { useUser } from '@/common/contexts/UserContext';
+import { useRouter } from 'next/navigation';
+import { HOME_PAGE } from '@/common/page-links';
 
 
 
@@ -15,6 +17,12 @@ const WalletConnect = () => {
     const {session } = useUser();
     const { disconnect, isPending } = useDisconnect();
     const { showModal, hideModal } = useModal();
+    const router = useRouter();
+
+    function handleDisconnect() {
+        disconnect();
+        router.push(HOME_PAGE);
+    }
 
 
 //sign out
@@ -35,7 +43,7 @@ const WalletConnect = () => {
             {session.status === "authenticated" ? (
                 <div className="flex justify-between items-center space-x-2 text-black py-2">
                     <span>{shortenAddress(walletAddress)}</span>
-                    <div onClick={() => disconnect()}>
+                    <div onClick={() => handleDisconnect()}>
                         <Image
                             src="/images/icons/disconnect.png"
                             alt="Disconnect"
@@ -47,7 +55,7 @@ const WalletConnect = () => {
                 </div>
             ) : (
                 <ConnectButton/>
-            )}
+            )} 
         </Fragment>
     );
 };

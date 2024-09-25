@@ -9,20 +9,24 @@ import {
   import { writeContract } from "viem/actions";
   import { offerTypes as OFFER_TYPES } from "./constants";
 import { Offer } from "./types";
+
+interface FetchAdsOptions {
+    quantity?: number;
+    page?: number;
+    offerType?: string;
+    tokenId?: string;
+    merchant?: string;
+    paymentMethod?: string;
+    currency?: string;
+    amount?: string;
+    orderBy?: string;
+    orderDirection?: string;
+    isActive?: boolean;
+}
   
   
 
-export async function fetchAds(indexerUrl: string, options?: { 
-  quantity?: number, 
-  merchant?: string, 
-  page?: number, 
-  offerType: string, 
-  tokenId?: string, 
-  currency?: string, 
-  amount?: string, 
-  paymentMethod?: string,
-  isActive?: boolean
-}) {
+export async function fetchAds(indexerUrl: string, options?: FetchAdsOptions ) {
   const {
     quantity = 10,
     page = 0,
@@ -32,6 +36,8 @@ export async function fetchAds(indexerUrl: string, options?: {
     paymentMethod,
     currency,
     amount,
+    orderBy,
+    orderDirection,
     isActive
   } = options || {};
 
@@ -40,6 +46,8 @@ export async function fetchAds(indexerUrl: string, options?: {
   const operation = constructAdsQuery({
     first: quantity,
     skip: page * quantity,
+    orderBy: orderBy || "blockTimestamp",
+    orderDirection: orderDirection || "desc",
     options: [
       { name: "offerType", value: OFFER_TYPES[offerType as keyof typeof OFFER_TYPES], type: "Int" },
       { name: "token", value: tokenId, type: "String" },
@@ -80,11 +88,13 @@ export async function fetchAds(indexerUrl: string, options?: {
 export function constructAdsQuery(params: {
   first: number;
   skip: number;
+  orderBy: string;
+  orderDirection: string;
   options: { name: string, value: string | number | Boolean | undefined, type: string }[];
 }) {
-  const { first, skip, options } = params;
+  const { first, skip, orderBy, orderDirection, options } = params;
 
-  const variables : {[key: string]: any} = { first, skip };
+  const variables : {[key: string]: any} = { first, skip, orderBy: orderBy, orderDirection: orderDirection };
 
 
   const whereClauses = options.map((option) => {
@@ -105,8 +115,8 @@ export function constructAdsQuery(params: {
   }).filter(Boolean).join(", ");
 
   return ({variables, query :`
-    query ads($first: Int!, $skip: Int!, ${queryVariables}) {
-      offers(first: $first, skip: $skip, where: { ${whereClauses} }) {
+    query ads($first: Int!, $skip: Int!, $orderBy: Order_orderBy, $orderDirection: OrderDirection, ${queryVariables}) {
+      offers(first: $first, orderBy: $orderBy, orderDirection: $orderDirection,  skip: $skip, where: { ${whereClauses} }) {
         id
         maxOrder
         minOrder

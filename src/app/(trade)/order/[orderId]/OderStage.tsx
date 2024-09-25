@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { offerTypes } from "@/common/api/constants";
 import fetchAccountDetails from "@/common/api/fetchAccountDetails";
 import fetchOrder from "@/common/api/fetchOrder";
@@ -14,6 +14,7 @@ import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast"
 import ModalAlert from "@/components/modals";
 import CediH from "@/common/abis/CediH";
 import Link from "next/link";
+import { config } from "@/common/configs";
 
 function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: () => void }) {
   const { indexerUrl, p2p, tokens } = useContracts();
@@ -26,7 +27,6 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
     queryKey: ["order", orderId],
     queryFn: () => fetchOrder(indexerUrl, orderId),
     retry: 3,
-    staleTime: 0,
   });
 
   const { data: allowance } = useReadContract({
@@ -43,6 +43,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
     enabled: !!order,
     staleTime: 0,
   });
+
+
+
 
   
   const handlePayOrder = async () => {
@@ -109,12 +112,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   };
 
   const handleCancelOrder = async () => {
-    console.log("Cancel Order");
+    console.log("Cancel Order", orderId, order);
     const txHash = await writeContractAsync({},{
       address: p2p.address,
       abi: p2p.abi,
       functionName: "cancelOrder",
-      args: [BigInt(orderId)],
+      args: [orderId],
     }, 
   );
   // Optimistically update the order status
@@ -146,8 +149,10 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
 
   const isTrader = order.trader.id.toLowerCase() === account.address?.toLowerCase();
   const isMerchant = order.offer.merchant.id.toLowerCase() === account.address?.toLowerCase();
+  const isBuy = order.offer.offerType === offerTypes.buy;
+  const isSell = order.offer.offerType === offerTypes.sell;
 
-  const isBuyer = ((order.offer.offerType === offerTypes.buy) && isTrader) || ((order.offer.offerType === offerTypes.sell) && isMerchant);
+  const isBuyer = (isBuy && isTrader) || (isSell && isMerchant);
 
   console.log("Is Buyer", isBuyer);
 
@@ -196,7 +201,13 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
  
 
   if (!(isTrader || isMerchant)) {
-    return <div>You are not authorized to view this page</div>;
+   return <div className="flex flex-col items-center justify-center h-screen">
+      <h2 className="text-2xl font-semibold text-gray-700">Unauthorized Access</h2>
+      <p className="text-gray-500 mt-2">You are not authorized to view this page.</p>
+      <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-blue-600">
+        Go Home
+      </Link>
+    </div>;
   }
 
 
@@ -204,6 +215,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   const buyAmount = formatCurrency(Number(order?.quantity) * Number(order?.offer.rate), isBuyer ? order.offer.currency.currency : order.offer.token.symbol)
   const sellAmount = formatCurrency(Number(order?.quantity), isBuyer ? order?.offer.token.symbol : order.offer.currency.currency)
 
+  const isCancellable = (order.status === OrderState.pending && isMerchant) || (order.status === OrderState.accepted && isTrader);
+
+  //TODO: @Jovells implement timer
   return (
     <>
       <div className="w-full py-6 bg-[#CCE0F6]">
@@ -239,7 +253,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
         <div className="w-full h-[500px] grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
           <ChatWithMerchant otherParty = {isTrader? order.offer.merchant : order.trader} />
           <div className="p-6 h-full shadow-lg border border-gray-300 rounded-xl space-y-6">
+            <div className="flex justify-between">
             <h2 className="text-lg text-gray-500">Order Info</h2>
+            <div className={`px-4 py-1 rounded-xl ${isBuyer ? "bg-green-200" : "bg-red-200"}`}>
+              {isBuyer ? "Buying" : "Selling"}
+            </div>
+            </div>
             <div className="flex flex-col justify-start items-start lg:flex-row lg:justify-between gap-3 lg:gap-10 mt-6">
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
                 <div className="text-sm text-gray-600 font-light">Amount</div>
@@ -281,7 +300,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
             </div>
             <div className="flex flex-col lg:flex-row gap-6">
               <Button loading ={isPending} text={buttonText} className={`${disabled ? "bg-slate-100 text-gray-500" :"bg-[#000000] text-white"}  rounded-xl px-4 py-2`} onClick={onClick} disabled={disabled} />
-                {order.status === OrderState.pending  && (
+                {isCancellable  && (
                 <Button text="Cancel Order" className="bg-red-200 text-black rounded-xl px-4 py-2 hover:bg-red-300" onClick={handleCancelOrder} />
                 )}
               

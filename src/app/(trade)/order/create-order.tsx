@@ -10,9 +10,8 @@ import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteCont
 import { decodeEventLog } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
-import { Offer, PaymentMethod, } from "@/common/api/types";
+import { Offer, Order, OrderState, PaymentMethod, } from "@/common/api/types";
 import toast from "react-hot-toast";
-import { waitForTransactionReceipt } from "viem/actions";
 import  z  from "zod";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
@@ -21,7 +20,11 @@ import { Link } from "lucide-react";
 import AddPaymentMethod from "@/app/dashboard/account/payment/AddPaymentMethod";
 import { useModal } from "@/common/contexts/ModalContext";
 import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
- 
+import { useUser } from "@/common/contexts/UserContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { getBlock } from '@wagmi/core'
+import { config } from "@/common/configs";
+
 const formSchema = z.object({
   toPay: z.string().min(1, "Please enter a valid amount").refine(val => !isNaN(Number(val)) && Number(val) > 0, {
     message: "Must be a valid positive number"
@@ -44,33 +47,32 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     toReceive: "",
     paymentMethod: data.paymentMethod,
   });
+  const queryClient = useQueryClient();
   const [errors, setErrors] = useState<z.ZodIssue[]>([]);
-  const {p2p, tokens} = useContracts();
+  const {p2p, tokens, currentChain} = useContracts();
   const token = tokens.find((token) => token.address.toLowerCase() === data.token.id.toLowerCase());
-  const account = useAccount();
+  const {address: userAddress} = useUser();
   const prevOrderType = useRef(orderType);
   const searchParams = useSearchParams();
   const navigate = useRouter();
+  const newOrder =  useRef<Partial<Order>>();
   const {paymentMethods : userPaymentMethods, isFetching, refetch} = useUserPaymentMethods();
   const {showModal, hideModal} = useModal();
 
   const trade = orderType === "buy" ? "Buy" : "Sell";
   const crypto = data.token.symbol
 
-  const { writeContractAsync: writeToken, data: approveHash, isSuccess: isApproveSuccess, isPending: isP2pWritePending } = useWriteContractWithToast();
-  const { writeContractAsync: writeP2p, data: p2phash, isPending : isApprovePending  } = useWriteContractWithToast();
-  const {
-    data: receipt, isSuccess, 
-    isLoading: isP2pPending,
-  } = useWaitForTransactionReceipt({
-    hash: p2phash, 
-  });
+  const { writeContractAsync: writeToken, data: approveHash, isSuccess: isApproveSuccess, isPending: isApprovePending } = useWriteContractWithToast();
+  const { writeContractAsync: writeP2p, data: p2phash, receipt, isSuccess, isPending  } = useWriteContractWithToast();
+
+
+  const isMerchant = userAddress === data.merchant.id;
 
   const { data: allowance } = useReadContract({
     abi: CediH,
     address: data.token.id,
     functionName: "allowance",
-    args: [account.address!, p2p.address],
+    args: [userAddress!, p2p.address],
   });
   const isBuy = orderType.toLowerCase() === "buy"
 
@@ -119,8 +121,11 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     console.log('orderType', orderType, "paymentMethod", paymentMethod,)
-    
     e.preventDefault();
+    if(isMerchant){
+      toast.error("You cannot trade with yourself");
+      return;
+    }
     
     
     // Validate the form before submission
@@ -134,11 +139,11 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       setErrors([]);
     }
     
-    const depositAddress = isBuy ? data.depositAddress.id : account.address;
+    const depositAddress = isBuy ? data.depositAddress.id : userAddress;
 
     const accountHash = isBuy ? data.accountHash : await storeAccountDetails({
       name: "" as string,
-      address: account.address as string,
+      address: userAddress as string,
       number: "" as string,
       paymentMethod: paymentMethod.method,
       details: paymentMethod.details,
@@ -154,8 +159,10 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           args: [p2p.address, tokensAmount],
         });
       } 
-        const createHash = await writeP2p({
-        },{
+        const createHash = await writeP2p(
+          {loadingMessage:"Creating Order",
+          successMessage: "Order Created Successfully",
+          },{
           abi: p2p.abi,
           address: p2p.address,
           functionName: "createOrder",
@@ -166,7 +173,15 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
             accountHash,
           ],
         });
-      
+      newOrder.current = { 
+        accountHash: accountHash as `0x${string}`, 
+        offer: data, 
+        trader: { id: userAddress! },
+        depositAddress : { id: depositAddress! },
+        orderType: data.offerType,
+        quantity: tokensAmount.toString(),
+        status: OrderState.pending
+       } satisfies Partial<Order>;
 
     } catch (e) {
       console.log("error", e);
@@ -174,42 +189,44 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   };
 
   useEffect(()=>{
-    if (isSuccess && p2phash) {
-      const id = "create-order";
-      let orderId;
-      receipt.logs.some((log) => {
-        try {
-          const decoded = decodeEventLog({
-            abi: p2p.abi,
-            data: log.data,
-            topics: log.topics,
-            eventName: "NewOrder",
-          });
-          const args = decoded?.args as unknown as { orderId: string };
-          orderId = args.orderId;
-          return true;
-        } catch (e) {
-          return false;
-        }
-      });
-  
-      navigate.push("/order/" + orderId);
+    console.log('qweisSuccess', isSuccess, 'receipt', receipt)
+
+    if (isSuccess && receipt) {
+
+   let orderId : string;
+    receipt.logs.some(async (log) => {
+      try {
+        const decoded = decodeEventLog({
+          abi: p2p.abi,
+          data: log.data,
+          topics: log.topics,
+          eventName: "NewOrder",
+        });
+        const args = decoded?.args ;
+        console.log('args', args)
+        orderId = args.orderId.toString();
+
+        //TODO: @Jovells MOVE BLOCKTIMESTAMP ELSEWHERE
+        const block = await getBlock(config, {blockNumber: receipt.blockNumber} );
+          const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder.current } as Order;
+          console.log('order', order)
+          navigate.push("/order/" + orderId);
+          queryClient.setQueryData(["order", orderId], order);
+
+        return true;
+      } catch (e) {
+        return false;
+      }
+    });
+
+      
     }
   }, [isSuccess, receipt, p2phash, navigate])
 
-  let paymentsMethods = isBuy ? 
-  [data.paymentMethod] :
-    userPaymentMethods?.map((method) => {
-    if (method.paymentMethod === data.paymentMethod.method) {
-      return { 
-        method: method.paymentMethod,
-        details: method.details,
-      } satisfies PaymentMethod as PaymentMethod;
-    }
-    return undefined as unknown as PaymentMethod;
-  }).filter(Boolean) || [];
+  let paymentsMethods = isBuy 
+    ? [data.paymentMethod] 
+    : userPaymentMethods?.filter((method) => method.method === data.paymentMethod.method)  || [];
   
-
   const handleAddPaymentMethodClick = () => {
     showModal(
 <AddPaymentMethod method={data.paymentMethod.method}  hideModal={hideModal} onSuccess={refetch} /> );
@@ -255,7 +272,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           {
           <PaymentMethodSelect
             addButton={
-              <>
+              isBuy ? "" :<>
               <Button icon='/images/icons/add-circle.png'
      className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2" text={"Add " + data.paymentMethod.method + " details"} onClick = {handleAddPaymentMethodClick}/>
               </>
@@ -278,7 +295,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
               onClick={toggleExpand}
             />
             <Button
-              loading={isP2pWritePending || isApprovePending || isP2pPending}
+              loading={ isApprovePending || isPending}
               type="submit"
               text={alreadyApproved? `${trade} ${crypto}` : `Approve and ${trade} ${crypto}`}
               className={`${isBuy ? "bg-[#2D947A]" : "bg-[#f14e4e]"} text-white rounded-xl px-4 py-2`}

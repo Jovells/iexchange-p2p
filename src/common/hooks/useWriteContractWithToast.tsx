@@ -2,15 +2,21 @@ import { useWriteContract as useWagmiWriteContract, useWaitForTransactionReceipt
 import toast from 'react-hot-toast';
 import { useModal } from '../contexts/ModalContext';
 import ModalAlert from '@/components/modals';
+import { use, useEffect, useState } from 'react';
+import { config } from '../configs';
+import { getBlock } from '@wagmi/core'
 
 
  function useWriteContractWithToast() {
     const { showModal } = useModal()
+    const [isPending, setIspending] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false)
 
   const writeContractResult = useWagmiWriteContract();
-  const {data: receipt, isSuccess, isError, error} = useWaitForTransactionReceipt({
+  const {data: receipt, isError, error} = useWaitForTransactionReceipt({
     hash: writeContractResult.data,
-    confirmations: 1
+    confirmations: 1,
+
   })
 
   const { writeContractAsync, writeContract } = writeContractResult;
@@ -19,18 +25,23 @@ import ModalAlert from '@/components/modals';
     { shouldShowModal = false,
       modalAction,
       loadingMessage,
+      toastId,
       timeTimeToWait = 5000,
+      errorMessage,
     successMessage} : {
       timeTimeToWait?: number,
       shouldShowModal?: boolean,
+      toastId?: string,
       modalAction?: any,
+      errorMessage?: string,
       loadingMessage?: string,
         successMessage?: string},
     ...args: Parameters<typeof writeContractAsync>
   ) => {
 
-    const toastId = toast.loading(loadingMessage || 'Calling ' + args[0].functionName + '...');
+    toastId =  toastId || toast.loading(loadingMessage || 'Calling ' + args[0].functionName + '...');
     try {
+      setIspending(true)
       const result = await writeContractAsync(...args);
       await new Promise((resolve) => setTimeout(resolve, timeTimeToWait));
       
@@ -41,10 +52,14 @@ import ModalAlert from '@/components/modals';
       icon="../../images/icons/success.png" />);
 
       toast.success(successMessage || args[0].functionName + ' successful', { id: toastId  });
-      return receipt;
-    } catch (error: any) {
-      toast.error(`Transaction Failed: ${error.message}`, { id: toastId });
+
+      setIsSuccess(true)
+         } catch (error: any) {
+      toast.error(errorMessage || `Transaction Failed: ${error.message}`, { id: toastId });
       throw new Error(error);
+    }
+    finally {
+      setIspending(false)
     }
   };
 
@@ -61,8 +76,13 @@ import ModalAlert from '@/components/modals';
     }
   };
 
+
+
   return {
     ...writeContractResult,
+    receipt,
+    isPending,
+    isSuccess,
     writeContractAsync: customWriteAsync,
     writeContract: customWrite,
   };

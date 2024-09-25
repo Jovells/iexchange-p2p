@@ -9,7 +9,7 @@ export const shortenAddress = (address: string | any, chars = 4): string => {
   return `${address.slice(0, chars + 2)}...${address.slice(-chars)}`;
 }
 
-export const formatBlockTimesamp = (timestamp: number | BigInt): string => {
+export const formatBlockTimesamp = (timestamp: number | BigInt | string): string => {
   const date = new Date(Number(timestamp) * 1000);
   const day = date.getDate().toString().padStart(2, '0');
   const month = (date.getMonth() + 1).toString().padStart(2, '0');

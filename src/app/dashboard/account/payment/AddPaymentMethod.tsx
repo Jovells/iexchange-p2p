@@ -26,7 +26,7 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess}) => {
     const [name, setName] = useState<string>("")
     const [number, setNumber] = useState<string>("")
 
-    const { data: paymentMetho } = useQuery({
+    const { data: paymentMetho, isFetching } = useQuery({
         queryKey: ["paymentOptions"],
         queryFn: () => fetchContractPaymentMethods(indexerUrl),
         enabled: !!indexerUrl,
@@ -39,7 +39,7 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess}) => {
 
             // Add the payment method details to the "accounts" collection
             addDoc(collection(db, `Users/${account.address}/paymentMethods`), {
-                paymentMethod: selectedMethod,
+                method: selectedMethod,
                 name,
                 number,
                 details
@@ -57,6 +57,7 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess}) => {
         }
     }
 
+    console.log("paymentMetho", paymentMetho)
 
     return (
         <div className='w-full lg:w-[800px] h-auto bg-white rounded-xl shadow-md border-2 border-gray-500 flex flex-col gap-4'>
@@ -66,12 +67,12 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess}) => {
                     <X onClick={hideModal} className='cursor-pointer' />
                 </div>
             </div>
-            {paymentMetho && paymentMetho?.length === 0 && <Loader className='h-[400px]' />}
             {paymentMetho && paymentMetho?.length > 0 && (
                 <div className='gap-4 flex flex-col p-8 pt-4'>
                     {
                         steps === 1 && (
                             <Fragment>
+                                {isFetching && <Loader className='h-[400px]' />}
                                 <SearchInput
                                     placeholder="Type to search..."
                                     onSearch={handleSearch}
@@ -79,7 +80,7 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess}) => {
                                     buttonText="Go"
                                 />
                                 <ul className="space-y-2">
-                                    {paymentMetho && paymentMetho.filter(mt => !mt.isAccespted).map((method) => (
+                                    {paymentMetho && paymentMetho.filter(mt => mt.isAccepted).map((method) => (
                                         <li
                                             key={method?.method}
                                             className="flex justify-between items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100"

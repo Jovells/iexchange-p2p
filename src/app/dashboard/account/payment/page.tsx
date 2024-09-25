@@ -18,13 +18,6 @@ type PaymentMethod = {
   name: string;
 };
 
-const paymentMethods: PaymentMethod[] = [
-  { id: 1, name: 'Credit Card' },
-  { id: 2, name: 'PayPal' },
-  { id: 3, name: 'Bank Transfer' },
-  { id: 4, name: 'Apple Pay' },
-  { id: 5, name: 'Google Pay' },
-];
 
 const Payment = () => {
   const { showModal, hideModal } = useModal();
@@ -58,18 +51,26 @@ const Payment = () => {
         </div>
         <div>
           {isFetching && <Loader loaderType='text'/>}
+            {!paymentMethods  && !isFetching && (
+            <div className="p-4 bg-gray-100 rounded-xl text-center">
+              <p className="text-gray-400 font-bold">No payment methods added yet</p>
+            </div>
+            )}
 
           {paymentMethods?.map((method, i) => {
-            const parsedDetails = parseStringToObject(method.details);
             return (
               <div key={i} className="p-2 border-b">
-                <strong>{method.paymentMethod}</strong>
-                <div className="">
-                  {Object.entries(parsedDetails).map(([key, value], index) => (
-                    <div key={index}>
-                      <strong>{key}:</strong> {value}
-                    </div>
-                  ))}
+                <strong >{method.method}</strong>
+                <div className='pt-2'>
+                      <span className="flex justify-between gap-4">
+                        <span className='text-sm text-gray-500'>Name:</span> <span>{method.name}</span>
+                      </span>
+                      <span className="flex justify-between gap-4">
+                        <span className='text-sm text-gray-500'>Number:</span> <span>{method.number}</span>
+                      </span>
+                      <span className="flex justify-between gap-4">
+                        <span className='text-sm text-gray-500'>Extra Details:</span> <span>{method.details}</span>
+                      </span>
                 </div>
               </div>
             );

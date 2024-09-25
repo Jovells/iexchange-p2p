@@ -112,8 +112,8 @@ if (status_not){
   orders(
     first: $first
     skip: $skip
-    orderBy: id
-    orderDirection: asc
+    orderBy: blockTimestamp
+    orderDirection: desc
     where: {and: [{or: [{trader: $trader}, {offer_: {merchant: $merchant}}]}, {status_not_in: $status_not_in}] }
   ) {
     accountHash

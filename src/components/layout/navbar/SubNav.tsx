@@ -80,6 +80,7 @@ const SubNav = () => {
                 icon="/images/icons/orders.png"
                 dropdownItems={[]}
             >
+            {/* TODO @mbawon: Check Styling Add notification icon to show number of new orders */}
               <OrdersDropdown />
             </MenuDropdown>
             <MenuDropdown

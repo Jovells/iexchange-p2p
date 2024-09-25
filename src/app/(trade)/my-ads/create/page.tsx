@@ -18,6 +18,7 @@ import storeAccountDetails from '@/common/api/storeAccountDetails'
 import Loader from '@/components/loader/Loader'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
+import useWriteContractWithToast from '@/common/hooks/useWriteContractWithToast'
 
 const formSchema = z.object({
   token: z.string().startsWith('0x'),
@@ -45,7 +46,7 @@ const CreateAd = () => {
     const router = useRouter();
     const account = useAccount();
     const [submitting, setSubmitting] = useState(false);
-    const {writeContractAsync} = useWriteContract()
+    const {writeContractAsync} = useWriteContractWithToast()
     const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
 
     const {data: currencies } = useQuery({
@@ -66,6 +67,7 @@ const CreateAd = () => {
         e.preventDefault();
         setSubmitting(true);
         setErrors({});
+        const id = toast.loading('Creating Ad...');
         const formData = new FormData(e.currentTarget);
         const data = {
             token: formData.get('token') as `0x${string}`,
@@ -95,7 +97,7 @@ const CreateAd = () => {
                 });
                 setErrors(fieldErrors);
                 setSubmitting(false);
-                toast.error('Please correct the errors in the form');
+                toast.error('Please correct the errors in the form', { id });
                 return;
             }
         }
@@ -122,11 +124,16 @@ const CreateAd = () => {
                     maxOrder,
                     accountHash,
                     depositAddress,
-                    offerTypes[activeTab],
+                    //swap is necessary
+                    activeTab === 'buy' ? offerTypes.sell : offerTypes.buy,
                 ];
                 console.log('args', args, activeTab);
 
             const response = await writeContractAsync({
+                loadingMessage: 'Creating Ad...',
+                successMessage: 'Ad created successfully',
+                toastId: id,
+            },{
                 address: p2p.address,
                 functionName: "createOffer",
                 abi: p2p.abi,
@@ -143,11 +150,11 @@ const CreateAd = () => {
                 ],
             });
             console.log('Transaction successful:', response);
-            toast.success('Ad created successfully');
+            toast.success('Ad created successfully', { id });
             router.push('/my-ads'); // Redirect or handle success
             } catch (error) {
             console.error('Transaction failed:', error);
-            toast.error('Failed to create ad. Please try again.');
+            toast.error('Failed to create ad. Please try again.', { id });
             } finally {
             setSubmitting(false);
             }

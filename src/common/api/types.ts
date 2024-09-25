@@ -29,8 +29,11 @@ export type PreparedCurrency = { symbol: string; name: string; id: `0x${string}`
 export type PaymentMethod = {
   id?: string;
   method: string;
-  isAccespted?: boolean;
+  isAccepted?: boolean;
   details?: string;
+  icon?: JSX.Element;
+  name?: string;
+  number?: string;
 }
 
 enum OfferType {
@@ -90,7 +93,7 @@ export type Order = {
   trader: {
     id: `0x${string}`;
   };
-  blockTimestamp: number;
+  blockTimestamp: string;
 }
 
 export type OrderResponse = {

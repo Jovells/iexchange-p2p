@@ -12,9 +12,17 @@ import { useContracts } from '@/common/contexts/ContractContext';
 import { useAccount } from 'wagmi';
 import TradeLayout from '../layout';
 import { Offer } from '@/common/api/types';
+import { offerTypes } from '@/common/api/constants';
 
 
 const columns: any = [
+  {
+    key: "id",
+    label: "Id",
+    render: (row: Offer) => (
+      <span className="font-bold">{row.id}</span>
+    ),
+  },
   {
     key: "rate",
     label: "Rate",
@@ -41,6 +49,13 @@ const columns: any = [
       <span className="italic">{row.active ? "Active" : "Deactivated"}</span>
     ),
   },
+  {
+    key: "offerType",
+    label: "offerType",
+    render: (row: Offer) => (
+      <span className="italic">{row.offerType === offerTypes.buy ? 'buy' : 'sell'}</span>
+    ),
+  },
 ];
 
 const MyAds = () => {
@@ -51,16 +66,14 @@ const MyAds = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const account = useAccount();
-  const [offerType, setOfferType] = useState<string>("buy");
-
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
 
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } =
     useQuery({
-      queryKey: ["ads", currentPage, offerType, { merchant: account.address }],
-      queryFn: () => fetchAds(indexerUrl, { page :currentPage, offerType, 
+      queryKey: ["ads", currentPage, { merchant: account.address }],
+      queryFn: () => fetchAds(indexerUrl, { page :currentPage, 
         merchant: account.address?.toLowerCase()
       }),
       // placeholderData: keepPreviousData,
