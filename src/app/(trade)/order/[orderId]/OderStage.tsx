@@ -6,7 +6,7 @@ import { useContracts } from "@/common/contexts/ContractContext";
 import Loader from "@/components/loader/Loader";
 import ChatWithMerchant from "@/components/merchant/ChatWithMerchant";
 import Button from "@/components/ui/Button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { Order, OrderState } from "@/common/api/types";
 import { formatCurrency, formatBlockTimesamp } from "@/lib/utils";
@@ -17,6 +17,7 @@ import Link from "next/link";
 
 function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: () => void }) {
   const { indexerUrl, p2p, tokens } = useContracts();
+  const queryClient = useQueryClient();
   const account = useAccount();
   const { writeContractAsync, isPending } = useWriteContractWithToast();
   const { writeContractAsync: writeToken, data: approveHash, isSuccess: isApproveSuccess, isPending: isP2pWritePending } = useWriteContractWithToast();
@@ -43,6 +44,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
     staleTime: 0,
   });
 
+  
   const handlePayOrder = async () => {
     console.log("Transfer funds");
     const txHash = await writeContractAsync(
@@ -54,7 +56,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       args: [BigInt(orderId)],
     }, 
   );
-  refetch()
+  // Optimistically update the order status
+  const updatedOrder = { ...order, status: OrderState.paid };
+  queryClient.setQueryData(["order", orderId], updatedOrder);
     console.log("Transaction Hash", txHash);
   };
 
@@ -67,7 +71,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       args: [BigInt(orderId)],
     }, 
   );
-  refetch()
+  // Optimistically update the order status
+  const updatedOrder = { ...order, status: OrderState.released };
+  queryClient.setQueryData(["order", orderId], updatedOrder);
 
     console.log("Transaction Hash", txHash);
   };
@@ -95,7 +101,10 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       args: [BigInt(orderId)],
     }
   );
-  refetch()
+  // Optimistically update the order status
+  const updatedOrder = { ...order, status: OrderState.accepted };
+  queryClient.setQueryData(["order", orderId], updatedOrder);
+
     console.log("Transaction Hash", txHash);
   };
 
@@ -108,7 +117,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       args: [BigInt(orderId)],
     }, 
   );
-  refetch()
+  // Optimistically update the order status
+  const updatedOrder = { ...order, status: OrderState.cancelled };
+  queryClient.setQueryData(["order", orderId], updatedOrder);
 
     console.log("Transaction Hash", txHash);
   };
