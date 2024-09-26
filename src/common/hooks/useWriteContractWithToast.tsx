@@ -2,9 +2,8 @@ import { useWriteContract as useWagmiWriteContract, useWaitForTransactionReceipt
 import toast from 'react-hot-toast';
 import { useModal } from '../contexts/ModalContext';
 import ModalAlert from '@/components/modals';
-import { use, useEffect, useState } from 'react';
-import { config } from '../configs';
-import { getBlock } from '@wagmi/core'
+import { useState } from 'react';
+
 
 
  function useWriteContractWithToast() {
@@ -26,13 +25,15 @@ import { getBlock } from '@wagmi/core'
       modalAction,
       loadingMessage,
       toastId,
-      timeTimeToWait = 5000,
+      timeTimeToWait,
       errorMessage,
+      afterAction,
     successMessage} : {
       timeTimeToWait?: number,
       shouldShowModal?: boolean,
       toastId?: string,
       modalAction?: any,
+      afterAction?: Promise<any>,
       errorMessage?: string,
       loadingMessage?: string,
         successMessage?: string},
@@ -43,8 +44,9 @@ import { getBlock } from '@wagmi/core'
     try {
       setIspending(true)
       const result = await writeContractAsync(...args);
+      await afterAction;
+      timeTimeToWait= timeTimeToWait || afterAction ? 0 : 5000;
       await new Promise((resolve) => setTimeout(resolve, timeTimeToWait));
-      
       shouldShowModal && showModal( <ModalAlert buttonText="Done" buttonClick={modalAction} 
       modalType="success" 
       title="Successful" 
