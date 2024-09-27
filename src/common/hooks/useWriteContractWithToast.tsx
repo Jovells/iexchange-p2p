@@ -9,7 +9,6 @@ import { useState } from 'react';
  function useWriteContractWithToast() {
     const { showModal } = useModal()
     const [isPending, setIspending] = useState(false)
-    const [isSuccess, setIsSuccess] = useState(false)
 
   const writeContractResult = useWagmiWriteContract();
   const {data: receipt, isError, error} = useWaitForTransactionReceipt({
@@ -55,7 +54,6 @@ import { useState } from 'react';
 
       toast.success(successMessage || args[0].functionName + ' successful', { id: toastId  });
 
-      setIsSuccess(true)
          } catch (error: any) {
       toast.error(errorMessage || `Transaction Failed: ${error.message}`, { id: toastId });
       throw new Error(error);
@@ -84,7 +82,6 @@ import { useState } from 'react';
     ...writeContractResult,
     receipt,
     isPending,
-    isSuccess,
     writeContractAsync: customWriteAsync,
     writeContract: customWrite,
   };

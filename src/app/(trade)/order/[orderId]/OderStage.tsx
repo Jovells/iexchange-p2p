@@ -1,3 +1,4 @@
+import { Timer } from './timer';
 import React, { useEffect } from "react";
 import { offerTypes } from "@/common/api/constants";
 import fetchAccountDetails from "@/common/api/fetchAccountDetails";
@@ -226,15 +227,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
             <span className="font-bold text-gray-600">Order Created</span>
             <div className="flex flex-row space-x-2">
               <span className="text-gray-500">Time Limit Exhaustion:</span>
-              <div className="flex flex-row justify-start items-start space-x-1">
-                <span className="bg-blue-500 rounded-lg w-6 h-6 p-1 flex justify-center items-center px-3 text-white text-sm">
-                  15
-                </span>x
-                <span>:</span>
-                <span className="bg-blue-500 rounded-lg w-6 h-6 p-1 flex justify-center items-center px-3 text-white text-sm">
-                  00
-                </span>
-              </div>
+            <Timer timestamp={order.blockTimestamp} seconds={30*60}     />
             </div>
           </div>
           <div className="space-y-0 lg:space-y-2">
@@ -277,20 +270,33 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
             </div>
             <div>
               <h2 className=" text-gray-500 mb-1">Payment Details</h2>
-              <div className="w-full border rounded-xl p-4 h-auto space-y-4">
-                <div>
+                <div className="w-full flex gap-10  border rounded-xl p-4 h-auto ">
+                <div className=" w-full space-y-4">
+                  <div>
                   <div className="font-light text-gray-500 text-sm">Payment Method</div>
-                  <div className="text-gray-600">{order?.offer.paymentMethod.method}</div>
+                  <div className="text-gray-600">
+                  {order?.status === OrderState.pending && isBuyer ? "********" : order?.offer.paymentMethod.method}
+                  </div>
                 </div>
                 <div>
                   <div className="font-light text-gray-500 text-sm">Account Name</div>
-                  <div className="text-gray-600">{accountDetails?.name}</div>
+                  <div className="text-gray-600">
+                  {order?.status === OrderState.pending && isBuyer ? "********" : accountDetails?.name}
+                  </div>
                 </div>
                 <div>
                   <div className="font-light text-gray-500 text-sm">Account Number</div>
-                  <div className="text-gray-600">{accountDetails?.number}</div>
+                  <div className="text-gray-600">
+                  {order?.status === OrderState.pending && isBuyer ? "********" : accountDetails?.number}
+                  </div>
+                </div></div>
+                {accountDetails?.details && <div className="w-full">
+                  <div className="font-light text-gray-500 text-sm">Extra Details</div>
+                  <div className="text-gray-600">
+                    {accountDetails?.details}
+                  </div>
+                </div>}
                 </div>
-              </div>
             </div>
             <div>
               <h2 className="text-gray-700">Proceed:</h2>

@@ -161,7 +161,17 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           args: [p2p.address, tokensAmount],
         });
       } 
-        const createHash = await writeP2p(
+      newOrder.current = { 
+        accountHash: accountHash as `0x${string}`, 
+        offer: data, 
+        trader: { id: userAddress! },
+        depositAddress : { id: depositAddress! },
+        orderType: data.offerType,
+        quantity: tokensAmount.toString(),
+        status: OrderState.pending
+       } satisfies Partial<Order>;
+
+       await writeP2p(
           {loadingMessage:"Creating Order",
           successMessage: "Order Created Successfully",
           afterAction: new Promise(async (resolve) => {
@@ -178,15 +188,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
             accountHash,
           ],
         });
-      newOrder.current = { 
-        accountHash: accountHash as `0x${string}`, 
-        offer: data, 
-        trader: { id: userAddress! },
-        depositAddress : { id: depositAddress! },
-        orderType: data.offerType,
-        quantity: tokensAmount.toString(),
-        status: OrderState.pending
-       } satisfies Partial<Order>;
+
 
     } catch (e) {
       console.log("error", e);
