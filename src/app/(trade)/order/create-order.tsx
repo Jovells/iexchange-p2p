@@ -24,7 +24,6 @@ import { useUser } from "@/common/contexts/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { getBlock } from '@wagmi/core'
 import { config } from "@/common/configs";
-import { resolve } from "path";
 
 const formSchema = z.object({
   toPay: z.string().min(1, "Please enter a valid amount").refine(val => !isNaN(Number(val)) && Number(val) > 0, {
@@ -168,7 +167,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
         depositAddress : { id: depositAddress! },
         orderType: data.offerType,
         quantity: tokensAmount.toString(),
-        status: OrderState.pending
+        status: OrderState.Pending
        } satisfies Partial<Order>;
 
        await writeP2p(
@@ -196,41 +195,41 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   };
 
   useEffect(()=>{
+   const getTimeStampAndNavigate = async () => {
     console.log('qweisSuccess', isSuccess, 'receipt', receipt)
 
     if (isSuccess && receipt) {
 
    let orderId : string;
-    receipt.logs.some(async (log) => {
+    for (const log of receipt.logs) {
       try {
-        const decoded = decodeEventLog({
-          abi: p2p.abi,
-          data: log.data,
-          topics: log.topics,
-          eventName: "NewOrder",
-        });
-        const args = decoded?.args ;
-        console.log('args', args)
-        orderId = args.orderId.toString();
+      const decoded = decodeEventLog({
+        abi: p2p.abi,
+        data: log.data,
+        topics: log.topics,
+        eventName: "NewOrder",
+      });
+      const args = decoded?.args;
+      console.log('qwargs', args);
+      orderId = args.orderId.toString();
 
+      //TODO: @Jovells MOVE BLOCKTIMESTAMP ELSEWHERE
+      const block = await getBlock(config, { blockNumber: receipt.blockNumber });
+      console.log('qwblock', block);
+      const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder.current } as Order;
+      console.log('qworder', order);
+      navigate.push("/order/" + orderId);
+      queryClient.setQueryData(["order", orderId], order);
+      afterRef.current?.("done");
 
-
-        //TODO: @Jovells MOVE BLOCKTIMESTAMP ELSEWHERE
-        const block = await getBlock(config, {blockNumber: receipt.blockNumber} );
-          const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder.current } as Order;
-          console.log('order', order)
-          navigate.push("/order/" + orderId);
-          queryClient.setQueryData(["order", orderId], order);
-          resolve("done")
-
-        return true;
+      break;
       } catch (e) {
-        return false;
+      continue;
       }
-    });
-
-      
     }
+}      
+    }
+    getTimeStampAndNavigate();
   }, [isSuccess, receipt, p2phash, navigate])
 
   let paymentsMethods = isBuy 

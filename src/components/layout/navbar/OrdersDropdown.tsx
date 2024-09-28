@@ -20,7 +20,7 @@ export function OrdersDropdown() {
     quantity: 10,
     merchant: userAddress,
     trader: userAddress,
-    status_not: OrderState.released
+    status_not: OrderState.Released
   };
   const { data: myOrders, isFetching } = useQuery({
     queryKey: ["orders", options],

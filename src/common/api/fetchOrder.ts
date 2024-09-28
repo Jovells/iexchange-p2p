@@ -59,7 +59,6 @@ import { OrderResponse } from "./types";
 // Create a query against the collection.
 
 export default async function fetchOrder(indexerUrl: string, orderId: string) {
-  console.log("fetching order", indexerUrl, orderId) ;
   const graphdata = (await fetchGraphQL(indexerUrl, operation, "order", {
     orderId,
   })) as OrderResponse;

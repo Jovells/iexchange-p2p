@@ -10,31 +10,50 @@ import Button from "@/components/ui/Button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { Order, OrderState } from "@/common/api/types";
-import { formatCurrency, formatBlockTimesamp } from "@/lib/utils";
+import { formatCurrency, formatBlockTimesamp, shortenAddress } from "@/lib/utils";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import ModalAlert from "@/components/modals";
 import CediH from "@/common/abis/CediH";
 import Link from "next/link";
 import { config } from "@/common/configs";
+import fetchOrderStatus from '@/common/api/fetchOrderStatus';
+import toast from 'react-hot-toast';
+
+const POLLING_INTERVAL = 5000;
+const toastId = "order-status";
 
 function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: () => void }) {
-  const { indexerUrl, p2p, tokens } = useContracts();
+  const { indexerUrl, p2p, tokens, currentChain } = useContracts();
   const queryClient = useQueryClient();
   const account = useAccount();
   const { writeContractAsync, isPending } = useWriteContractWithToast();
   const { writeContractAsync: writeToken, data: approveHash, isSuccess: isApproveSuccess, isPending: isP2pWritePending } = useWriteContractWithToast();
+  const [transactionHashes, setTransactionHashes] = React.useState<{hash: string, status: string}[]| null>(null);
   
-  const { data: order, error: orderError, refetch, isLoading: orderLoading} = useQuery({
+  const { data: order, error: orderError, isLoading: orderLoading} = useQuery({
     queryKey: ["order", orderId],
     queryFn: () => fetchOrder(indexerUrl, orderId),
     retry: 3,
   });
+
+
+  const isTrader = order?.trader.id.toLowerCase() === account.address?.toLowerCase();
+  const isMerchant = order?.offer.merchant.id.toLowerCase() === account.address?.toLowerCase();
+  const isBuy = order?.offer.offerType === offerTypes.buy;
+  const isSell = order?.offer.offerType === offerTypes.sell;
+
+  const isBuyer = (isBuy && isTrader) || (isSell && isMerchant);
+
+  console.log("Order orderstage", order);
 
   const { data: allowance } = useReadContract({
     abi: CediH,
     address: order?.offer.token.id,
     functionName: "allowance",
     args: [account.address!, p2p.address],
+    query:{
+      enabled: !!order && !isBuyer,
+    }
   });
 
 
@@ -46,13 +65,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   });
 
 
-
-
   
   const handlePayOrder = async () => {
     console.log("Transfer funds");
     const txHash = await writeContractAsync(
-      { },
+      {toastId},
       {
       address: p2p.address,
       abi: p2p.abi,
@@ -61,14 +78,13 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
     }, 
   );
   // Optimistically update the order status
-  const updatedOrder = { ...order, status: OrderState.paid };
-  queryClient.setQueryData(["order", orderId], updatedOrder);
-    console.log("Transaction Hash", txHash);
+  handleOptimisticUpdate(OrderState.Paid, txHash);
+
   };
 
   const handleReleaseFunds = async () => {
     console.log("Release funds");
-    const txHash = await writeContractAsync({},{
+    const txHash = await writeContractAsync({toastId},{
       address: p2p.address,
       abi: p2p.abi,
       functionName: "releaseOrder",
@@ -76,10 +92,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
     }, 
   );
   // Optimistically update the order status
-  const updatedOrder = { ...order, status: OrderState.released };
-  queryClient.setQueryData(["order", orderId], updatedOrder);
+  handleOptimisticUpdate(OrderState.Released, txHash);
 
-    console.log("Transaction Hash", txHash);
   };
 
   const handleAcceptOrder = async () => {
@@ -98,7 +112,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       });
     } 
 
-    const txHash = await writeContractAsync({},{
+    const txHash = await writeContractAsync({toastId},{
       address: p2p.address,
       abi: p2p.abi,
       functionName: "acceptOrder",
@@ -106,15 +120,83 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
     }
   );
   // Optimistically update the order status
-  const updatedOrder = { ...order, status: OrderState.accepted };
-  queryClient.setQueryData(["order", orderId], updatedOrder);
-
-    console.log("Transaction Hash", txHash);
+  handleOptimisticUpdate(OrderState.Accepted, txHash);
+  
   };
+
+
+  const getButtonConfig = () => {
+    if (!order) return { text: "", buttonText: "", onClick: () => {}, disabled: true , shouldPoll: false};
+
+      const getDisabledAction = (buttonText: string, text: string, shouldPoll = true) => ({ buttonText, text, onClick: () => {}, disabled: true, shouldPoll });
+      const getEnabledAction = (buttonText: string, text: string, onClick : ()=>{}, shouldPoll = false) => ({ buttonText, text, onClick, disabled: false, shouldPoll });
+    
+      console.log("qwOrder Status", order.status, isBuyer, order);
+      switch (order.status) {
+        case OrderState.Pending:
+          if (isBuyer) {
+            return order.offer.offerType === offerTypes.buy
+              ? getDisabledAction("Waiting for Merchant", "Please wait for the merchant to accept your order and send the tokens to the escrow account")
+              : getEnabledAction("Done With Payment","Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order", handlePayOrder);
+          } else {
+            return order.offer.offerType === offerTypes.sell
+              ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
+              : getEnabledAction("Accept Order", "Click “Accept Order” your order and send the tokens to the escrow account ", handleAcceptOrder);
+          }
+        case OrderState.Accepted:
+          return isBuyer
+            ? getEnabledAction("Done With Payment", "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order", handlePayOrder)
+            : getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment");
+        case OrderState.Paid:
+            return isBuyer
+            ? getDisabledAction("Waiting for Seller to Release", "Please wait for the seller to release")
+            : getEnabledAction("Release Funds", "Click “Release Funds” to release the funds to the buyer", handleReleaseFunds);
+        case OrderState.Released:
+          return getDisabledAction("Completed", "Order has been completed", false);
+        case OrderState.Cancelled:
+          return getDisabledAction("Cancelled", "Order has been cancelled", false);
+        default:
+          console.log("qw default", order.status);
+          return getDisabledAction("", "", false);
+      }
+    };
+
+  const { text, onClick, disabled, buttonText, shouldPoll  } = getButtonConfig();
+
+  //poll order status
+  const {data: orderStatus} = useQuery({
+    queryKey: ["orderStatus", orderId],
+    queryFn: () => fetchOrderStatus(indexerUrl, orderId),
+    retry: 3,
+    enabled: shouldPoll,
+    refetchInterval: (q)=>{
+      console.log("qeRefetching order status", q);
+      const fetchedStatus = q.state.data?.status;
+      q.state
+      if((fetchedStatus === order?.status) || (fetchedStatus === undefined)) return POLLING_INTERVAL;
+
+      const updatedOrder = { ...order, status: fetchedStatus };
+      if (fetchedStatus === OrderState.Cancelled){
+        toast.error("Order has been cancelled", {id: toastId});
+      }else {toast.success("Order Status Updated", {id: toastId});}
+
+      queryClient.setQueryData(["order", orderId], updatedOrder);
+      console.log("qeRefetching order status", order?.status, updatedOrder.status );
+
+      return POLLING_INTERVAL;},
+  })
+
+
+  function handleOptimisticUpdate(status: OrderState, txHash: string) {
+    const updatedStatus = { ...orderStatus, status };
+    queryClient.setQueryData(["orderStatus", orderId], updatedStatus);
+    setTransactionHashes([...(transactionHashes || []), {hash: txHash, status: OrderState[status]}]);
+  }
+
 
   const handleCancelOrder = async () => {
     console.log("Cancel Order", orderId, order);
-    const txHash = await writeContractAsync({},{
+    const txHash = await writeContractAsync({toastId},{
       address: p2p.address,
       abi: p2p.abi,
       functionName: "cancelOrder",
@@ -122,10 +204,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
     }, 
   );
   // Optimistically update the order status
-  const updatedOrder = { ...order, status: OrderState.cancelled };
-  queryClient.setQueryData(["order", orderId], updatedOrder);
-
-    console.log("Transaction Hash", txHash);
+  handleOptimisticUpdate(OrderState.Cancelled, txHash);
   };
 
   if (!order && (orderLoading)) {
@@ -146,50 +225,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
 
 
 
-
-
-  const isTrader = order.trader.id.toLowerCase() === account.address?.toLowerCase();
-  const isMerchant = order.offer.merchant.id.toLowerCase() === account.address?.toLowerCase();
-  const isBuy = order.offer.offerType === offerTypes.buy;
-  const isSell = order.offer.offerType === offerTypes.sell;
-
-  const isBuyer = (isBuy && isTrader) || (isSell && isMerchant);
-
   console.log("Is Buyer", isBuyer);
 
-  const getButtonConfig = () => {
-    if (!order) return { text: "", buttonText: "", onClick: () => {}, disabled: true };
-
-      const getDisabledAction = (buttonText: string, text: string) => ({ buttonText, text, onClick: () => {}, disabled: true });
-      const getEnabledAction = (buttonText: string, text: string, onClick : ()=>{}) => ({ buttonText, text, onClick, disabled: false });
-    
-      switch (order.status) {
-        case OrderState.pending:
-          if (isBuyer) {
-            return order.offer.offerType === offerTypes.buy
-              ? getDisabledAction("Waiting for Merchant", "Please wait for the merchant to accept your order and send the tokens to the escrow account")
-              : getEnabledAction("Done With Payment","Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order", handlePayOrder);
-          } else {
-            return order.offer.offerType === offerTypes.sell
-              ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
-              : getEnabledAction("Accept Order", "Click “Accept Order” your order and send the tokens to the escrow account ", handleAcceptOrder);
-          }
-        case OrderState.accepted:
-          return isBuyer
-            ? getEnabledAction("Done With Payment", "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order", handlePayOrder)
-            : getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment");
-        case OrderState.paid:
-            return isBuyer
-            ? getDisabledAction("Waiting for Seller to Release", "Please wait for the seller to release")
-            : getEnabledAction("Release Funds", "Click “Release Funds” to release the funds to the buyer", handleReleaseFunds);
-        case OrderState.released:
-          return getDisabledAction("Completed", "Order has been completed");
-        case OrderState.cancelled:
-          return getDisabledAction("Cancelled", "Order has been cancelled");
-        default:
-          return getDisabledAction("", "");
-      }
-    };
 
   if (orderError) {
     console.log("Error fetching order", orderError);
@@ -212,13 +249,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   }
 
 
-  const { text, onClick, disabled, buttonText  } = getButtonConfig();
-  const buyAmount = formatCurrency(Number(order?.quantity) * Number(order?.offer.rate), isBuyer ? order.offer.currency.currency : order.offer.token.symbol)
-  const sellAmount = formatCurrency(Number(order?.quantity), isBuyer ? order?.offer.token.symbol : order.offer.currency.currency)
+  const fiatAmount = formatCurrency(Number(order?.quantity) * Number(order?.offer.rate), order.offer.currency.currency)
+  const cryptoAmount = formatCurrency(Number(order?.quantity), order?.offer.token.symbol )
 
-  const isCancellable = (order.status === OrderState.pending && isMerchant) || (order.status === OrderState.accepted && isTrader);
+  const isCancellable = (order.status === OrderState.Pending && isMerchant) || (order.status === OrderState.Accepted && isTrader);
 
-  //TODO: @Jovells implement timer
+  const isBuyerAndNotYetAccepted = order?.status === OrderState.Pending && isBuyer && isTrader
   return (
     <>
       <div className="w-full py-6 bg-[#CCE0F6]">
@@ -226,8 +262,10 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
           <div className="space-y-3">
             <span className="font-bold text-gray-600">Order Created</span>
             <div className="flex flex-row space-x-2">
-              <span className="text-gray-500">Time Limit Exhaustion:</span>
-            <Timer timestamp={order.blockTimestamp} seconds={30*60}     />
+            {order.status === OrderState.Pending &&
+             <>
+          <span className="text-gray-500">Time Limit Exhaustion:</span>
+               <Timer timestamp={order.blockTimestamp} seconds={30*60} /></>}
             </div>
           </div>
           <div className="space-y-0 lg:space-y-2">
@@ -249,14 +287,14 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
             <div className="flex justify-between">
             <h2 className="text-lg text-gray-500">Order Info</h2>
             <div className={`px-4 py-1 rounded-xl ${isBuyer ? "bg-green-200" : "bg-red-200"}`}>
-              {isBuyer ? "Buying" : "Selling"}
+              {isBuyer ? "Buy" : "Sell"}
             </div>
             </div>
             <div className="flex flex-col justify-start items-start lg:flex-row lg:justify-between gap-3 lg:gap-10 mt-6">
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
                 <div className="text-sm text-gray-600 font-light">Amount</div>
-                <div className="text-green-700 text-lg font-medium">
-                  {isBuyer ? buyAmount : sellAmount}
+                <div className={`text-lg font-medium ${isBuyer ? "text-green-700" : "text-red-700"}`}>
+                  {isBuyer ? fiatAmount : cryptoAmount}
                 </div>
               </div>
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
@@ -265,7 +303,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
               </div>
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
                 <div className="text-sm text-gray-600 font-light">Receive Quantity</div>
-                <div className="text-gray-700 text-lg font-light">{isBuyer? sellAmount : buyAmount}</div>
+                <div className="text-gray-700 text-lg font-light">{isBuyer? cryptoAmount : fiatAmount}</div>
               </div>
             </div>
             <div>
@@ -275,25 +313,25 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
                   <div>
                   <div className="font-light text-gray-500 text-sm">Payment Method</div>
                   <div className="text-gray-600">
-                  {order?.status === OrderState.pending && isBuyer ? "********" : order?.offer.paymentMethod.method}
+                   {order?.offer.paymentMethod.method}
                   </div>
                 </div>
                 <div>
                   <div className="font-light text-gray-500 text-sm">Account Name</div>
                   <div className="text-gray-600">
-                  {order?.status === OrderState.pending && isBuyer ? "********" : accountDetails?.name}
+                  {isBuyerAndNotYetAccepted ? "********" : accountDetails?.name}
                   </div>
                 </div>
                 <div>
                   <div className="font-light text-gray-500 text-sm">Account Number</div>
                   <div className="text-gray-600">
-                  {order?.status === OrderState.pending && isBuyer ? "********" : accountDetails?.number}
+                  {isBuyerAndNotYetAccepted ? "********" : accountDetails?.number}
                   </div>
                 </div></div>
                 {accountDetails?.details && <div className="w-full">
                   <div className="font-light text-gray-500 text-sm">Extra Details</div>
                   <div className="text-gray-600">
-                    {accountDetails?.details}
+                    {isBuyerAndNotYetAccepted ? "********" : accountDetails?.details}
                   </div>
                 </div>}
                 </div>
@@ -304,6 +342,14 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
                 {text}
               </p>
             </div>
+            {transactionHashes && <div>
+              <h2 className="text-gray-700">Transactions:</h2>
+              {transactionHashes.map((hash, index) => (
+                  <div key={index} className="flex flex-row items-center space-x-2">
+                    <div className="text-gray-500">{hash.status} :</div> <a href={`${currentChain?.blockExplorers?.default.url}/tx/${hash.hash}`} target="_blank" className="text-blue-500">{shortenAddress(hash.hash, 8)}</a>
+                  </div>
+                ))}
+            </div>}
             <div className="flex flex-col lg:flex-row gap-6">
               <Button loading ={isPending} text={buttonText} className={`${disabled ? "bg-slate-100 text-gray-500" :"bg-[#000000] text-white"}  rounded-xl px-4 py-2`} onClick={onClick} disabled={disabled} />
                 {isCancellable  && (

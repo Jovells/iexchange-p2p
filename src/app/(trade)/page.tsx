@@ -39,7 +39,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     enabled: !!indexerUrl,
   });
   const [selectedCrypto, setSelectedCrypto] = useState(
-    tokens?.find((t) => t.symbol === searchParams.get("crypto") || "CEDIH")
+    tokens?.find((t) => t.symbol === searchParams.get("crypto") || "")
   );
 
   const [activeTab, setActiveTab] = useState<"buy" | "sell" | string>(
@@ -80,10 +80,10 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   };
 
   useEffect(() => {
-    const fiat: string = currencyAmount.currency || "CEDIH"
+    const fiat: string = currencyAmount.currency || "GHS";
     const query = activeTab
       ? `trade=${activeTab}&crypto=${selectedCrypto?.symbol || ""}&fiat=${fiat}`
-      : `crypto=${selectedCrypto?.symbol}&fiat=${fiat}`;
+      : `crypto=${selectedCrypto?.symbol || ""}&fiat=${fiat}`;
     router.push(`${pathname}?${query}`);
 
   }, [selectedCrypto, activeTab]);
@@ -185,9 +185,6 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
   return (
     <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
       <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
-        <div className="w-full block lg:hidden">
-          <NetworkSwitcher />
-        </div>
         <div className="w-full lg:w-[300px]">
           <InputAmount
             label=""
@@ -217,11 +214,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
         </div>
         <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
       </div>
-      {session.status === "authenticated" && (
-        <div className="lg:w-auto hidden lg:flex">
-          <NetworkSwitcher />
-        </div>
-      )}
+
     </div>
 
   )

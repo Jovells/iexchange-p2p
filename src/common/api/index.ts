@@ -21,7 +21,7 @@ export async function fetchGraphQL(
   });
 
   const resultjson = await result.json();
-  console.log(operationName + ": ", resultjson);
+  console.log("fetched", operationName + ": ", resultjson);
 
   return resultjson.data;
 }

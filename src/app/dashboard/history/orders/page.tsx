@@ -17,10 +17,10 @@ const P2POrderHistory = () => {
 
   const tabs = [
     { label: 'All', value: "" },
-    { label: 'Unpaid', value: OrderState.pending },
-    { label: 'Paid', value: OrderState.paid },
-    { label: 'Appeal in progress', value: OrderState.appealed },
-    { label: 'Cancelled orders', value: OrderState.cancelled },
+    { label: 'Unpaid', value: OrderState.Pending },
+    { label: 'Paid', value: OrderState.Paid },
+    { label: 'Appeal in progress', value: OrderState.Appealed },
+    { label: 'Cancelled orders', value: OrderState.Cancelled },
   ];
 
 

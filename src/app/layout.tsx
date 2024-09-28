@@ -5,11 +5,11 @@ import ModalManager from "@/components/shared/modal/Modal";
 import { ModalContextProvider } from "@/common/contexts/ModalContext";
 import TopLoader from "@/components/loader/TopLoader";
 import { Metadata } from "next/types";
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import ErrorBoundary from "@/components/error/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Roboto({ subsets: ["latin"], weight: ["100", "300", "400", "500", "700"] });
 
 export const metadata: Metadata = {
   icons: "/images/logo/iexchange-logo.png", // Adjusted to a relative path

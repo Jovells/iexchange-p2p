@@ -7,9 +7,12 @@ import BecomeAMerchant from "../../merchant";
 import { ThemeToggle } from "@/components/shared";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/common/contexts/ModalContext";
+import NetworkSwitcher from "@/components/networkSwitcher";
+import { useUser } from "@/common/contexts/UserContext";
 
 const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
     const navigation = useRouter()
+    const { session } = useUser();
     const drawerRef = useRef<HTMLDivElement>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -58,7 +61,13 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
                 <div className="hidden lg:flex space-x-1">
                     {renderLinks(navLinks)}
                 </div>
+
                 <div className="hidden lg:flex flex-row justify-start items-center space-x-6">
+                    {session.status === "authenticated" && (
+                        <div className="lg:w-auto lg:flex">
+                            <NetworkSwitcher />
+                        </div>
+                    )}
                     <BecomeAMerchant />
                     <Button
                         icon="/images/icons/gold.png"
@@ -69,6 +78,11 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
                     <ThemeToggle />
                 </div>
                 <div className="lg:hidden flex flex-row justify-start items-center gap-4" id="mobile-menu">
+                {session.status === "authenticated" && (
+                        <div className="lg:w-auto lg:flex">
+                            <NetworkSwitcher />
+                        </div>
+                    )}
                     <Button
                         icon="/images/icons/gold.png"
                         iconPosition="any"

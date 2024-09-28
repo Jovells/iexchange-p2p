@@ -8,12 +8,12 @@ export type Token = {
 }
 
  export enum OrderState {
-  pending,
-  accepted,
-  paid,
-  appealed,
-  released,
-  cancelled
+  Pending,
+  Accepted,
+  Paid,
+  Appealed,
+  Released,
+  Cancelled
 }
 
 export type Merchant = {
@@ -98,6 +98,12 @@ export type Order = {
 
 export type OrderResponse = {
   order: Order | null;
+}
+export type OrderStatusResponse = {
+  order: {
+    status: OrderState;
+    blockTimestamp: string;
+  } | null;
 }
 
 export type AccountDetails = {

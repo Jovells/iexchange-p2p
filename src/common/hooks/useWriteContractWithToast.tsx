@@ -42,17 +42,20 @@ import { useState } from 'react';
     toastId =  toastId || toast.loading(loadingMessage || 'Calling ' + args[0].functionName + '...');
     try {
       setIspending(true)
-      const result = await writeContractAsync(...args);
+      const txHash = await writeContractAsync(...args);
+      console.log("vb before afterAction")
       await afterAction;
+      console.log("after afterAction")
       timeTimeToWait= timeTimeToWait || afterAction ? 0 : 5000;
       await new Promise((resolve) => setTimeout(resolve, timeTimeToWait));
+      console.log("vb after wait")
       shouldShowModal && showModal( <ModalAlert buttonText="Done" buttonClick={modalAction} 
       modalType="success" 
       title="Successful" 
       description= {successMessage || args[0].functionName + ' successful'}   
       icon="../../images/icons/success.png" />);
-
       toast.success(successMessage || args[0].functionName + ' successful', { id: toastId  });
+      return txHash;
 
          } catch (error: any) {
       toast.error(errorMessage || `Transaction Failed: ${error.message}`, { id: toastId });
