@@ -20,6 +20,7 @@ import { z } from 'zod'
 import toast from 'react-hot-toast'
 import useWriteContractWithToast from '@/common/hooks/useWriteContractWithToast'
 
+const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 const formSchema = z.object({
   token: z.string().startsWith('0x'),
   currency: z.string().min(1, 'Currency is required'),
@@ -30,7 +31,9 @@ const formSchema = z.object({
   accountNumber: z.string().min(1, 'Account number is required'),
   timeLimit: z.number().positive('Time limit must be positive'),
   terms: z.string().optional(),
-  depositAddress: z.string().startsWith('0x'),
+  depositAddress: z.string().refine((val) => ethAddressRegex.test(val), {
+    message: 'Invalid Ethereum address',
+  }),
   rate: z.bigint().positive('Rate must be positive'),
   offerType: z.enum(['buy', 'sell']),
 }).refine((data) => data.minOrder <= data.maxOrder, {

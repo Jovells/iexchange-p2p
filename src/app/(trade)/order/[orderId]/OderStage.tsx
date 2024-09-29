@@ -189,10 +189,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
 
   function handleOptimisticUpdate(status: OrderState, txHash: string) {
     const updatedStatus = { ...orderStatus, status };
+    if(status === OrderState.Released || status === OrderState.Accepted || status === OrderState.Cancelled){
+    queryClient.refetchQueries({queryKey: ["balance", order?.offer.token.id]});
+    }
     queryClient.setQueryData(["orderStatus", orderId], updatedStatus);
     setTransactionHashes([...(transactionHashes || []), {hash: txHash, status: OrderState[status]}]);
   }
-
 
   const handleCancelOrder = async () => {
     console.log("Cancel Order", orderId, order);
