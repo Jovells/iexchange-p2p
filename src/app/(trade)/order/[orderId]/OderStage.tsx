@@ -88,9 +88,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
       args: [BigInt(orderId)],
     }, 
   );
+  handleOptimisticUpdate(OrderState.Released, txHash);
   return txHash;
   // Optimistically update the order status
-  handleOptimisticUpdate(OrderState.Released, txHash);
 }
   };
 
