@@ -19,7 +19,7 @@ export const formatBlockTimesamp = (timestamp: number | BigInt | string): string
 
 //esport a function which takes the a number and amount and return a currency value. juse prepend the currenty with the string, and divide the number by 10^18  to two decimal places
 export const formatCurrency = (amount: string | number, currency: string): string => {
-  return `${currency} ${(Number(amount) / 10 ** 18).toFixed(2)}`;
+  return `${(Number(amount) / 10 ** 18).toFixed(2)} ${currency}`;
 }
 export const parseStringToObject = (inputString: string): Record<string, string> => {
   const result: Record<string, string> = {};

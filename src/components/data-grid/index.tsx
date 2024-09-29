@@ -24,7 +24,7 @@ type Action = {
 
 type ExpandableTableProps = {
   columns: Column[];
-  data: any[] ;
+  data: any[];
   actions?: Action[];
   styles?: React.CSSProperties;
   isLoading: boolean;
@@ -83,7 +83,7 @@ const ExpandableTable = forwardRef(
     const columnGridTemplate = `repeat(${columns.length + (actions.length > 0 ? 1 : 0)
       }, minmax(0, 1fr))`;
 
-    const totalPages = Math.ceil(totalRecords / pageSize);
+    const totalPages = Math.ceil(data.length / pageSize);
 
     return (
       <div className="w-full overflow-x-auto">
@@ -108,7 +108,7 @@ const ExpandableTable = forwardRef(
               {isMobile ? (
                 <div>
                   {data.map((row: Offer, index) => (
-                    <div key={index} className="bg-white mb-4 p-4 rounded-lg border-b">
+                    <div key={index} className="bg-white mb-4 p-4 rounded-lg border-b border-[#C3D5F173]">
                       {columns.map((column) => (
                         <div key={column.key} className="mb-2">
                           <span>
@@ -120,26 +120,27 @@ const ExpandableTable = forwardRef(
                       ))}
                       {actions.length > 0 && (
                         <div className="mt-4 flex justify-end">
-    
+
                           {actions.map((action, actionIndex) => {
                             let label = typeof action.label === "function" ? action.label(row) : action.label;
-                            
+
                             return (
-                            <button
-                              key={actionIndex}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRowClick(index);
-                                action.onClick(row);
-                              }}
-                              className={`${row.offerType === offerTypes.buy
-                                ? 'bg-[#2D947A]'
-                                : 'bg-[#F14E4E]'
-                                } text-white text-sm px-4 py-3 rounded-xl`}
-                            >
-                              {label}
-                            </button>
-                          )})}
+                              <button
+                                key={actionIndex}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRowClick(index);
+                                  action.onClick(row);
+                                }}
+                                className={`${row.offerType === offerTypes.buy
+                                  ? 'bg-[#2D947A]'
+                                  : 'bg-[#F14E4E]'
+                                  } text-white text-sm px-4 py-3 rounded-xl`}
+                              >
+                                {label}
+                              </button>
+                            )
+                          })}
                         </div>
                       )}
                     </div>
@@ -162,7 +163,7 @@ const ExpandableTable = forwardRef(
                     <React.Fragment key={index}>
                       {expandedRowIndex !== index && (
                         <div
-                          className="grid grid-cols-12 gap-4 p-4 border-b border-[#C3D5F124] cursor-pointer"
+                          className="grid grid-cols-12 gap-4 p-4 border-b-2 border-[#C3D5F173] cursor-pointer"
                           style={{ gridTemplateColumns: columnGridTemplate }}
                         >
                           {columns.map((column) => (
@@ -175,8 +176,8 @@ const ExpandableTable = forwardRef(
                           {actions.length > 0 && (
                             <div className="col-span-1 w-full flex justify-end">
                               {actions.map((action, actionIndex) => {
-                                  const label = typeof action.label === "function" ? action.label(row) : action.label;
-                               return  <button
+                                const label = typeof action.label === "function" ? action.label(row) : action.label;
+                                return <button
                                   key={actionIndex}
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -184,12 +185,12 @@ const ExpandableTable = forwardRef(
                                     handleRowClick(index);
                                   }}
                                   className={`${row.offerType === offerTypes.buy
-                                      ? "bg-[#2D947A]"
-                                      : "bg-[#F14E4E]"
+                                    ? "bg-[#2D947A]"
+                                    : "bg-[#F14E4E]"
                                     } text-white text-sm px-4 py-3 rounded-xl`}>
                                   {label}
                                 </button>
-  }
+                              }
                               )}
                             </div>
                           )}
@@ -212,7 +213,7 @@ const ExpandableTable = forwardRef(
           )}
 
           {/* Pagination */}
-          {
+          {/* {
             data && data.length > 0 && (
               <div className="flex justify-center mt-4">
                 <button
@@ -234,7 +235,77 @@ const ExpandableTable = forwardRef(
                 </button>
               </div>
             )
+          } */}
+
+          {
+            data && data.length > 0 && (
+              <div className="flex justify-center mt-4 pt-10">
+                <div className="flex items-center mx-4 gap-2">
+                  <button
+                    disabled={page === 0}
+                    onClick={() => onPageChange(page - 1)}
+                    className="px-4 py-2 bg-transparent cursor-pointer rounded disabled:opacity-50"
+                  >
+                    Prev
+                  </button>
+                  {totalPages > 1 && (
+                    <>
+                      <button
+                        onClick={() => onPageChange(1)}
+                        className={`px-4 py-2 rounded-[8px] border ${page === 0 ? 'bg-[#01A2E4] text-white hover:bg-[#01A2E4]' : 'bg-transparent text-blue-600'
+                          } hover:bg-blue-200 transition-colors duration-200`}
+                      >
+                        1
+                      </button>
+                      {totalPages > 3 && page > 2 && <span className="px-2">...</span>}
+                    </>
+                  )}
+
+                  {Array.from({ length: Math.min(2, totalPages) }, (_, index) => {
+                    const pageNum = Math.max(2, page - 2) + index; 
+                    
+                    if (pageNum <= totalPages && pageNum > 1) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => onPageChange(pageNum)}
+                          className={`px-4 py-2 rounded-[8px] border ${page === pageNum ? 'bg-[#01A2E4] text-white hover:bg-[#01A2E4]' : 'bg-transparent text-blue-600'
+                            } hover:bg-blue-200 transition-colors duration-200`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    }
+                    return null;
+                  }).filter(Boolean)}
+
+                  {totalPages > 3 && page < totalPages - 1 && (
+                    <>
+                      {page < totalPages - 2 && <span className="px-2">...</span>}
+                      <button
+                        onClick={() => onPageChange(totalPages)}
+                        className={`px-4 py-2 rounded-[8px] border ${page === totalPages ? 'bg-[#01A2E4] text-white hover:bg-[#01A2E4]' : 'bg-transparent text-blue-600'
+                          } hover:bg-blue-200 transition-colors duration-200`}
+                      >
+                        {totalPages}
+                      </button>
+                    </>
+                  )}
+                  <button
+                    disabled={page === totalPages}
+                    onClick={() => onPageChange(page + 1)}
+                    className="px-4 py-2 bg-transparent cursor-pointer rounded disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )
           }
+
+
+
+
 
         </div>
       </div>

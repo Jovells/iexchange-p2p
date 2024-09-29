@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, CheckCircle, CheckSquare, ChevronDown } from 'lucide-react';
+import { Check, CheckCircle, CheckSquare, ChevronDown, Square } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 
 interface SelectOption {
@@ -76,7 +76,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                 </div>
             </div>
             {isOpen && (
-                <div className="absolute w-full bg-gray-50 p-2 border rounded-lg shadow-md z-10">
+                <div className="absolute w-full bg-gray-50 p-2 border rounded-[8px] shadow-md z-10">
                     {options.map((option) => (
                         <div
                             key={option.value}
@@ -86,7 +86,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                         >
                             <div className="flex items-center space-x-4">
                                 {/* {option.icon} */}
-                                {option.value === selectedValue ? <Check className='bg-black text-white w-4 h-4 rounded-lg' /> : <Check className='w-4 h-4 opacity-0' />}
+                                {option.value === selectedValue ? <Check className='bg-black text-white w-4 h-4 rounded-lg' /> : <Square className='text-gray-300 w-4 h-4' />}
                                 <span className='border-l-4 border-blue-500 pl-2'>{option.label}</span>
                             </div>
                         </div>

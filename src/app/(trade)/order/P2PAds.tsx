@@ -46,7 +46,7 @@ interface Props {
   isActive?: boolean;
 }
 const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, isActive }) => {
-  const {indexerUrl} = useContracts();
+  const { indexerUrl } = useContracts();
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -56,7 +56,7 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
 
   console.log("paymentMethod", paymentMethod);
 
-  const options = {page: currentPage, isActive, offerType, tokenId: token?.id, currency: currency?.id, amount, paymentMethod: paymentMethod?.id};
+  const options = { page: currentPage, isActive, offerType, tokenId: token?.id, currency: currency?.id, amount, paymentMethod: paymentMethod?.id };
 
   const { isPending, error, data } =
     useQuery({
@@ -87,8 +87,10 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
           data={data?.offers || []}
           actions={actions}
           isLoading={isPending}
-          pageSize={50}
-          onPageChange={handlePageChange}>
+          page={currentPage}
+          pageSize={10}
+          onPageChange={handlePageChange}
+        >
           {(row, toggleExpand) => (
             <CreateOrder
               data={row}

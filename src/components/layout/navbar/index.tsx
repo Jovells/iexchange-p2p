@@ -36,7 +36,7 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
             <Link
                 key={link.href}
                 href={link.href}
-                className="text-[#111315] hover:text-[#01A2E4] font-roboto font-sm leading-5 tracking-widest block px-2 py-2 rounded-md text-base"
+                className="text-[#111315] hover:text-[#01A2E4] font-[500px] block px-2 py-2 text-[14px]"
             >
                 {link.label}
             </Link>
@@ -55,40 +55,34 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
 
 
     return (
-        <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 px-0 lg:pr-3 lg:pl-0">
-            <Image src="/images/logo/iexchange-logo.png" alt="iexchange logo" className="h-[50px] w-[300px] lg:w-[170px] " width={150} height={50} onClick={() => navigation.push("/")} />
+        <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 pr-6">
+            <Image src="/images/logo/iexchange-logo.png" alt="iexchange logo" className="h-[50px] w-auto lg:w-auto cursor-pointer" width={150} height={50} onClick={() => navigation.push("/")} />
             <div className="w-full flex flex-row justify-end lg:justify-between items-center">
-                <div className="hidden lg:flex space-x-1">
+                <div className="hidden lg:flex space-x-1 mt-1">
                     {renderLinks(navLinks)}
                 </div>
 
                 <div className="hidden lg:flex flex-row justify-start items-center space-x-6">
-                    {session.status === "authenticated" && (
+                    {/* {session.status === "authenticated" && (
                         <div className="lg:w-auto lg:flex">
                             <NetworkSwitcher />
                         </div>
-                    )}
+                    )} */}
                     <BecomeAMerchant />
-                    <Button
-                        icon="/images/icons/gold.png"
-                        iconPosition="any"
-                        iconClassName="w-[32px] h-[32px]"
-                        className="bg-transparent rounded-full px-0 py-0 border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C]"
-                    />
+                    <Link href="" className="rounded-full border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C] p-0">
+                        <img src="/images/icons/gold.png" alt="gold bars" className="w-auto h-auto" />
+                    </Link>
                     <ThemeToggle />
                 </div>
-                <div className="lg:hidden flex flex-row justify-start items-center gap-4" id="mobile-menu">
-                {session.status === "authenticated" && (
+                <div className="lg:hidden flex flex-row justify-start items-center gap-2" id="mobile-menu">
+                    {/* {session.status === "authenticated" && (
                         <div className="lg:w-auto lg:flex">
                             <NetworkSwitcher />
                         </div>
-                    )}
-                    <Button
-                        icon="/images/icons/gold.png"
-                        iconPosition="any"
-                        iconClassName="w-[22px] h-[22px]"
-                        className="bg-transparent rounded-full mr-2 px-0 py-0 border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C]"
-                    />
+                    )} */}
+                    <Link href="" className="rounded-full border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C] p-0">
+                        <img src="/images/icons/gold.png" alt="gold bars" className="w-auto h-auto" />
+                    </Link>
                     <button
                         type="button"
                         className="flex items-center justify-center rounded-md text-gray-400 hover:text-[#01A2E4] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"

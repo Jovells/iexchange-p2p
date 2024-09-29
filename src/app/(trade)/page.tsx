@@ -2,10 +2,8 @@
 
 import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Filter } from "lucide-react";
 import WalletConnectSection from "@/components/sections/WalletConnectSection";
 import IExchangeGuide from "@/components/sections/IExchangeGuide";
-import { useChainModal } from "@rainbow-me/rainbowkit";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTokens } from "@/common/api/fetchTokens";
@@ -14,7 +12,6 @@ import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
 
 
-const Button = React.lazy(() => import('@/components/ui/Button'));
 const Faqs = React.lazy(() => import('@/components/sections/Faqs'));
 const P2PAds = React.lazy(() => import('./order/P2PAds'));
 const InputAmount = React.lazy(() => import('@/components/ui/InputWithSelect'));
@@ -27,10 +24,10 @@ import { useUser } from "@/common/contexts/UserContext";
 interface P2PMarketProps { }
 
 const P2PMarket: React.FC<P2PMarketProps> = () => {
+  const { session } = useUser();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { openChainModal } = useChainModal();
   const { currentChain, indexerUrl } = useContracts();
   const [paymentMethod, setPaymentMethod] = useState("");
   const { data: tokens } = useQuery({
@@ -52,7 +49,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     enabled: !!indexerUrl,
   });
 
-  const currencies = acceptedCurrencies?.map((currency) => ({
+  const currencies = acceptedCurrencies?.map((currency: { currency: string; id: any; }) => ({
     symbol: currency.currency,
     name: currency.currency,
     id: currency.id,
@@ -62,15 +59,11 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const currencyFromUrl = acceptedCurrencies?.find(c => c.currency = searchParams.get("fiat") || "GHS");
   const [currencyAmount, setCurrencyAmount] = useState({ currency: currencyFromUrl?.currency || "GHS", id: currencyFromUrl?.id, amount: "" });
 
-
-
   const { data: paymentMethods } = useQuery({
     queryKey: ["paymentOptions"],
     queryFn: () => fetchContractPaymentMethods(indexerUrl),
     enabled: !!indexerUrl,
   });
-
-
 
   const handleTabChange = (
     tab: "buy" | "sell" | string,
@@ -117,7 +110,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
         <Suspense fallback={<Loader loaderType="text" className="mt-24" />}>
           <P2PAds offerType={activeTab}
             isActive={true}
-            paymentMethod={paymentMethods.find(method => method.method === paymentMethod)}
+            paymentMethod={paymentMethods.find((method: { method: string; }) => method.method === paymentMethod)}
             amount={currencyAmount.amount}
             currency={currencies.find(c => c.id === currencyAmount.id)}
             token={selectedCrypto} />
@@ -143,21 +136,21 @@ const TabSelector: React.FC<TabSelectorProps> = ({
   activeTab,
   handleTabChange,
 }) => (
-  <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl p-1 min-w-[150px]">
+  <div className="flex flex-row items-center bg-white border border-gray-200 rounded-[10px] p-2 min-w-[150px]">
     <button
       onClick={() => handleTabChange("buy")}
-      className={`w-full rounded-xl text-center text-md p-1 ${activeTab.toLowerCase() === "buy"
-        ? "text-black bg-gray-300"
-        : "text-gray-600"
+      className={`w-full rounded-[5px] text-center text-[14px] font-[400px] p-2 px-6 ${activeTab.toLowerCase() === "buy"
+        ? "text-black bg-gray-400"
+        : "text-gray-400"
         }`}
     >
       Buy
     </button>
     <button
       onClick={() => handleTabChange("sell")}
-      className={`w-full rounded-xl text-center text-md p-1 ${activeTab.toLowerCase() === "sell"
-        ? "text-black bg-gray-300"
-        : "text-gray-600"
+      className={`w-full rounded-[5px] text-center text-[14px] font-[400px] p-2 px-6  ${activeTab.toLowerCase() === "sell"
+        ? "text-black bg-gray-400"
+        : "text-gray-400"
         }`}
     >
       Sell
@@ -184,7 +177,12 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
   const { session } = useUser()
   return (
     <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
-      <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
+      <div className="flex flex-row justify-between items-center space-x-0 gap-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
+        {session.status === "authenticated" && (
+          <div className="w-full block lg:hidden">
+            <NetworkSwitcher />
+          </div>
+        )}
         <div className="w-full lg:w-[300px]">
           <InputAmount
             label=""
@@ -212,8 +210,13 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
             onValueChange={(value) => setPaymentMethod(value)}
           />
         </div>
-        <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} />
+        {/* <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} /> */}
       </div>
+      {session.status === "authenticated" && (
+        <div className="lg:w-auto lg:flex hidden lg:block">
+          <NetworkSwitcher />
+        </div>
+      )}
 
     </div>
 

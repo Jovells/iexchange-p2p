@@ -6,13 +6,14 @@ import Footer from "@/components/layout/footer";
 import { Suspense } from "react";
 import Loader from "@/components/loader/Loader";
 
-const TradeLayout = ({ children, }: Readonly<{ children: React.ReactNode; }>) => {
-
+const TradeLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     return (
         <Suspense fallback={<Loader loaderType="text" className="h-screen" />}>
-            <MainNav />
-            <SubNav />
-            <div className="w-full min-h-screen">
+            <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                <MainNav />
+                <SubNav />
+            </div>
+            <div className="w-full min-h-screen mt-[100px]"> {/* Adjust the margin-top based on the heights of MainNav and SubNav */}
                 {children}
             </div>
             <Footer />
@@ -20,4 +21,4 @@ const TradeLayout = ({ children, }: Readonly<{ children: React.ReactNode; }>) =>
     );
 }
 
-export default TradeLayout
+export default TradeLayout;

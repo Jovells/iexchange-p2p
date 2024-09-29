@@ -17,7 +17,7 @@ const ModalManager: React.FC = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-10 flex items-center justify-center" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true">
       <div
         className="absolute inset-0 bg-gray-700 opacity-75"
         onClick={hideModal}

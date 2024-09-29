@@ -10,6 +10,8 @@ import Footer from "@/components/layout/footer";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import SubNav from "@/components/layout/navbar/SubNav";
+import { useUser } from "@/common/contexts/UserContext";
+import NetworkSwitcher from "@/components/networkSwitcher";
 
 export default function DashboardLayout({
     children,
@@ -17,6 +19,7 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }>) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const { session } = useUser();
 
     const toggleDrawer = () => {
         setIsDrawerOpen(!isDrawerOpen);
@@ -28,10 +31,15 @@ export default function DashboardLayout({
             <ModalContextProvider>
                 <MainNav />
                 <SubNav />
-                <div className="lg:hidden px-4 py-2 bg-white text-gray-600 border-t">
+                <div className="lg:hidden px-4 py-2 bg-white text-gray-600 border-t flex flex-row justify-between items-center">
                     <button onClick={toggleDrawer} className="text-gray-600 flex items-center">
                         <Menu className="mr-2 h-10 w-10" />
                     </button>
+                    {session.status === "authenticated" && (
+                    <div className="">
+                        <NetworkSwitcher />
+                    </div>
+                )}
                 </div>
                 <div className="flex flex-1 border-t p-0 pt-0 lg:pt-6">
                     <SideNav isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />

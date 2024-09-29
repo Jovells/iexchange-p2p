@@ -5,11 +5,16 @@ import ModalManager from "@/components/shared/modal/Modal";
 import { ModalContextProvider } from "@/common/contexts/ModalContext";
 import TopLoader from "@/components/loader/TopLoader";
 import { Metadata } from "next/types";
-import { Roboto } from "next/font/google";
+import { Inter, Roboto } from "next/font/google";
 import ErrorBoundary from "@/components/error/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
 
-const inter = Roboto({ subsets: ["latin"], weight: ["100", "300", "400", "500", "700"] });
+const inter = Inter({ subsets: ["latin"] });
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ['100', '300', '400', '500', '700', '900'],
+  display: "swap"
+});
 
 export const metadata: Metadata = {
   icons: "/images/logo/iexchange-logo.png", // Adjusted to a relative path
@@ -26,16 +31,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={roboto.className}>
         <ErrorBoundary>
           <TopLoader />
-            <WalletProvider>
-              <ModalContextProvider>
-                <Toaster/>
-                {children}
-                <ModalManager />
-              </ModalContextProvider>
-            </WalletProvider>
+          <WalletProvider>
+            <ModalContextProvider>
+              <Toaster />
+              {children}
+              <ModalManager />
+            </ModalContextProvider>
+          </WalletProvider>
         </ErrorBoundary>
       </body>
     </html>

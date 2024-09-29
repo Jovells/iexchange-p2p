@@ -64,7 +64,7 @@ const BecomeAMerchant = () => {
             text={isMerchant ? 'Post an Ad' : 'Become a Merchant'}
             icon={isMerchant ? '/images/icons/add-circle.png' : '/images/icons/export.svg'}
             iconPosition="right"
-            className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2"
+            className="bg-black text-white hover:bg-gray-600"
             onClick={handleClick}
             loading={isLoading}
         />

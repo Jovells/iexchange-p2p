@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   ...ButtonProps
 }) => {
-  const baseClasses = "flex justify-center items-center rounded font-medium";
+  const baseClasses = "flex justify-center items-center rounded-[8px] font-medium font-[500px] text-[14px] p-2 px-3";
   const defaultClasses = "";
 
 

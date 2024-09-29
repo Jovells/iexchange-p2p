@@ -1,7 +1,7 @@
 'use client'
 
 import { PaymentMethod } from '@/common/api/types';
-import { Check, CheckCircle, CheckSquare, ChevronDown } from 'lucide-react';
+import { Check, CheckCircle, CheckSquare, ChevronDown, Square } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 
 
@@ -89,7 +89,7 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
                 </div>
             </div>
             {isOpen && (
-                <div className="absolute w-full bg-gray-50 p-2 border rounded-lg shadow-md z-10">
+                <div className="absolute w-full bg-gray-50 p-2 border rounded-[8px] shadow-md z-10">
                     {options.map((option, i) => (
                         <div
                             key={i}
@@ -100,7 +100,7 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
                             <div className="flex w-full justify-between">
                             <div className="flex items-center space-x-4">
                                 {/* {option.icon} */}
-                                {option === selectedValue ? <Check className='bg-black text-white w-4 h-4 rounded-lg' /> : <Check className='w-4 h-4 opacity-0' />}
+                                {option === selectedValue ? <Square className='bg-black text-white w-4 h-4 rounded-lg' /> : <Square className='text-black w-4 h-4' />}
                                 <span className='border-l-4 border-blue-500 pl-2'>{option.method}</span>
                             </div>
                             <div className="min-w-40 text-sm text-gray-500">

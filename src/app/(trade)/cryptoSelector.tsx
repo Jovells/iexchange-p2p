@@ -37,8 +37,8 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
   }
 
   return (
-    <div className="bg-white border-0 border-gray-200 rounded-xl">
-      <div className="hidden sm:flex justify-start items-center space-x-4 p-1 px-3">
+    <div className="bg-transparent border-0 lg:border border-gray-200 rounded-[8px]">
+      <div className="hidden sm:flex justify-start items-center space-x-4 p-2 px-3">
         {tokens.map((token) => (
           <CryptoButton
             key={token.id}
@@ -58,7 +58,7 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
           onChange={(e) =>
             setSelectedCrypto(tokens.find((t) => t.symbol === e.target.value)!)
           }
-          className="w-full px-6 py-2 rounded-xl text-md bg-white border border-gray-300 text-gray-600 outline-none"
+          className="w-full px-6 py-4 rounded-xl text-md bg-white border border-gray-300 text-gray-600 outline-none"
         >
           {tokens.map((crypto) => (
             <option key={crypto.id} value={crypto.symbol}>
@@ -66,8 +66,6 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
             </option>
           ))}
         </select>
-
-        <Filter className="cursor-pointer w-10 h-10" onClick={() => { }} />
       </div>
     </div>
   );

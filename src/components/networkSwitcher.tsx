@@ -9,21 +9,20 @@ import { chains } from "@/common/configs";
 
 
 function NetworkSwitcher() {
-  const { openChainModal} = useChainModal();
+  const { openChainModal } = useChainModal();
   const { openConnectModal } = useConnectModal();
   const { isCorrectChain, currentChain } = useContracts();
 
   const text = isCorrectChain ? currentChain?.name : "Wrong Network";
 
 
-      return (<Suspense fallback={<Loader loaderType="text" />}>
-        {openChainModal?
-          <Button text={text} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full" onClick={()=>openChainModal()} icon={<ChevronsUpDown />} />
-       : <Button text={text} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full" onClick={()=>openConnectModal?.()} icon={<FaChevronCircleRight />} />
-        }
-      </Suspense>);
+  return (<Suspense fallback={<Loader loaderType="text" />}>
+    {openChainModal ?
+      <Button text={text} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full" onClick={() => openChainModal()} icon={<ChevronsUpDown />} />
+      : <Button text={text} className="justify-end bg-transparent border border-blue-300 px-4 py-2 w-full" onClick={() => openConnectModal?.()} icon={<FaChevronCircleRight />} />
     }
+  </Suspense>);
+}
 
 export default NetworkSwitcher;
-  
-  
+

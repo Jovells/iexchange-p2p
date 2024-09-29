@@ -14,7 +14,7 @@ import { useAccount } from "wagmi";
 
 export function OrdersDropdown() {
   const { indexerUrl } = useContracts();
-  const {address: userAddress} = useUser();
+  const { address: userAddress } = useUser();
   const options = {
     page: 0,
     quantity: 10,
@@ -30,48 +30,57 @@ export function OrdersDropdown() {
 
   console.log("myOrders", myOrders);
 
-  if (!myOrders && !isFetching  ) {
+  if (!myOrders && !isFetching) {
     return <Loader />;
   }
 
   if (!myOrders) {
-    return <div>No orders</div>;
+    return null;
   }
 
   return (
-    <div className="w-[400px] p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-      {myOrders.map((item, index) => {
-        const isTrader =  item.trader.id === userAddress;
+    <div className="w-full rounded-[8px] border border-gray-200">
+      <div className="flex flex-row justify-between items-center p-4 border-b">
+        <h2 className="text-black font-bold">Processing</h2>
+        <Link href="/dashboard/history/orders" className="text-blue-600">View more</Link>
+      </div>
+      {myOrders.map((item: any, index: any) => {
+        const isTrader = item.trader.id === userAddress;
         const isMerchant = item.offer.merchant.id === userAddress;
         const isBuy = item.orderType === offerTypes.buy;
         const isSell = item.orderType === offerTypes.sell;
         const isBuyer =
           isTrader && isBuy;
         const barColor = isBuyer ? "bg-green-500" : "bg-red-500";
+        const textColor = isBuyer ? "text-green-500" : "text-red-500";
         const otherPartyAddress = isBuyer
           ? item.offer.merchant.id
           : item.trader.id;
 
         return (
-            <Link href={ORDER_PAGE(item.id)} key={index}>
-            <div className="border-b p-4 flex hover:bg-gray-100 transition-colors duration-200">
-              <div className={`w-2 ${barColor} mr-4`}></div>
-              <div className="flex flex-col space-y-2">
-              <h3 className=" font-bold">
-                {(item.orderType === offerTypes.buy && isBuyer
-                ? "Buy "
-                : "Sell ") + item.offer.token.symbol}
-              </h3>
-              <p className="text-sm text-gray-500">{OrderState[item.status]}</p>
-              <p className="text-lg font-medium">
-                {formatCurrency(Number(item.quantity) * Number(item.offer.rate), item.offer.currency.currency)}
-              </p>
-              <p className="text-sm text-gray-500">Rate: {item.offer.rate}</p>
-              <p className="text-sm text-gray-500">Date: {formatBlockTimesamp(item.blockTimestamp)}</p>
-              <p className="text-sm text-gray-500">Other Party: {shortenAddress(otherPartyAddress)}</p>
+          <Link href={ORDER_PAGE(item.id)} key={index} className="flex grid-cols-1 lg:grid-cols-2 gap-4 border-b p-4 hover:bg-gray-100 transition-colors duration-200 w-full">
+            <div className="w-full flex flex-row justify-between items-start space-y-2 ">
+              <div className="flex flex-row">
+                <div className={`w-2 ${barColor} mr-4`}></div>
+                <div>
+                  <h3 className={`font-bold text-left ${textColor}`}>
+                    {(item.orderType === offerTypes.buy && isBuyer
+                      ? "Buy "
+                      : "Sell ") + item.offer.token.symbol}
+                  </h3>
+                  <p className="text-lg font-medium text-left">
+                    {formatCurrency(Number(item.quantity) * Number(item.offer.rate), item.offer.currency.currency)}
+                  </p>
+                  {/* <p className="text-sm text-gray-500">{OrderState[item.status]}</p> */}
+                  <p className="text-sm text-gray-500 text-left">{shortenAddress(otherPartyAddress)}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 text-right">Price: {item.offer.rate}</p>
+                <p className="text-sm text-gray-500 text-right">Date: {formatBlockTimesamp(item.blockTimestamp)}</p>
               </div>
             </div>
-            </Link>
+          </Link>
         );
       })}
     </div>

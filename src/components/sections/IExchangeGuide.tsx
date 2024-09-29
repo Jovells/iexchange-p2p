@@ -8,24 +8,24 @@ const IExchangeGuide = () => {
         <div className='w-full py-3 lg:py-16'>
             <div className="flex flex-row justify-between items-center flex-wrap lg:flex-nowrap lg:p-0 gap-6 lg:gap-0 mt-6">
                 <h1 className='text-3xl font-bold'>How iExchange Works</h1>
-                <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl min-w-[150px]">
+                <div className="flex flex-row items-center bg-white border border-gray-200 rounded-[8px] min-w-[150px] p-2">
                     <button
                         onClick={() => setActiveTab("trade")}
-                        className={`w-full rounded-xl text-center text-md p-1 px-6 ${activeTab.toLowerCase() === 'trade' ? 'text-black bg-gray-300' : 'text-gray-600'
+                        className={`w-full rounded-[8px] text-center text-md p-1 px-6 ${activeTab.toLowerCase() === 'trade' ? 'text-black bg-gray-400' : 'text-gray-400'
                             }`}
                     >
                         Trade
                     </button>
                     <button
                         onClick={() => setActiveTab("merchandise")}
-                        className={`w-full rounded-xl text-center text-md p-1 px-6 ${activeTab.toLowerCase() === 'merchandise' ? 'text-black bg-gray-300' : 'text-gray-600'
+                        className={`w-full rounded-[8px] text-center text-md p-1 px-6 ${activeTab.toLowerCase() === 'merchandise' ? 'text-black bg-gray-400' : 'text-gray-400'
                             }`}
                     >
                         Merchandise
                     </button>
                     <button
                         onClick={() => setActiveTab("settle")}
-                        className={`w-full rounded-xl text-center text-md p-1 px-6 ${activeTab.toLowerCase() === 'settle' ? 'text-black bg-gray-300' : 'text-gray-600'
+                        className={`w-full rounded-[8px] text-center text-md p-1 px-6 ${activeTab.toLowerCase() === 'settle' ? 'text-black bg-gray-400' : 'text-gray-400'
                             }`}
                     >
                         Settle

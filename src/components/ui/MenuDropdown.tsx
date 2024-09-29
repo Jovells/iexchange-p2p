@@ -7,9 +7,10 @@ interface DropdownProps {
     dropdownItems: any[];
     children?: ReactNode;
     itemIcon?: string;
+    onClick?:()=>void
 }
 
-const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, children, itemIcon }) => {
+const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, children, itemIcon, onClick }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -32,6 +33,7 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
     }, [isOpen]);
 
     const toggleDropdown = () => {
+        onClick && onClick()
         setIsOpen((prev) => !prev);
     };
 
@@ -44,7 +46,7 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
             onClick={toggleDropdown}
         >
             <button
-                className="inline-flex items-center px-4 py-2 pl-1 pr-0 lg:pl-0 bg-transparent text-[#33343E] font-medium text-sm leading-5 tracking-widest rounded-md focus:outline-none"
+                className="inline-flex items-center px-4 py-2 pl-1 pr-0 lg:pl-0 bg-transparent text-[#33343E] font-[500px] text-[14px] rounded-md focus:outline-none"
             >
                 <img src={icon} alt="icon" className="w-5 h-5 ml-2 lg:ml-6 mr-2" />
                 <span className="hidden lg:flex">{title}</span>
@@ -64,13 +66,13 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
 
             {isOpen && (
                 <div
-                    className="absolute right-0 w-48 mt-0 py-4 t-6 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg z-10"
+                    className="absolute right-0 min-w-48 mt-0 t-6 origin-top-right bg-white pt-2 rounded-lg shadow-[8px] z-10"
                 >
-                    <div className="px-3">
+                    <div className="">
                         {children}
                     </div>
                     {dropdownItems.length > 0 && (
-                        <div className="min-w-[200px] py-4 space-y-3">
+                        <div className="min-w-[200px] py-4 space-y-3 border border-gray-200">
                             {dropdownItems.map((item, index) => (
                                 <Link
                                     key={index}
