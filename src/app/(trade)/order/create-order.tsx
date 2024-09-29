@@ -25,15 +25,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getBlock } from '@wagmi/core'
 import { config } from "@/common/configs";
 
-const formSchema = z.object({
-  toPay: z.string().min(1, "Please enter a valid amount").refine(val => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "Must be a valid positive number"
-  }),
-  toReceive: z.string().min(1, "Please enter a valid amount").refine(val => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "Must be a valid positive number"
-  }),
-  paymentMethod: z.string().min(1, "Payment method is required"),
-});
 
 interface Props {
   data: Offer;
@@ -74,8 +65,24 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     address: data.token.id,
     functionName: "allowance",
     args: [userAddress!, p2p.address],
+    query:{
+      enabled: orderType === "sell",
+    }
   });
+
+
   const isBuy = orderType.toLowerCase() === "buy"
+
+  const formSchema = z.object({
+    toPay: z.string().min(1, "Please enter a valid amount").refine(val => !isNaN(Number(val)) && Number(val) > 0, {
+      message: "Must be a valid positive number"
+    }),
+    toReceive: z.string().min(1, "Please enter a valid amount").refine(val => !isNaN(Number(val)) && Number(val) > 0, {
+      message: "Must be a valid positive number"
+    }),
+    paymentMethod: z.string().min(1, "Payment method is required"),
+  });
+  
 
   function handleFormDateChange(name: string, value: string | PaymentMethod) {
     console.log('name', name, 'orderType', orderType, 'isbuy', isBuy, )

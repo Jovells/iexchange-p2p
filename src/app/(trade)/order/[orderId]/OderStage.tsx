@@ -21,6 +21,7 @@ import toast from 'react-hot-toast';
 import { useModal } from '@/common/contexts/ModalContext';
 import OrderCancellationWarning from '@/components/modals/OrderCancellationWarning';
 import PaymentConfirmation from '@/components/modals/PaymentConfirmation';
+import ReleaseConfirmation from '@/components/modals/ReleaseConfirmation';
 
 const POLLING_INTERVAL = 5000;
 const toastId = "order-status";
@@ -69,10 +70,41 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   });
 
 
-  
+  const fiatAmount = order && formatCurrency(Number(order?.quantity) * Number(order?.offer.rate), order.offer.currency.currency);
+  const cryptoAmount = order && formatCurrency(Number(order?.quantity), order.offer.token.symbol );
+
+  const handleReleaseFunds = async () => {
+    showModal(<ReleaseConfirmation cryptoAmount={cryptoAmount!}
+      fiatAmount={fiatAmount!}
+      onClick={release}/>)
+
+  async function release(){
+    console.log("Release funds");
+    const txHash = await writeContractAsync({toastId},
+      {
+      address: p2p.address,
+      abi: p2p.abi,
+      functionName: "releaseOrder",
+      args: [BigInt(orderId)],
+    }, 
+  );
+  return txHash;
+  // Optimistically update the order status
+  handleOptimisticUpdate(OrderState.Released, txHash);
+}
+  };
+
   const handlePayOrder = async () => {
     console.log("Transfer funds");
-    const txHash = await writeContractAsync(
+    showModal(<PaymentConfirmation amount={cryptoAmount!} 
+
+      accountName={accountDetails?.name!}
+      accountNumber={accountDetails?.number!}
+      extraDetails={accountDetails?.details}
+      onClick={pay}/>)
+
+    async function pay(){
+      const txHash = await writeContractAsync(
       {toastId},
       {
       address: p2p.address,
@@ -83,20 +115,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   );
   // Optimistically update the order status
   handleOptimisticUpdate(OrderState.Paid, txHash);
-
-  };
-
-  const handleReleaseFunds = async () => {
-    console.log("Release funds");
-    const txHash = await writeContractAsync({toastId},{
-      address: p2p.address,
-      abi: p2p.abi,
-      functionName: "releaseOrder",
-      args: [BigInt(orderId)],
-    }, 
-  );
-  // Optimistically update the order status
-  handleOptimisticUpdate(OrderState.Released, txHash);
+}
 
   };
 
@@ -128,22 +147,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   
   };
 
-  //TODO @Jovels reference here
-  const handleClic = async () =>{
-    console.log("test")
-  }
-
-  const showOrderCompletedModal = () => {
-    showModal(
-    <PaymentConfirmation onClick={handleClic}/>
-    )
-  }
-
-  useEffect(()=>{
-    showOrderCompletedModal()
-  },[])
-
-
+ 
   const getButtonConfig = () => {
     if (!order) return { text: "", buttonText: "", onClick: () => {}, disabled: true , shouldPoll: false};
 
@@ -270,8 +274,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   }
 
 
-  const fiatAmount = formatCurrency(Number(order?.quantity) * Number(order?.offer.rate), order.offer.currency.currency)
-  const cryptoAmount = formatCurrency(Number(order?.quantity), order?.offer.token.symbol )
+
 
   const isCancellable = (order.status === OrderState.Pending && isMerchant) || (order.status === OrderState.Accepted && isTrader);
 
