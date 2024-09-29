@@ -18,6 +18,9 @@ import Link from "next/link";
 import { config } from "@/common/configs";
 import fetchOrderStatus from '@/common/api/fetchOrderStatus';
 import toast from 'react-hot-toast';
+import { useModal } from '@/common/contexts/ModalContext';
+import OrderCancellationWarning from '@/components/modals/OrderCancellationWarning';
+import PaymentConfirmation from '@/components/modals/PaymentConfirmation';
 
 const POLLING_INTERVAL = 5000;
 const toastId = "order-status";
@@ -29,6 +32,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   const { writeContractAsync, isPending } = useWriteContractWithToast();
   const { writeContractAsync: writeToken, data: approveHash, isSuccess: isApproveSuccess, isPending: isP2pWritePending } = useWriteContractWithToast();
   const [transactionHashes, setTransactionHashes] = React.useState<{hash: string, status: string}[]| null>(null);
+  const { showModal, hideModal } = useModal()
   
   const { data: order, error: orderError, isLoading: orderLoading} = useQuery({
     queryKey: ["order", orderId],
@@ -123,6 +127,21 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string, toggleExpand: 
   handleOptimisticUpdate(OrderState.Accepted, txHash);
   
   };
+
+  //TODO @Jovels reference here
+  const handleClic = async () =>{
+    console.log("test")
+  }
+
+  const showOrderCompletedModal = () => {
+    showModal(
+    <PaymentConfirmation onClick={handleClic}/>
+    )
+  }
+
+  useEffect(()=>{
+    showOrderCompletedModal()
+  },[])
 
 
   const getButtonConfig = () => {
