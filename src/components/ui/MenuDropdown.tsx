@@ -33,7 +33,6 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
     }, [isOpen]);
 
     const toggleDropdown = () => {
-        onClick && onClick()
         setIsOpen((prev) => !prev);
     };
 
@@ -46,6 +45,7 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
             onClick={toggleDropdown}
         >
             <button
+            onClick={()=>onClick?.()}
                 className="inline-flex items-center px-4 py-2 pl-1 pr-0 lg:pl-0 bg-transparent text-[#33343E] font-[500px] text-[14px] rounded-md focus:outline-none"
             >
                 <img src={icon} alt="icon" className="w-5 h-5 ml-2 lg:ml-6 mr-2" />

@@ -18,7 +18,7 @@ export type Token = {
 
 export type Merchant = {
   id: `0x${string}`;
-  isMerchant: boolean;
+  isMerchant?: boolean;
   name?: string;
   terms?: string;
   timeLimit?: number;
@@ -36,7 +36,7 @@ export type PaymentMethod = {
   number?: string;
 }
 
-enum OfferType {
+export enum OfferType {
   buy = 0,
   sell = 1,
 }
@@ -90,9 +90,7 @@ export type Order = {
   quantity: string;
   status: OrderState;
   offer: Offer;
-  trader: {
-    id: `0x${string}`;
-  };
+  trader: Merchant;
   blockTimestamp: string;
 }
 

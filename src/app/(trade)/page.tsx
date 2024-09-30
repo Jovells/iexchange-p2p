@@ -36,11 +36,11 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     enabled: !!indexerUrl,
   });
   const [selectedCrypto, setSelectedCrypto] = useState(
-    tokens?.find((t) => t.symbol === searchParams.get("crypto") || "")
+    tokens?.find(t => t.symbol === searchParams.get("crypto") || ""),
   );
 
   const [activeTab, setActiveTab] = useState<"buy" | "sell" | string>(
-    searchParams.get("trade")?.toLowerCase() || "buy"
+    searchParams.get("trade")?.toLowerCase() || "buy",
   );
 
   const { data: acceptedCurrencies } = useQuery({
@@ -49,15 +49,19 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     enabled: !!indexerUrl,
   });
 
-  const currencies = acceptedCurrencies?.map((currency: { currency: string; id: any; }) => ({
+  const currencies = acceptedCurrencies?.map(currency => ({
     symbol: currency.currency,
     name: currency.currency,
     id: currency.id,
-    icon: currency.currency === "GHS" ? <p>₵</p> : currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p>
+    icon: currency.currency === "GHS" ? <p>₵</p> : currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p>,
   }));
 
-  const currencyFromUrl = acceptedCurrencies?.find(c => c.currency = searchParams.get("fiat") || "GHS");
-  const [currencyAmount, setCurrencyAmount] = useState({ currency: currencyFromUrl?.currency || "GHS", id: currencyFromUrl?.id, amount: "" });
+  const currencyFromUrl = acceptedCurrencies?.find(c => c.currency === searchParams.get("fiat") || "GHS");
+  const [currencyAmount, setCurrencyAmount] = useState({
+    currency: currencyFromUrl?.currency || "GHS",
+    id: currencyFromUrl?.id,
+    amount: "",
+  });
 
   const { data: paymentMethods } = useQuery({
     queryKey: ["paymentOptions"],
@@ -65,10 +69,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     enabled: !!indexerUrl,
   });
 
-  const handleTabChange = (
-    tab: "buy" | "sell" | string,
-  ) => {
-
+  const handleTabChange = (tab: "buy" | "sell" | string) => {
     setActiveTab(tab);
   };
 
@@ -78,9 +79,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
       ? `trade=${activeTab}&crypto=${selectedCrypto?.symbol || ""}&fiat=${fiat}`
       : `crypto=${selectedCrypto?.symbol || ""}&fiat=${fiat}`;
     router.push(`${pathname}?${query}`);
-
   }, [selectedCrypto, activeTab]);
-
 
   const isAvailable = !!(tokens && currencies && paymentMethods);
 
@@ -88,19 +87,18 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     return null;
   }
 
+  console.log("qiAllp2pcurrencies", currencies);
+
   return (
     <>
       <WalletConnectSection />
       <div className="container mx-auto p-4 lg:p-0 lg:py-10 flex flex-col items-start space-y-4">
         <div className="flex flex-row items-start gap-4">
           <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
-          <CryptoSelector
-            tokens={tokens}
-            selectedCrypto={selectedCrypto}
-            setSelectedCrypto={setSelectedCrypto}
-          />
+          <CryptoSelector tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={setSelectedCrypto} />
         </div>
         <PaymentsSection
+          currencyAmount={currencyAmount}
           setCurrencyAmount={setCurrencyAmount}
           setPaymentMethod={setPaymentMethod}
           currencies={currencies}
@@ -108,12 +106,14 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
           currentChain={currentChain}
         />
         <Suspense fallback={<Loader loaderType="text" className="mt-24" />}>
-          <P2PAds offerType={activeTab}
+          <P2PAds
+            offerType={activeTab}
             isActive={true}
-            paymentMethod={paymentMethods.find((method: { method: string; }) => method.method === paymentMethod)}
+            paymentMethod={paymentMethods.find((method: { method: string }) => method.method === paymentMethod)}
             amount={currencyAmount.amount}
             currency={currencies.find(c => c.id === currencyAmount.id)}
-            token={selectedCrypto} />
+            token={selectedCrypto}
+          />
         </Suspense>
         <IExchangeGuide />
         <Suspense fallback={<Loader loaderType="text" />}>
@@ -126,55 +126,49 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
 
 export default P2PMarket;
 
-
 interface TabSelectorProps {
   activeTab: string;
   handleTabChange: (tab: "buy" | "sell" | string) => void;
 }
 
-const TabSelector: React.FC<TabSelectorProps> = ({
-  activeTab,
-  handleTabChange,
-}) => (
+const TabSelector: React.FC<TabSelectorProps> = ({ activeTab, handleTabChange }) => (
   <div className="flex flex-row items-center bg-white border border-gray-200 rounded-[10px] p-2 min-w-[150px]">
     <button
       onClick={() => handleTabChange("buy")}
-      className={`w-full rounded-[5px] text-center text-[14px] font-[400px] p-2 px-6 ${activeTab.toLowerCase() === "buy"
-        ? "text-black bg-gray-400"
-        : "text-gray-400"
-        }`}
+      className={`w-full rounded-[5px] text-center text-[14px] font-[400px] p-2 px-6 ${
+        activeTab.toLowerCase() === "buy" ? "text-black bg-gray-400" : "text-gray-400"
+      }`}
     >
       Buy
     </button>
     <button
       onClick={() => handleTabChange("sell")}
-      className={`w-full rounded-[5px] text-center text-[14px] font-[400px] p-2 px-6  ${activeTab.toLowerCase() === "sell"
-        ? "text-black bg-gray-400"
-        : "text-gray-400"
-        }`}
+      className={`w-full rounded-[5px] text-center text-[14px] font-[400px] p-2 px-6  ${
+        activeTab.toLowerCase() === "sell" ? "text-black bg-gray-400" : "text-gray-400"
+      }`}
     >
       Sell
     </button>
   </div>
 );
 
-
-
 interface PaymentsSectionProps {
   currencies: PreparedCurrency[];
   paymentMethods: any;
   setCurrencyAmount: (value: { currency: string; amount: string; id: `0x${string}` }) => void;
   setPaymentMethod: (value: string) => void;
+  currencyAmount: { currency: string; amount: string; id: `0x${string}` | undefined };
   currentChain: any;
 }
 
 const PaymentsSection: React.FC<PaymentsSectionProps> = ({
   currencies,
   paymentMethods,
+  currencyAmount,
   setCurrencyAmount,
   setPaymentMethod,
 }) => {
-  const { session } = useUser()
+  const { session } = useUser();
   return (
     <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
       <div className="flex flex-row justify-between items-center space-x-0 gap-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
@@ -187,14 +181,13 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
           <InputAmount
             label=""
             placeholder="Enter amount"
-            initialCurrency={currencies[0].symbol}
+            initialCurrencyName={currencyAmount.currency}
             currencies={currencies}
             //@ts-ignore
-            onValueChange={(value: { currency: string; amount: string, id: `0x${string}` }) => {
+            onValueChange={(value: { currency: string; amount: string; id: `0x${string}` }) => {
               setCurrencyAmount(value);
-              console.log(value)
-            }
-            }
+              console.log(value);
+            }}
             readOnly={false}
           />
         </div>
@@ -207,7 +200,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
               value: method.method,
               label: method.method,
             }))}
-            onValueChange={(value) => setPaymentMethod(value)}
+            onValueChange={value => setPaymentMethod(value)}
           />
         </div>
         {/* <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} /> */}
@@ -217,9 +210,6 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
           <NetworkSwitcher />
         </div>
       )}
-
     </div>
-
-  )
-
+  );
 };

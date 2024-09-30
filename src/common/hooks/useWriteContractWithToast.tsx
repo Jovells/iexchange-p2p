@@ -1,5 +1,5 @@
 import { useWriteContract as useWagmiWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import toast from 'react-hot-toast';
+import { ixToast as toast } from "@/lib/utils";
 import { useModal } from '../contexts/ModalContext';
 import ModalAlert from '@/components/modals';
 import { useState } from 'react';

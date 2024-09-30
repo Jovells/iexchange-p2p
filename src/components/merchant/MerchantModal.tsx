@@ -11,7 +11,7 @@ import { useModal } from "@/common/contexts/ModalContext";
 import ModalAlert from "../modals";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { ixToast as toast } from "@/lib/utils";
 
 interface MerchantModalProps {
     hideModal: () => void;
@@ -72,48 +72,54 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     }
 
     return (
-        <div className='w-full lg:w-[500px] h-auto bg-white p-8 rounded-xl shadow-md border-2 border-gray-500'>
-            <div className='flex justify-end'>
-                <X onClick={hideModal} className='cursor-pointer' />
-            </div>
-            {action === "verify" && (
-                <>
-                    <div className='flex flex-col gap-6'>
-                        <h2 className='text-gray-700 text-lg'>Let’s Verify Your Identification</h2>
-                        <p className='text-gray-500 text-sm'>Please provide all necessary information. Note that all your information is safe.</p>
-                    </div>
-                    <Button
-                        text="Proceed"
-                        className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2 mt-12 w-full"
-                        onClick={() => { }} // Add functionality if needed
-                    />
-                </>
-            )}
-            {action === "stake" && (
-                <>
-                    <div className='flex flex-col gap-6 mb-4'>
-                        <h2 className='text-gray-700 text-lg'>Merchant Stake</h2>
-                        <p className='text-gray-500 text-sm'>Stake any currency up to 10 USDT to continue the process of becoming a merchant.</p>
-                    </div>
-                    <InputWithSelect
-                        label="Stake Amount"
-                        initialCurrency="CEDIH"
-                        currencies={cryptoTokens as unknown as { symbol: string; name: string, icon: JSX.Element; id: `0x${string}` }[]}
-                        onValueChange={(value) => console.log(value)}
-                        value="1500"
-                        readOnly
-                        placeholder="Enter amount"
-                        selectIsReadOnly
-                    />
-                    <Button
-                        text="Proceed"
-                        loading={isStaking}
-                        className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2 mt-6 w-full"
-                        onClick={handleStake}
-                    />
-                </>
-            )}
+      <div className="w-full lg:w-[500px] h-auto bg-white p-8 rounded-xl shadow-md border-2 border-gray-500">
+        <div className="flex justify-end">
+          <X onClick={hideModal} className="cursor-pointer" />
         </div>
+        {action === "verify" && (
+          <>
+            <div className="flex flex-col gap-6">
+              <h2 className="text-gray-700 text-lg">Let’s Verify Your Identification</h2>
+              <p className="text-gray-500 text-sm">
+                Please provide all necessary information. Note that all your information is safe.
+              </p>
+            </div>
+            <Button
+              text="Proceed"
+              className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2 mt-12 w-full"
+              onClick={() => {}} // Add functionality if needed
+            />
+          </>
+        )}
+        {action === "stake" && (
+          <>
+            <div className="flex flex-col gap-6 mb-4">
+              <h2 className="text-gray-700 text-lg">Merchant Stake</h2>
+              <p className="text-gray-500 text-sm">
+                Stake any currency up to 10 USDT to continue the process of becoming a merchant.
+              </p>
+            </div>
+            <InputWithSelect
+              label="Stake Amount"
+              initialCurrencyName="CEDIH"
+              currencies={
+                cryptoTokens as unknown as { symbol: string; name: string; icon: JSX.Element; id: `0x${string}` }[]
+              }
+              onValueChange={value => console.log(value)}
+              value="1500"
+              readOnly
+              placeholder="Enter amount"
+              selectIsReadOnly
+            />
+            <Button
+              text="Proceed"
+              loading={isStaking}
+              className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2 mt-6 w-full"
+              onClick={handleStake}
+            />
+          </>
+        )}
+      </div>
     );
 }
 
