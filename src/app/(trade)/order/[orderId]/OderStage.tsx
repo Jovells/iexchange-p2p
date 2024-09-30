@@ -290,7 +290,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         showModal(<BuyerReleaseModal txHash={address!} cryptoAmount={cryptoAmount!} fiatAmount={fiatAmount!} />);
       } else if (fetchedStatus === OrderState.Paid) {
         showModal(<SellerPaymentConfirmedModal txHash={address!} fiatAmount={fiatAmount!} />);
-      } else if (fetchedStatus === OrderState.Accepted) {
+      } else if ((fetchedStatus === OrderState.Accepted) && isBuyer) {
         toast.success(
           t => {
             return (
