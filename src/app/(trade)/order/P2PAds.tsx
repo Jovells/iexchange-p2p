@@ -58,12 +58,12 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
 
   const options = { page: currentPage, isActive, offerType, tokenId: token?.id, currency: currency?.id, amount, paymentMethod: paymentMethod?.id };
 
-  const { isPending, error, data } =
-    useQuery({
-      queryKey: ["ads", indexerUrl, options],
-      queryFn: () => fetchAds(indexerUrl, options),
-      // placeholderData: keepPreviousData,
-    });
+  const { isPending, error, data } = useQuery({
+    queryKey: ["ads", indexerUrl, options],
+    queryFn: () => fetchAds(indexerUrl, options),
+    //TODO: add retry logic
+    retry: 0,
+  });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

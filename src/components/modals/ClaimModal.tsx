@@ -8,8 +8,10 @@ import { useAccount, useReadContract } from 'wagmi';
 import Loader from '../loader/Loader';
 import useWriteContractWithToast from '@/common/hooks/useWriteContractWithToast';
 import { useModal } from '@/common/contexts/ModalContext';
+import { useQueryClient } from "@tanstack/react-query";
 
 const ClaimModal = () => {
+    const queryClient = useQueryClient();
     const { hideModal } = useModal()
     const { faucet } = useContracts();
     const account = useAccount();
@@ -35,14 +37,22 @@ const ClaimModal = () => {
 
     async function handleClaim() {
 
-        await claim({}, {
-            abi: faucet.abi,
-            address: faucet.address,
-            functionName: 'claim',
-            args: []
-        });
-
-        hideModal()
+  try {
+    await claim(
+      {},
+      {
+        abi: faucet.abi,
+        address: faucet.address,
+        functionName: "claim",
+        args: [],
+      },
+    );
+    hideModal();
+    queryClient.refetchQueries({ queryKey: ["readContract", { functionName: "balanceOf" }] });
+  } catch (error) {
+    console.log(error);
+  }
+         
     }
 
     useEffect(() => {

@@ -106,7 +106,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       setFormData(prev => ({
         ...prev,
         toPay: value as string,
-        toReceive: newToReceive.toFixed(8), // Limit to 8 decimal places
+        toReceive: newToReceive.toFixed(2), // Limit to 8 decimal places
       }));
     } else if (name === "toReceive") {
       let newToPay;
@@ -116,7 +116,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       setFormData(prev => ({
         ...prev,
         toReceive: value as string,
-        toPay: newToPay.toFixed(8), // Limit to 8 decimal places
+        toPay: newToPay.toFixed(2), // Limit to 8 decimal places
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));

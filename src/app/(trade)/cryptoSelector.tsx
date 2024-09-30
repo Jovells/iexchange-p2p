@@ -17,29 +17,24 @@ interface CryptoSelectorProps {
   setSelectedCrypto: Dispatch<SetStateAction<Token | undefined>>;
 }
 
-const CryptoSelector: React.FC<CryptoSelectorProps> = ({
-  tokens,
-  selectedCrypto,
-  setSelectedCrypto,
-}) => {
+const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto, setSelectedCrypto }) => {
   const { isConnected } = useAccount();
-  const { openConnectModal } = useConnectModal()
+  const { openConnectModal } = useConnectModal();
   const { showModal, hideModal } = useModal();
-
 
   const showClaimModal = () => {
     if (isConnected) {
-      const modal = <ClaimModal />
+      const modal = <ClaimModal />;
       showModal(modal);
     } else {
-      openConnectModal?.()
+      openConnectModal?.();
     }
-  }
+  };
 
   return (
     <div className="bg-transparent border-0 lg:border border-gray-200 rounded-[8px]">
       <div className="hidden sm:flex justify-start items-center space-x-4 p-2 px-3">
-        {tokens.map((token) => (
+        {tokens.map(token => (
           <CryptoButton
             key={token.id}
             token={token}
@@ -47,7 +42,8 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
             setSelectedCrypto={setSelectedCrypto}
           />
         ))}
-        <Button text="Claim"
+        <Button
+          text="Claim"
           onClick={showClaimModal}
           className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-xl px-4 py-2 font-bold shadow-lg hover:from-yellow-500 hover:to-yellow-700 border border-yellow-300"
         />
@@ -55,12 +51,10 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({
       <div className="sm:hidden flex flex-row items-center space-x-6">
         <select
           value={selectedCrypto?.symbol}
-          onChange={(e) =>
-            setSelectedCrypto(tokens.find((t) => t.symbol === e.target.value)!)
-          }
+          onChange={e => setSelectedCrypto(tokens.find(t => t.symbol === e.target.value)!)}
           className="w-full px-6 py-4 rounded-xl text-md bg-white border border-gray-300 text-gray-600 outline-none"
         >
-          {tokens.map((crypto) => (
+          {tokens.map(crypto => (
             <option key={crypto.id} value={crypto.symbol}>
               {crypto.symbol}
             </option>
@@ -77,38 +71,40 @@ interface CryptoButtonProps {
   setSelectedCrypto: Dispatch<SetStateAction<Token | undefined>>;
 }
 
-const CryptoButton: React.FC<CryptoButtonProps> = ({
-  token,
-  selectedCrypto,
-  setSelectedCrypto,
-}) => {
-  const { tokens } = useContracts()
+const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, setSelectedCrypto }) => {
+  const { tokens } = useContracts();
   const { address } = useAccount();
-  const { data: balance, isLoading } = useReadContract({
+  const {
+    data: balance,
+    isLoading,
+    queryKey,
+  } = useReadContract({
     address: token.id as `0x${string}`,
     abi: tokens[0].abi,
     functionName: "balanceOf",
     args: [address as `0x${string}`],
-    query: { enabled: !!address, }
+    query: { enabled: !!address },
   });
 
-  console.log("selector ", tokens[0].address, "balance ", balance, "address", address)
-
+  console.log("qoqueryKey: ", queryKey);
 
   const formattedBalance = balance ? parseFloat(formatUnits(balance, 18)).toFixed(2) : "0.00";
 
   return (
     <button
-      onClick={() => setSelectedCrypto(oldToken => {
-        if (oldToken?.symbol === token.symbol) return undefined
-        return token
-      })}
-      className={`py-1 px-2 rounded-full text-md flex items-center space-x-2 ${selectedCrypto?.symbol === token.symbol ? "bg-blue-500 text-white" : "text-black"
-        }`}
+      onClick={() =>
+        setSelectedCrypto(oldToken => {
+          if (oldToken?.symbol === token.symbol) return undefined;
+          return token;
+        })
+      }
+      className={`py-1 px-2 rounded-full text-md flex items-center space-x-2 ${
+        selectedCrypto?.symbol === token.symbol ? "bg-blue-500 text-white" : "text-black"
+      }`}
     >
       <span>{token.symbol}</span>
       <span className="bg-gray-200 text-xs text-gray-700 rounded-full px-2 py-1">
-        {!isLoading ? "Balance: " + formattedBalance : <Loader loaderType="text" />}
+        {!isLoading ? "Balance: " + formattedBalance : <Loader size="xs" className="text-xs" loaderType="text" />}
       </span>
     </button>
   );

@@ -41,17 +41,20 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
   const [session, setSession]  = useState<Session>({status: auth.currentUser ? "authenticated" : "unauthenticated"}); 
   const {address: mixedCaseAddress} = useAccount(); 
 
-  const address = mixedCaseAddress?.toLocaleLowerCase() as `0x${string}` | undefined;
-  
+  const address =
+    session.status === "authenticated"
+      ? (mixedCaseAddress?.toLocaleLowerCase() as `0x${string}` | undefined)
+      : undefined;
+
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
       try {
-        const response = await fetch(API_ENDPOINT + '/siwe/nonce/'+ address?.toLocaleLowerCase());
+        const response = await fetch(API_ENDPOINT + "/siwe/nonce/" + mixedCaseAddress?.toLocaleLowerCase());
         const nonce = await response.json();
-        console.log('Nonce:', nonce);
+        console.log("Nonce:", nonce);
         return nonce.nonce;
       } catch (error) {
-        console.error('Error fetching nonce:', error);
+        console.error("Error fetching nonce:", error);
         throw error;
       }
     },
@@ -60,66 +63,66 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
         const message = new SiweMessage({
           domain: window.location.host,
           address,
-          statement: 'Sign in with Ethereum to the app.',
+          statement: "Sign in with Ethereum to the app.",
           uri: window.location.origin,
-          version: '1',
+          version: "1",
           chainId,
           nonce,
         });
-        console.log('Message:', message);
+        console.log("Message:", message);
         return message;
       } catch (error) {
-        console.error('Error creating message:', error);
+        console.error("Error creating message:", error);
         throw error;
       }
     },
     getMessageBody: ({ message }) => {
       try {
         const messageBody = message.prepareMessage();
-        console.log('Message Body:', messageBody);
+        console.log("Message Body:", messageBody);
         return messageBody;
       } catch (error) {
-        console.error('Error preparing message body:', error);
+        console.error("Error preparing message body:", error);
         throw error;
       }
     },
-    verify: async ({ message, signature }: { message: SiweMessage, signature: string }) => {
-      console.log('Verify request:', { message, signature });
+    verify: async ({ message, signature }: { message: SiweMessage; signature: string }) => {
+      console.log("Verify request:", { message, signature });
       try {
-        const verifyRes = await fetch(API_ENDPOINT + '/siwe/verify/'+ address?.toLowerCase(), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const verifyRes = await fetch(API_ENDPOINT + "/siwe/verify/" + mixedCaseAddress?.toLowerCase(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message, signature }),
         });
         if (!verifyRes.ok) {
-          throw new Error('Verification failed');
+          throw new Error("Verification failed");
         }
         const verifyJson = await verifyRes.json();
-        console.log('Verify response:',verifyJson);
-        await signUserIn(verifyJson.token)
+        console.log("Verify response:", verifyJson);
+        await signUserIn(verifyJson.token);
         return Boolean(verifyRes.ok);
       } catch (error) {
-        console.log('Error verifying message:', error);
+        console.log("Error verifying message:", error);
         throw error;
       }
     },
     signOut: async () => {
       try {
         await signUserOut();
-        console.log('Signed out successfully');
+        console.log("Signed out successfully");
       } catch (error) {
-        console.error('Error signing out:', error);
+        console.error("Error signing out:", error);
         throw error;
       }
     },
   });
 
   useLayoutEffect(()=>{
-    const unsubscribe = auth.onAuthStateChanged((an) => {
-      if(an){
-        setSession({status: "authenticated"});
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        setSession({ status: "authenticated" });
       }
-    })
+    });
 
     return () => unsubscribe();
 
