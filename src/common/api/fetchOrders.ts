@@ -28,13 +28,14 @@ export async function fetchOrders(indexerUrl: string, options?: OrderOptions) {
     skip: page * quantity,
   };
   
-  if (status) {
+  if (status !== undefined) {
+    console.log("status", status);
     variables.status = status;
   }
-  if (status_not) {
+  if (status_not !== undefined) {
     variables.status_not = status_not;
   }
-  if (orderType) {
+  if (orderType !== undefined) {
     variables.orderType = orderType;
   }
   if (trader) {
@@ -45,21 +46,21 @@ export async function fetchOrders(indexerUrl: string, options?: OrderOptions) {
   }
 
   const whereClause = [];
-  if (orderType) whereClause.push('orderType: $orderType');
-  if (status) whereClause.push('status: $status');
-  
+  if (orderType !== undefined) whereClause.push("{ orderType: $orderType } ");
+  if (status !== undefined) whereClause.push("{ status: $status }");
+
   const orConditions = [];
-  if (trader) orConditions.push('{ trader: $trader }');
-  if (merchant) orConditions.push('{ offer_: { merchant: $merchant } }');
-  
+  if (trader) orConditions.push("{ trader: $trader }");
+  if (merchant) orConditions.push("{ offer_: { merchant: $merchant } }");
+
   if (orConditions.length > 0) {
-    whereClause.push(`or: [${orConditions.join(', ')}]`);
+    whereClause.push(`{or: [${orConditions.join(", ")}]}`);
   }
 
-  const whereClauseString = whereClause.length > 0 ? `where: { ${whereClause.join(', ')} }` : '';
+  const whereClauseString = whereClause.length > 0 ? `where: { and:[ ${whereClause.join(", ")} ]}` : "";
 
   let operation = `
-  query orders($first: Int!, $skip: Int, $orderType: Int, $trader: String, $merchant: String, $status: String, $status_not: Int) {
+  query orders($first: Int!, $skip: Int, $orderType: Int, $trader: String, $merchant: String, $status: Int, $status_not: Int) {
     orders(first: $first, skip: $skip, ${whereClauseString}) {    
       accountHash
       depositAddress {
@@ -105,10 +106,10 @@ export async function fetchOrders(indexerUrl: string, options?: OrderOptions) {
   }
 `;
 
-if (status_not){
-  variables.status_not = status_not;
-  operation = `
- query orders($first: Int!, $skip: Int, $orderType: Int, $trader: String, $merchant: String, $status: String, $status_not: Int, $status_not_in: [Int!] = [4, 5]) {
+  if (status_not) {
+    variables.status_not = status_not;
+    operation = `
+ query orders($first: Int!, $skip: Int, $orderType: Int, $trader: String, $merchant: String, $status: Int, $status_not: Int, $status_not_in: [Int!] = [4, 5]) {
   orders(
     first: $first
     skip: $skip
@@ -159,8 +160,8 @@ if (status_not){
   }
 }
   
-  `
-}
+  `;
+  }
 
     const graphdata = (await fetchGraphQL(indexerUrl, operation, "orders", variables)) as { orders: Order[] };
   

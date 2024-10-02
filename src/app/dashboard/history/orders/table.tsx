@@ -9,15 +9,19 @@ import { useContracts } from '@/common/contexts/ContractContext';
 import OrderStage from '@/app/(trade)/order/[orderId]/OderStage';
 import { fetchOrders } from '@/common/api/fetchOrders';
 import { useAccount } from 'wagmi';
-import { Order, OrderOptions, OrderState } from '@/common/api/types';
+import { OfferType, Order, OrderOptions, OrderState } from "@/common/api/types";
+import { formatEther } from "ethers";
 
 const columns: any = [
   {
+    key: "orderNumber",
+    label: "Order Number",
+    render: (row: Order) => <span className="font-bold">{row.id}</span>,
+  },
+  {
     key: "type",
     label: "Type",
-    render: (row: Order) => (
-      <span className="font-bold">{row.orderType}</span>
-    ),
+    render: (row: Order) => <span className="font-bold">{OfferType[row.orderType]}</span>,
   },
   {
     key: "price",
@@ -26,35 +30,23 @@ const columns: any = [
   },
   {
     key: "funds",
-    label: "Available Funds",
-    render: (row: Order) => <span className="italic">{"not"}</span>,
-  },
-  {
-    key: "orderNumber",
-    label: "Order Number",
-    render: (row: Order) => (
-      <span className="italic">{row.id}</span>
-    ),
+    label: "Quantity",
+    render: (row: Order) => <span className="italic">{formatEther(row.quantity)}</span>,
   },
   {
     key: "paymentOption",
     label: "Payment Option",
-    render: (row: Order) => (
-      <span className="italic">{row.offer.paymentMethod.method}</span>
-    ),
+    render: (row: Order) => <span className="italic">{row.offer.paymentMethod.method}</span>,
   },
   {
     key: "status",
     label: "Status",
-    render: (row: Order) => (
-      <span className="italic">{OrderState[row.status]}</span>
-    ),
+    render: (row: Order) => <span className="italic">{OrderState[row.status]}</span>,
   },
 ];
 
-
-const OrdersTable: FC<Partial<OrderOptions>> = ({orderType, }) => {
-  const {indexerUrl} = useContracts();
+const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
+  const { indexerUrl } = useContracts();
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -63,27 +55,28 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({orderType, }) => {
 
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
-  const options = {page: currentPage,
+  const options: Partial<OrderOptions> = {
+    page: currentPage,
+    status: status,
     orderType: orderType,
     merchant: account.address?.toLowerCase(),
     trader: account.address?.toLowerCase(),
-  }
+  };
 
-  const { isPending, isError, error, data, isFetching, isPlaceholderData } =
-    useQuery({
-      queryKey: ["orders", currentPage, orderType, options],
-      queryFn: () => fetchOrders(indexerUrl, options ),
-      // placeholderData: keepPreviousData,
-    });
+  const { isPending, isError, error, data, isFetching, isPlaceholderData } = useQuery({
+    queryKey: ["orders", currentPage, orderType, options],
+    queryFn: () => fetchOrders(indexerUrl, options),
+    //TODO @Jovells: add retry logic
+    retry: false,
+    // placeholderData: keepPreviousData,
+  });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    console.log('Page changed to:', page);
+    console.log("Page changed to:", page);
   };
 
-  const actions = [
-    { label: "expand", onClick: (row: any) => console.log(row) },
-  ];
+  const actions = [{ label: "expand", onClick: (row: any) => console.log(row) }];
 
   if (error) {
     console.log("error:", error);
@@ -99,18 +92,12 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({orderType, }) => {
           actions={actions}
           isLoading={isPending}
           pageSize={50}
-          onPageChange={handlePageChange}>
-          {(row, toggleExpand) => (
-            <OrderStage
-              orderId={row.id}
-              toggleExpand={toggleExpand}
-            />
-          )}
+          onPageChange={handlePageChange}
+        >
+          {(row, toggleExpand) => <OrderStage orderId={row.id} toggleExpand={toggleExpand} />}
         </ExpandableTable>
-
       </div>
     </Suspense>
-
   );
 };
 

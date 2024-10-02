@@ -20,8 +20,8 @@ const SellerPaymentConfirmedModal: React.FC<Props> = ({ txHash, fiatAmount }) =>
       <Image src="/images/icons/alert-info.svg" alt="info" className="w-auto h-auto mb-8" width={84} height={84} />
       <h2 className="font-[500px] text-center text-[16px] mb-6">Seller Marked Paid</h2>
       <p className="text-center text-gray-500 text[14px] font-[400px] mb-6">
-        Seller has marked order as paid. Please confirm that you received {fiatAmount}
-        in your account before releasing the crypto to the buyer.
+        Seller has marked order as paid. Please confirm that you received {fiatAmount} in your account before releasing
+        the crypto to the buyer.
       </p>
       <div className="text-gray-500">TxHash :</div>{" "}
       <a href={`${currentChain?.blockExplorers?.default.url}/tx/${txHash}`} target="_blank" className="text-blue-500">

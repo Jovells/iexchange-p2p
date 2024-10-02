@@ -1,14 +1,14 @@
 import React from 'react';
 
 interface Tab {
-    label: string;
-    value: string;
+  label: string;
+  value: string;
 }
 
 interface TabComponentProps {
-    tabs: Tab[];
-    activeTab: string;
-    onTabChange: (value: string) => void;
+  tabs: Tab[];
+  activeTab: string | undefined;
+  onTabChange: (value: string | undefined) => void;
 }
 
 const CustomTab: React.FC<TabComponentProps> = ({ tabs, activeTab, onTabChange }) => {

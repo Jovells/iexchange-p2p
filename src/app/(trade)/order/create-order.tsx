@@ -7,10 +7,10 @@ import Button from "@/components/ui/Button";
 import MerchantProfile from "@/components/merchant/MerchantProfile";
 import { useRouter } from "next/navigation";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { decodeEventLog } from "viem";
+import { decodeEventLog, formatEther } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
-import { Offer, Order, OrderState, PaymentMethod, } from "@/common/api/types";
+import { Offer, Order, OrderState, PaymentMethod } from "@/common/api/types";
 import { ixToast as toast } from "@/lib/utils";
 import z from "zod";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
@@ -32,9 +32,11 @@ interface Props {
 }
 
 const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
-  const [{ toPay, toReceive, paymentMethod }, setFormData] = useState({
+  const [{ toPay, toPayForContract, toReceive, toReceiveForContract, paymentMethod }, setFormData] = useState({
     toPay: "",
+    toPayForContract: "",
     toReceive: "",
+    toReceiveForContract: "",
     paymentMethod: data.paymentMethod,
   });
   const queryClient = useQueryClient();
@@ -106,7 +108,8 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       setFormData(prev => ({
         ...prev,
         toPay: value as string,
-        toReceive: newToReceive.toFixed(2), // Limit to 8 decimal places
+        toReceive: newToReceive.toFixed(2), // Limit to 2 decimal places
+        toReceiveForContract: newToReceive.toString(),
       }));
     } else if (name === "toReceive") {
       let newToPay;
@@ -116,7 +119,8 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       setFormData(prev => ({
         ...prev,
         toReceive: value as string,
-        toPay: newToPay.toFixed(2), // Limit to 8 decimal places
+        toPay: newToPay.toFixed(2), // Limit to 2 decimal places
+        toPayForContract: newToPay.toString(),
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -131,6 +135,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   }, [orderType, toggleExpand]);
 
   const tokensAmount = toReceive ? BigInt(Math.floor(Number(toReceive) * 10 ** 18)) : BigInt(0);
+  console.log("qptokensAmount", formatEther(tokensAmount), "toReceive", toReceive);
   const alreadyApproved = allowance! >= tokensAmount || orderType === "buy";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
