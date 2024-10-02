@@ -7,10 +7,10 @@ import { fetchAds } from "@/common/api/fetchAds";
 import Button from "@/components/ui/Button";
 import { useContracts } from '@/common/contexts/ContractContext';
 import OrderStage from '@/app/(trade)/order/[orderId]/OderStage';
-import { fetchOrders } from '@/common/api/fetchOrders';
-import { useAccount } from 'wagmi';
+import { fetchOrders } from "@/common/api/fetchOrders";
 import { OfferType, Order, OrderOptions, OrderState } from "@/common/api/types";
 import { formatEther } from "ethers";
+import { useUser } from "@/common/contexts/UserContext";
 
 const columns: any = [
   {
@@ -51,7 +51,7 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const account = useAccount();
+  const { address } = useUser();
 
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
@@ -59,8 +59,8 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
     page: currentPage,
     status: status,
     orderType: orderType,
-    merchant: account.address?.toLowerCase(),
-    trader: account.address?.toLowerCase(),
+    merchant: address?.toLowerCase(),
+    trader: address?.toLowerCase(),
   };
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } = useQuery({

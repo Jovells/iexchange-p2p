@@ -8,34 +8,32 @@ import React, { FC, Suspense, useRef, useState } from 'react'
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import Button from "@/components/ui/Button";
-import { useContracts } from '@/common/contexts/ContractContext';
-import { useAccount } from 'wagmi';
-import TradeLayout from '../layout';
-import { Offer } from '@/common/api/types';
-import { offerTypes } from '@/common/api/constants';
-
+import { useContracts } from "@/common/contexts/ContractContext";
+import TradeLayout from "../layout";
+import { Offer } from "@/common/api/types";
+import { offerTypes } from "@/common/api/constants";
+import { useUser } from "@/common/contexts/UserContext";
+import { formatCurrency } from "@/lib/utils";
 
 const columns: any = [
   {
     key: "id",
     label: "Id",
-    render: (row: Offer) => (
-      <span className="font-bold">{row.id}</span>
-    ),
+    render: (row: Offer) => <span className="font-bold">{row.id}</span>,
   },
   {
     key: "rate",
     label: "Rate",
-    render: (row: Offer) => (
-      <span className="font-bold">{row.rate}</span>
-    ),
+    render: (row: Offer) => <span className="font-bold">{row.rate}</span>,
   },
   {
     key: "amounts",
     label: "Amounts",
-    //TODO: REPLACE WITH CURRENCY
-    render: (row: Offer) => <span className="font-bold"> GHS {Number(row.minOrder) / 10 ** 18
-    } - GHS {Number(row.maxOrder) / 10 ** 18}</span>,
+    render: (row: Offer) => (
+      <span className="font-bold">
+        {formatCurrency(row.minOrder, row.token.symbol)} - {formatCurrency(row.maxOrder, row.token.symbol)}
+      </span>
+    ),
   },
   {
     key: "paymentMethod",
@@ -45,16 +43,12 @@ const columns: any = [
   {
     key: "status",
     label: "Status",
-    render: (row: Offer) => (
-      <span className="italic">{row.active ? "Active" : "Deactivated"}</span>
-    ),
+    render: (row: Offer) => <span className="italic">{row.active ? "Active" : "Deactivated"}</span>,
   },
   {
     key: "offerType",
     label: "offerType",
-    render: (row: Offer) => (
-      <span className="italic">{row.offerType === offerTypes.buy ? 'buy' : 'sell'}</span>
-    ),
+    render: (row: Offer) => <span className="italic">{row.offerType === offerTypes.buy ? "buy" : "sell"}</span>,
   },
 ];
 
@@ -65,23 +59,21 @@ const MyAds = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
-  const account = useAccount();
+  const { address } = useUser();
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
 
+  const options = { page: currentPage, merchant: address?.toLowerCase() };
 
-  const { isPending, isError, error, data, isFetching, isPlaceholderData } =
-    useQuery({
-      queryKey: ["ads", currentPage, { merchant: account.address }],
-      queryFn: () => fetchAds(indexerUrl, { page :currentPage, 
-        merchant: account.address?.toLowerCase()
-      }),
-      // placeholderData: keepPreviousData,
-    });
+  const { isPending, isError, error, data, isFetching, isPlaceholderData } = useQuery({
+    queryKey: ["my-ads", indexerUrl, options],
+    queryFn: () => fetchAds(indexerUrl, options),
+    // placeholderData: keepPreviousData,
+  });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    console.log('Page changed to:', page);
+    console.log("Page changed to:", page);
   };
 
   if (error) {
@@ -89,22 +81,25 @@ const MyAds = () => {
   }
 
   const actions = [
-    { onClick: (row: any) => router.push('/order/order'), classNames: "bg-transparent text-black", icon: <Eye /> },
-    { onClick: (row: any) => router.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <Trash2 /> },
-    { onClick: (row: any) => router.push('/appeal/order'), classNames: "bg-transparent text-black", icon: <CircleCheck /> },
-  ]
+    { onClick: (row: any) => router.push("/order/order"), classNames: "bg-transparent text-black", icon: <Eye /> },
+    { onClick: (row: any) => router.push("/appeal/order"), classNames: "bg-transparent text-black", icon: <Trash2 /> },
+    {
+      onClick: (row: any) => router.push("/appeal/order"),
+      classNames: "bg-transparent text-black",
+      icon: <CircleCheck />,
+    },
+  ];
 
-
-  if(isPending){
+  if (isPending) {
     return null;
   }
 
   return (
-      <div className="container mx-auto p-0 py-4">
-        <div className='py-12 flex flex-col gap-10'>
-          <GridTable columns={columns} data={data?.offers || []} actions={actions} itemsPerPage={50} />
-        </div>
+    <div className="container mx-auto p-0 py-4">
+      <div className="py-12 flex flex-col gap-10">
+        <GridTable columns={columns} data={data?.offers || []} actions={actions} itemsPerPage={50} />
       </div>
+    </div>
   );
 };
 

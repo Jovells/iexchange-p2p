@@ -16,14 +16,12 @@ type Session = {status: "authenticated" | "unauthenticated"}
 interface UserContextType {
   address: `0x${string}` | undefined;
   session: Session;
+  isConnected: boolean;
   signUserOut: () => void;
   signUserIn: (firebaseToken: string) => void;
 }
 
-
-export const UserContext = createContext<UserContextType | undefined>(
-  undefined
-);
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const useUser = () => {
   const context = useContext(UserContext);
@@ -33,13 +31,11 @@ export const useUser = () => {
   return context;
 };
 
-export const UserProvider: FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const auth = getAuth(app);
-  console.log('auth', {...auth});
-  const [session, setSession]  = useState<Session>({status: auth.currentUser ? "authenticated" : "unauthenticated"}); 
-  const {address: mixedCaseAddress} = useAccount(); 
+  console.log("auth", { ...auth });
+  const [session, setSession] = useState<Session>({ status: auth.currentUser ? "authenticated" : "unauthenticated" });
+  const { address: mixedCaseAddress } = useAccount();
 
   const address =
     session.status === "authenticated"
@@ -117,7 +113,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
     },
   });
 
-  useLayoutEffect(()=>{
+  useLayoutEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
         setSession({ status: "authenticated" });
@@ -125,47 +121,45 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
     });
 
     return () => unsubscribe();
-
-  }, [])
-  
-
+  }, []);
 
   const signUserIn = async (firebaseToken: string) => {
     try {
       const userCredential = await signInWithCustomToken(auth, firebaseToken);
       // const jwt = await userCredential.user.getIdToken();
       //TODO@Jovells add jwt to requests
-      setSession({status: "authenticated"});
+      setSession({ status: "authenticated" });
       // ...
     } catch (error) {
       console.error(error);
       // ...
     }
- 
   };
 
   const signUserOut = async () => {
-      await auth.signOut();
-      setSession({status: "unauthenticated"});
-      return;
-  }
+    await auth.signOut();
+    setSession({ status: "unauthenticated" });
+    return;
+  };
 
   console.log("session 45", session, auth.currentUser);
 
+  const isConnected = session.status === "authenticated";
 
   return (
-    <UserContext.Provider value={{ address, session, signUserOut, signUserIn }}>
-          <RainbowKitAuthenticationProvider  status ={session.status} adapter = {authenticationAdapter}>
-        <RainbowKitProvider theme={darkTheme({
-          accentColor: '#000000',
-          // accentColorForeground: '#',
-          borderRadius: 'medium',
-          fontStack: "system"
-        })}>
-          
-      {children}
+    <UserContext.Provider value={{ address, session, isConnected, signUserOut, signUserIn }}>
+      <RainbowKitAuthenticationProvider status={session.status} adapter={authenticationAdapter}>
+        <RainbowKitProvider
+          theme={darkTheme({
+            accentColor: "#000000",
+            // accentColorForeground: '#',
+            borderRadius: "medium",
+            fontStack: "system",
+          })}
+        >
+          {children}
         </RainbowKitProvider>
-        </RainbowKitAuthenticationProvider>
+      </RainbowKitAuthenticationProvider>
     </UserContext.Provider>
   );
 };

@@ -109,6 +109,7 @@ export type AccountDetails = {
   number: string;
   address: string;
   hash?: string;
+  terms?: string;
   paymentMethod?: string;
   details?: string;
-}
+};

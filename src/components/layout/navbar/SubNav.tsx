@@ -4,7 +4,6 @@ import IsVerifiedButton from "@/components/ui/IsVerifiedButton";
 import MenuDropdown from "../../ui/MenuDropdown";
 import Link from 'next/link';
 import WalletConnect from "@/components/wallet";
-import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import { DASHBOARD_PAGE, MY_ADS_PAGE, ORDER_HISTORY_PAGE } from "@/common/page-links";
 import useIsMerchant from "@/common/hooks/useIsMerchant";

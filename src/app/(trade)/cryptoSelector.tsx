@@ -1,6 +1,6 @@
 import { Token } from "@/common/api/types";
 import { Filter } from "lucide-react";
-import { useAccount, useReadContract } from "wagmi";
+import { useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import Button from "@/components/ui/Button";
@@ -9,7 +9,7 @@ import { useModal } from "@/common/contexts/ModalContext";
 import { Dispatch, SetStateAction } from "react";
 import Loader from "@/components/loader/Loader";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-
+import { useUser } from "@/common/contexts/UserContext";
 
 interface CryptoSelectorProps {
   tokens: Token[];
@@ -18,7 +18,7 @@ interface CryptoSelectorProps {
 }
 
 const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto, setSelectedCrypto }) => {
-  const { isConnected } = useAccount();
+  const { isConnected } = useUser();
   const { openConnectModal } = useConnectModal();
   const { showModal, hideModal } = useModal();
 
@@ -73,7 +73,7 @@ interface CryptoButtonProps {
 
 const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, setSelectedCrypto }) => {
   const { tokens } = useContracts();
-  const { address } = useAccount();
+  const { address } = useUser();
   const {
     data: balance,
     isLoading,

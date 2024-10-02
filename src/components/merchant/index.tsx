@@ -3,8 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Button from '../ui/Button'
 import { useModal } from '@/common/contexts/ModalContext'
-import MerchantModal from './MerchantModal'
-import { useAccount } from 'wagmi'
+import MerchantModal from "./MerchantModal";
 import { fetchAccount } from '@/common/api/fetchAccount'
 import { useQuery } from '@tanstack/react-query'
 import { useConnectModal } from '@rainbow-me/rainbowkit'

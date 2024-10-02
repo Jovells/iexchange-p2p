@@ -6,7 +6,7 @@ import InputSelect from "@/components/ui/InputSelect";
 import Button from "@/components/ui/Button";
 import MerchantProfile from "@/components/merchant/MerchantProfile";
 import { useRouter } from "next/navigation";
-import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { decodeEventLog, formatEther } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
@@ -239,7 +239,8 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
               eventName: "NewOrder",
             });
             const args = decoded?.args;
-            console.log("qwargs", args);
+            console.log("qsargs", args);
+            console.log("qslog1", log);
             orderId = args.orderId.toString();
 
             //TODO: @Jovells MOVE BLOCKTIMESTAMP ELSEWHERE
@@ -264,10 +265,6 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   let paymentsMethods = isBuy
     ? [data.paymentMethod]
     : userPaymentMethods?.filter(method => method.method === data.paymentMethod.method) || [];
-
-  const handleAddPaymentMethodClick = () => {
-    showModal(<AddPaymentMethod method={data.paymentMethod.method} hideModal={hideModal} onSuccess={refetch} />);
-  };
 
   return (
     <Suspense>
@@ -308,20 +305,9 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           )}
           {
             <PaymentMethodSelect
-              addButton={
-                isBuy ? (
-                  ""
-                ) : (
-                  <>
-                    <Button
-                      icon="/images/icons/add-circle.png"
-                      className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2"
-                      text={"Add " + data.paymentMethod.method + " details"}
-                      onClick={handleAddPaymentMethodClick}
-                    />
-                  </>
-                )
-              }
+              addButton={!!isBuy}
+              skipStep1
+              addButtonText={"Add " + data.paymentMethod.method + " details"}
               label=""
               initialValue=""
               selectedMethod={paymentMethod}

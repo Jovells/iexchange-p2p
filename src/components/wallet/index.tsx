@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useLayoutEffect } from 'react';
 import Image from 'next/image';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useDisconnect } from "wagmi";
 import { shortenAddress } from '@/lib/utils';
 import { useModal } from '@/common/contexts/ModalContext';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -13,8 +13,7 @@ import { HOME_PAGE } from '@/common/page-links';
 
 
 const WalletConnect = () => {
-    const { address: walletAddress } = useAccount();
-    const {session } = useUser();
+    const { session, address: walletAddress } = useUser();
     const { disconnect, isPending } = useDisconnect();
     const { showModal, hideModal } = useModal();
     const router = useRouter();

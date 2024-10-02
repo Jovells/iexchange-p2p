@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import WalletConnect from '../wallet';
-import { useAccount } from 'wagmi';
+import WalletConnect from "../wallet";
 import { useUser } from '@/common/contexts/UserContext';
 
 const WalletConnectSection: React.FC = () => {

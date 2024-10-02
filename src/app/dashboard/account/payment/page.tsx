@@ -4,8 +4,7 @@ import { useModal } from '@/common/contexts/ModalContext';
 import Button from '@/components/ui/Button';
 import React, { } from 'react';
 import AddPaymentMethod from './AddPaymentMethod';
-import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi';
+import { useQuery } from "@tanstack/react-query";
 import fetchPaymentDetails from '@/common/api/fetchPaymentDetails';
 import { parseStringToObject } from '@/lib/utils';
 import DashboardLayout from '../../DashboardLayout';
@@ -21,15 +20,12 @@ type PaymentMethod = {
 
 const Payment = () => {
   const { showModal, hideModal } = useModal();
-  const account = useAccount();
-  const {paymentMethods, isFetching, refetch} = useUserPaymentMethods();
+  const { paymentMethods, isFetching } = useUserPaymentMethods();
 
 
   // Function to show the modal with the correct content
   const handleClick = () => {
-    showModal(
-      <AddPaymentMethod onSuccess ={refetch} hideModal={hideModal} />
-    );
+    showModal(<AddPaymentMethod hideModal={hideModal} />);
   };
 
 
