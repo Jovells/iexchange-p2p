@@ -150,7 +150,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({
       return;
   }
 
-  console.log("session 45", session);
+  console.log("session 45", session, auth.currentUser);
 
 
   return (

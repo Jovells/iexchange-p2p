@@ -26,14 +26,16 @@ const columns: any = [
   {
     key: "funds",
     label: "Limits",
-    render: (row: Offer) => <span className="italic">{formatCurrency(row.minOrder, row.currency.currency)} - {formatCurrency(row.maxOrder, row.currency.currency)}</span>,
+    render: (row: Offer) => (
+      <span className="italic">
+        {formatCurrency(row.minOrder, row.token.symbol)} - {formatCurrency(row.maxOrder, row.token.symbol)}
+      </span>
+    ),
   },
   {
     key: "payment",
     label: "Payment Options",
-    render: (row: Offer) => (
-      <span className="italic">{row.paymentMethod.method}</span>
-    ),
+    render: (row: Offer) => <span className="italic">{row.paymentMethod.method}</span>,
   },
 ];
 

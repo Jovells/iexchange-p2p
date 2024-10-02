@@ -11,7 +11,7 @@ import { decodeEventLog, formatEther } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
 import { Offer, Order, OrderState, PaymentMethod } from "@/common/api/types";
-import { ixToast as toast } from "@/lib/utils";
+import { formatCurrency, ixToast as toast } from "@/lib/utils";
 import z from "zod";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
@@ -87,9 +87,22 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     toReceive: z
       .string()
       .min(1, "Please enter a valid amount")
-      .refine(val => !isNaN(Number(val)) && Number(val) > 0, {
-        message: "Must be a valid positive number",
-      }),
+      .refine(
+        val => {
+          const valN = Number(val) * 10 ** 18;
+          const minOrder = Number(data.minOrder);
+          const maxOrder = Number(data.maxOrder);
+          console.log("valN", valN, "minOrder", minOrder, "maxOrder", maxOrder);
+          const res = !isNaN(valN) && valN >= minOrder && valN <= maxOrder;
+          return res;
+        },
+        {
+          message: `Value must be within ${formatCurrency(data.minOrder, data.token.symbol)} to ${formatCurrency(
+            data.maxOrder,
+            data.token.symbol,
+          )}`,
+        },
+      ),
     paymentMethod: z.string().min(1, "Payment method is required"),
   });
 
@@ -108,7 +121,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       setFormData(prev => ({
         ...prev,
         toPay: value as string,
-        toReceive: newToReceive.toFixed(2), // Limit to 2 decimal places
+        toReceive: Number(newToReceive.toPrecision(4)).toString(), //TODO: @Jovells GET DECIMAL PLACES FROM TOKEN/CURRENCY
         toReceiveForContract: newToReceive.toString(),
       }));
     } else if (name === "toReceive") {
@@ -119,7 +132,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       setFormData(prev => ({
         ...prev,
         toReceive: value as string,
-        toPay: newToPay.toFixed(2), // Limit to 2 decimal places
+        toPay: Number(newToPay.toPrecision(4)).toString(), //TODO: @Jovells GET DECIMAL PLACES FROM TOKEN/CURRENCY
         toPayForContract: newToPay.toString(),
       }));
     } else {
@@ -151,7 +164,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     const result = formSchema.safeParse(formData);
     if (!result.success) {
       setErrors(result.error.issues);
-      toast.error("Please correct the form errors");
+      toast.error("Please correct the errors");
       return;
     } else {
       setErrors([]);
