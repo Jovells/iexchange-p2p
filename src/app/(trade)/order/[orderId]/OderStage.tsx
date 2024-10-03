@@ -9,7 +9,7 @@ import ChatWithMerchant from "@/components/merchant/ChatWithMerchant";
 import Button from "@/components/ui/Button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useReadContract, useWriteContract } from "wagmi";
-import { Order, OrderState } from "@/common/api/types";
+import { Order, OrderState, WriteContractWithToastReturnType } from "@/common/api/types";
 import { formatCurrency, formatBlockTimesamp, shortenAddress, getUserConfig } from "@/lib/utils";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import ModalAlert from "@/components/modals";
@@ -26,6 +26,7 @@ import BuyerReleaseModal from "@/components/modals/BuyerReleaseModal";
 import { useUser } from "@/common/contexts/UserContext";
 import SellerPaymentConfirmedModal from "@/components/modals/SellerPaymentConfirmedModal";
 import OrderCancellationModal from "@/components/modals/OrderCancelledModal";
+import { ToggleLeft, ToggleRight } from "lucide-react";
 
 const POLLING_INTERVAL = 5000;
 const toastId = "order-status";
@@ -35,6 +36,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   const queryClient = useQueryClient();
   const { address } = useUser();
   const { writeContractAsync, isPending } = useWriteContractWithToast();
+  const [pollToggle, setPollToggle] = React.useState(true);
   const {
     writeContractAsync: writeToken,
     data: approveHash,
@@ -160,7 +162,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
     async function release() {
       console.log("Release funds");
-      const txHash = await writeContractAsync(
+      const writeResult = await writeContractAsync(
         { toastId },
         {
           address: p2p.address,
@@ -169,8 +171,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           args: [BigInt(orderId)],
         },
       );
-      handleOptimisticUpdate(OrderState.Released, txHash);
-      return txHash;
+      handleOptimisticUpdate(OrderState.Released, writeResult);
+      return writeResult.txHash;
       // Optimistically update the order status
     }
   };
@@ -188,7 +190,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     );
 
     async function pay() {
-      const txHash = await writeContractAsync(
+      const writeResult = await writeContractAsync(
         { toastId },
         {
           address: p2p.address,
@@ -198,8 +200,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         },
       );
       // Optimistically update the order status
-      handleOptimisticUpdate(OrderState.Paid, txHash);
-      return txHash;
+      handleOptimisticUpdate(OrderState.Paid, writeResult);
+      return writeResult.txHash;
     }
   };
 
@@ -220,7 +222,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
       );
     }
 
-    const txHash = await writeContractAsync(
+    const writeResult = await writeContractAsync(
       { toastId },
       {
         address: p2p.address,
@@ -230,16 +232,16 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
       },
     );
     // Optimistically update the order status
-    handleOptimisticUpdate(OrderState.Accepted, txHash);
+    handleOptimisticUpdate(OrderState.Accepted, writeResult);
   };
 
-  function handleOptimisticUpdate(status: OrderState, txHash: string) {
+  function handleOptimisticUpdate(status: OrderState, writeResult: WriteContractWithToastReturnType) {
     const updatedStatus = { ...orderStatus, status };
     if (status === OrderState.Released || status === OrderState.Accepted || status === OrderState.Cancelled) {
       queryClient.refetchQueries({ queryKey: ["balance", order?.offer.token.id] });
     }
     queryClient.setQueryData(["orderStatus", orderId], updatedStatus);
-    setTransactionHashes([...(transactionHashes || []), { hash: txHash, status: OrderState[status] }]);
+    setTransactionHashes([...(transactionHashes || []), { hash: writeResult.txHash, status: OrderState[status] }]);
   }
 
   const handleCancelOrder = async () => {
@@ -253,7 +255,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     );
 
     async function cancel() {
-      const txHash = await writeContractAsync(
+      const writeResult = await writeContractAsync(
         { toastId },
         {
           address: p2p.address,
@@ -263,8 +265,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         },
       );
       // Optimistically update the order status
-      handleOptimisticUpdate(OrderState.Cancelled, txHash);
-      return txHash;
+      handleOptimisticUpdate(OrderState.Cancelled, writeResult);
+      return writeResult.txHash;
     }
   };
 
@@ -275,7 +277,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     queryKey: ["orderStatus", orderId],
     queryFn: () => fetchOrderStatus(indexerUrl, orderId),
     retry: 3,
-    enabled: shouldPoll,
+    enabled: shouldPoll && pollToggle,
     refetchInterval: q => {
       console.log("qeRefetching order status", q);
       const fetchedStatus = q.state.data?.status;
@@ -290,7 +292,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         showModal(<BuyerReleaseModal txHash={address!} cryptoAmount={cryptoAmount!} fiatAmount={fiatAmount!} />);
       } else if (fetchedStatus === OrderState.Paid) {
         showModal(<SellerPaymentConfirmedModal txHash={address!} fiatAmount={fiatAmount!} />);
-      } else if ((fetchedStatus === OrderState.Accepted) && isBuyer) {
+      } else if (fetchedStatus === OrderState.Accepted && isBuyer) {
         toast.success(
           t => {
             return (
@@ -478,6 +480,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                   className="bg-red-200 text-black rounded-xl px-4 py-2 hover:bg-red-300"
                   onClick={handleCancelOrder}
                 />
+              )}
+              {pollToggle ? (
+                <ToggleLeft onClick={() => setPollToggle(!pollToggle)}>On</ToggleLeft>
+              ) : (
+                <ToggleRight onClick={() => setPollToggle(!pollToggle)}>Off</ToggleRight>
               )}
             </div>
           </div>

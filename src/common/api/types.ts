@@ -1,3 +1,4 @@
+import { TransactionReceipt } from "viem";
 import { Serializable } from "worker_threads";
 
 export type Token = {
@@ -5,15 +6,15 @@ export type Token = {
   id: `0x${string}`;
   name: string;
   isTraded?: boolean;
-}
+};
 
- export enum OrderState {
+export enum OrderState {
   Pending,
   Accepted,
   Paid,
   Appealed,
   Released,
-  Cancelled
+  Cancelled,
 }
 
 export type Merchant = {
@@ -22,9 +23,9 @@ export type Merchant = {
   name?: string;
   terms?: string;
   timeLimit?: number;
-}
+};
 
-export type PreparedCurrency = { symbol: string; name: string; id: `0x${string}`,  icon: JSX.Element };
+export type PreparedCurrency = { symbol: string; name: string; id: `0x${string}`; icon: JSX.Element };
 
 export type PaymentMethod = {
   id?: string;
@@ -34,19 +35,19 @@ export type PaymentMethod = {
   icon?: JSX.Element;
   name?: string;
   number?: string;
-}
+};
 
 export enum OfferType {
   buy = 0,
   sell = 1,
 }
 
-export type Currency ={
+export type Currency = {
   currency: string;
   id: `0x${string}`;
   isAccepted: boolean;
   addedBy: string;
-}
+};
 
 export type Offer = {
   id: string;
@@ -59,26 +60,25 @@ export type Offer = {
   merchant: Merchant;
   offerType: OfferType;
   paymentMethod: PaymentMethod;
-  currency : {
-    id : `0x${string}`;
-    currency : string;
-    isAccepted : boolean;
-  }
+  currency: {
+    id: `0x${string}`;
+    currency: string;
+    isAccepted: boolean;
+  };
   depositAddress: {
     id: `0x${string}`;
   };
-}
+};
 
-
-export type OrderOptions ={ 
-  quantity?: number, 
-  merchant?: string, 
-  trader?: string, 
-  page?: number, 
-  orderType?: OfferType, 
-  status?: OrderState,
-  status_not?: OrderState
-}
+export type OrderOptions = {
+  quantity?: number;
+  merchant?: string;
+  trader?: string;
+  page?: number;
+  orderType?: OfferType;
+  status?: OrderState;
+  status_not?: OrderState;
+};
 
 export type Order = {
   accountHash: `0x${string}`;
@@ -92,17 +92,17 @@ export type Order = {
   offer: Offer;
   trader: Merchant;
   blockTimestamp: string;
-}
+};
 
 export type OrderResponse = {
   order: Order | null;
-}
+};
 export type OrderStatusResponse = {
   order: {
     status: OrderState;
     blockTimestamp: string;
   } | null;
-}
+};
 
 export type AccountDetails = {
   name: string;
@@ -112,4 +112,10 @@ export type AccountDetails = {
   terms?: string;
   paymentMethod?: string;
   details?: string;
+};
+
+export type WriteContractWithToastReturnType = {
+  receipt?: TransactionReceipt;
+  decodedLogs?: any[];
+  txHash: string;
 };

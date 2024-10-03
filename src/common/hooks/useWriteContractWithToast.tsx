@@ -4,6 +4,7 @@ import { useModal } from '../contexts/ModalContext';
 import ModalAlert from '@/components/modals';
 import { useEffect, useRef, useState } from "react";
 import { decodeEventLog, TransactionReceipt } from "viem";
+import { WriteContractWithToastReturnType } from "../api/types";
 
 type Options = {
   timeTimeToWait?: number;
@@ -18,11 +19,7 @@ type Options = {
   args?: any;
 };
 
-type ReturnType = {
-  receipt?: TransactionReceipt;
-  decodedLogs?: any[];
-  txHash: string;
-};
+
 
 function useWriteContractWithToast(numConfirmations = 1) {
   const { showModal } = useModal();
@@ -38,14 +35,14 @@ function useWriteContractWithToast(numConfirmations = 1) {
     hash: writeContractResult.data,
     confirmations: numConfirmations,
   });
-  const promiseRef = useRef<{ resolve: (data: ReturnType) => void; reject: Function }>();
+  const promiseRef = useRef<{ resolve: (data: WriteContractWithToastReturnType) => void; reject: Function }>();
 
   const { writeContractAsync, writeContract } = writeContractResult;
 
   const customWriteAsync = async (
     options: Options,
     ...args: Parameters<typeof writeContractAsync>
-  ): Promise<ReturnType> => {
+  ): Promise<WriteContractWithToastReturnType> => {
     const {
       waitForReceipt,
       loadingMessage,
