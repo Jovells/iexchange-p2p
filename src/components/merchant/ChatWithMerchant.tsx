@@ -1,27 +1,23 @@
 'use client'
 
-import { Merchant } from '@/common/api/types';
-import { shortenAddress } from '@/lib/utils';
+import { shortenAddress } from "@/lib/utils";
 import { Send, X } from "lucide-react";
-import React, { use, useCallback, useEffect, useState } from "react";
+import React, { use, useCallback, useEffect, useMemo, useState } from "react";
 import { useEthersSigner } from "@/common/hooks/useEthersSigner";
 import {
-  Client,
-  useStreamMessages,
   useClient,
-  useMessages,
   useConversations,
   useCanMessage,
   useStartConversation,
-  DecodedMessage,
-  Conversation,
   CachedConversation,
   useSendMessage,
+  useConversation,
 } from "@xmtp/react-sdk";
 import { useUser } from "@/common/contexts/UserContext";
 import { useModal } from "@/common/contexts/ModalContext";
 import Button from "../ui/Button";
 import Messages from "./Messages";
+import { checksumAddress } from "viem";
 
 type XMTPConnectButtonProps = {
   label: string;
@@ -50,18 +46,16 @@ const XMTPConnectButton: React.FC<XMTPConnectButtonProps> = ({ label, onFinish }
 
 const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; name?: string } }) => {
   const { client, disconnect } = useClient();
-  const { conversations } = useConversations();
+  const { getCachedByPeerAddress } = useConversation();
   const { startConversation } = useStartConversation();
   const { canMessage } = useCanMessage();
   const { sendMessage: sendXMTPMessage, error: sendMessageError } = useSendMessage();
-  const { address } = useUser();
+  const { address, mixedCaseAddress } = useUser();
   const { showModal, hideModal } = useModal();
   const [messages, setMessages] = useState([{ sender: "Merchant", text: "Hi there! How can I help you?" }]);
   const [messageInputValue, setInputValue] = useState("");
   const [otherUserIsOnNetwork, setOtherUserIsOnNetwork] = useState(false);
-  const [conversation, setConversation] = useState<CachedConversation>();
-
-  conversation && console.log("qs conversations", conversations, "conversation: ", conversation);
+  const [conversation, setConversation] = useState<CachedConversation | undefined>();
 
   const handleInit = async () => {
     showModal(
@@ -74,6 +68,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
   };
 
   useEffect(() => {
+    console.log("qs useClient", client?.address);
     if (!client) {
       handleInit();
     }
@@ -81,11 +76,19 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       const checkIfOtherUserIsOnNetwork = async () => {
         const otherPartyAddress = otherParty.id;
         const _canMessage = await canMessage(otherPartyAddress);
-        setOtherUserIsOnNetwork(_canMessage);
+        if (_canMessage) {
+          const mixedCaseOtherPartyAddress = checksumAddress(otherPartyAddress);
+          console.log("qs mixedCase", mixedCaseOtherPartyAddress);
+          const _conversation = await getCachedByPeerAddress(checksumAddress(mixedCaseOtherPartyAddress));
+          setConversation(_conversation);
+          scrollLastMessageIntoView();
+          console.log("qs convos", _conversation);
+          setOtherUserIsOnNetwork(_canMessage);
+        }
       };
       checkIfOtherUserIsOnNetwork();
     }
-  }, [client]);
+  }, [client?.address]);
 
   const sendMessage = async () => {
     const otherPartyAddress = otherParty.id;
@@ -96,14 +99,17 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
     if (messageInputValue.trim()) {
       if (otherUserIsOnNetwork) {
         if (!conversation) {
-          const _conversation = await startConversation(otherPartyAddress, messageInputValue);
-          setConversation(_conversation.cachedConversation);
-          console.log("qs sent conversation", _conversation);
+          await startConversation(otherPartyAddress, messageInputValue, undefined);
+          console.log("qs sent start conversation", conversation);
         } else {
           const sentMessage = await sendXMTPMessage(conversation, messageInputValue);
           console.log("qs sent message", sentMessage);
         }
       }
+
+      // Scroll to the bottom of the messages container
+      scrollLastMessageIntoView();
+
       setInputValue("");
     }
   };
@@ -112,10 +118,11 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
     setInputValue(e.target.value);
   };
 
-  console.log("qs streamError", sendMessageError && "Error sending message");
+  console.log("qs convos, ", conversation && "convo dey", "streamerr", sendMessageError && "Error sending message");
 
   return (
-    <div className="w-full h-full border rounded-xl flex flex-col">
+    //TODO @mbawon MAKE CONVOS SCROLL
+    <div id="messagesContainer" className="w-full h-[600px] border rounded-xl flex flex-col">
       <div className="w-full bg-gray-100 p-3 rounded-t-xl">
         {otherParty.name} {shortenAddress(otherParty.id)}
         {otherUserIsOnNetwork ? " is online" : " is offline"}
@@ -137,7 +144,10 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
             className="w-full border rounded-xl p-2 pr-10 focus:outline-none bg-gray-100"
             value={messageInputValue}
             onChange={handleInputChange}
-            onKeyDown={e => e.key === "Enter" && sendMessage}
+            onKeyDown={e => {
+              console.log("keydown", e.key);
+              e.key === "Enter" && sendMessage();
+            }}
           />
           <button
             className="absolute right-2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600"
@@ -152,3 +162,12 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
 };
 
 export default ChatWithMerchant;
+
+function scrollLastMessageIntoView() {
+  const lastMessage = document.querySelector("#lastMessage");
+  console.log("qs lastMessage", lastMessage);
+  if (lastMessage) {
+    lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
+  }
+}
+

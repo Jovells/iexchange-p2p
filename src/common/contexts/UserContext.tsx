@@ -15,6 +15,7 @@ type Session = {status: "authenticated" | "unauthenticated"}
 
 interface UserContextType {
   address: `0x${string}` | undefined;
+  mixedCaseAddress: `0x${string}` | undefined;
   session: Session;
   isConnected: boolean;
   signUserOut: () => void;
@@ -35,12 +36,11 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const auth = getAuth(app);
   console.log("auth", { ...auth });
   const [session, setSession] = useState<Session>({ status: auth.currentUser ? "authenticated" : "unauthenticated" });
-  const { address: mixedCaseAddress } = useAccount();
+  const { address: wagmiAddress } = useAccount();
 
   const address =
-    session.status === "authenticated"
-      ? (mixedCaseAddress?.toLocaleLowerCase() as `0x${string}` | undefined)
-      : undefined;
+    session.status === "authenticated" ? (wagmiAddress?.toLocaleLowerCase() as `0x${string}` | undefined) : undefined;
+  const mixedCaseAddress = address && wagmiAddress;
 
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
@@ -147,7 +147,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const isConnected = session.status === "authenticated";
 
   return (
-    <UserContext.Provider value={{ address, session, isConnected, signUserOut, signUserIn }}>
+    <UserContext.Provider value={{ address, session, mixedCaseAddress, isConnected, signUserOut, signUserIn }}>
       <RainbowKitAuthenticationProvider status={session.status} adapter={authenticationAdapter}>
         <RainbowKitProvider
           theme={darkTheme({
