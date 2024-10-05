@@ -18,6 +18,7 @@ import { useModal } from "@/common/contexts/ModalContext";
 import Button from "../ui/Button";
 import Messages from "./Messages";
 import { checksumAddress } from "viem";
+import useInitXmtpClient from "@/common/hooks/useInitXmtpClient";
 
 type XMTPConnectButtonProps = {
   label: string;
@@ -25,19 +26,20 @@ type XMTPConnectButtonProps = {
 };
 
 const XMTPConnectButton: React.FC<XMTPConnectButtonProps> = ({ label, onFinish }) => {
-  const { initialize, client } = useClient();
+  const { client, isLoading, status, setStatus, resolveCreate, resolveEnable } = useInitXmtpClient();
   const signer = useEthersSigner();
 
   const handleConnect = useCallback(async () => {
-    const c = await initialize({
-      signer: signer,
-      options: {
-        env: "dev",
-      },
-    });
-    console.log("qd c", c?.address);
+    // const c = await initialize({
+    //   signer: signer,
+    //   options: {
+    //     env: "dev",
+    //   },
+    // });
+    // console.log("qd c", c?.address);
+    await resolveEnable();
     onFinish && onFinish();
-  }, [initialize, signer]);
+  }, [, signer]);
 
   console.log("qd client", client);
 
@@ -45,14 +47,12 @@ const XMTPConnectButton: React.FC<XMTPConnectButtonProps> = ({ label, onFinish }
 };
 
 const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; name?: string } }) => {
-  const { client, disconnect } = useClient();
+  const { client, status } = useInitXmtpClient();
   const { getCachedByPeerAddress } = useConversation();
   const { startConversation } = useStartConversation();
   const { canMessage } = useCanMessage();
   const { sendMessage: sendXMTPMessage, error: sendMessageError } = useSendMessage();
-  const { address, mixedCaseAddress } = useUser();
   const { showModal, hideModal } = useModal();
-  const [messages, setMessages] = useState([{ sender: "Merchant", text: "Hi there! How can I help you?" }]);
   const [messageInputValue, setInputValue] = useState("");
   const [otherUserIsOnNetwork, setOtherUserIsOnNetwork] = useState(false);
   const [conversation, setConversation] = useState<CachedConversation | undefined>();
@@ -68,8 +68,8 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
   };
 
   useEffect(() => {
-    console.log("qs useClient", client?.address);
-    if (!client) {
+    console.log("qf useClient", client?.address, client, status);
+    if (!client && status === undefined) {
       handleInit();
     }
     if (client) {
@@ -80,6 +80,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
           const mixedCaseOtherPartyAddress = checksumAddress(otherPartyAddress);
           console.log("qs mixedCase", mixedCaseOtherPartyAddress);
           const _conversation = await getCachedByPeerAddress(checksumAddress(mixedCaseOtherPartyAddress));
+
           setConversation(_conversation);
           scrollLastMessageIntoView();
           console.log("qs convos", _conversation);
@@ -88,7 +89,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       };
       checkIfOtherUserIsOnNetwork();
     }
-  }, [client?.address]);
+  }, [client?.address, status]);
 
   const sendMessage = async () => {
     const otherPartyAddress = otherParty.id;

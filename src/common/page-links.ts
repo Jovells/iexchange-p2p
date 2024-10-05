@@ -1,7 +1,7 @@
 import {HiOutlineHome, HiOutlineUser, HiOutlineUsers, HiOutlineCalendarDays, HiOutlineEnvelope } from 'react-icons/hi2'
 
 export const ORDER_PAGE = (orderId:string) => `/order/${orderId}`
-export const HOME_PAGE = ""
+export const HOME_PAGE = "/";
 export const DASHBOARD_PAGE = '/dashboard'
 export const POST_AD_PAGE = "/my-ads/create"
 export const ORDER_HISTORY_PAGE = "/dashboard/history/orders"

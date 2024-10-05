@@ -7,11 +7,9 @@ import { darkTheme, RainbowKitAuthenticationProvider, RainbowKitProvider } from 
 import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
 import { SiweMessage } from 'siwe';
 import { API_ENDPOINT } from '@/common/api/constants';
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 
-
-
-type Session = {status: "authenticated" | "unauthenticated"}
+type Session = { status: "authenticated" | "unauthenticated" };
 
 interface UserContextType {
   address: `0x${string}` | undefined;
@@ -37,6 +35,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   console.log("auth", { ...auth });
   const [session, setSession] = useState<Session>({ status: auth.currentUser ? "authenticated" : "unauthenticated" });
   const { address: wagmiAddress } = useAccount();
+  const { isSuccess, disconnect } = useDisconnect();
 
   const address =
     session.status === "authenticated" ? (wagmiAddress?.toLocaleLowerCase() as `0x${string}` | undefined) : undefined;
@@ -45,7 +44,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
       try {
-        const response = await fetch(API_ENDPOINT + "/siwe/nonce/" + mixedCaseAddress?.toLocaleLowerCase());
+        const response = await fetch(API_ENDPOINT + "/siwe/nonce/" + wagmiAddress?.toLocaleLowerCase());
         const nonce = await response.json();
         console.log("Nonce:", nonce);
         return nonce.nonce;
@@ -85,7 +84,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     verify: async ({ message, signature }: { message: SiweMessage; signature: string }) => {
       console.log("Verify request:", { message, signature });
       try {
-        const verifyRes = await fetch(API_ENDPOINT + "/siwe/verify/" + mixedCaseAddress?.toLowerCase(), {
+        const verifyRes = await fetch(API_ENDPOINT + "/siwe/verify/" + wagmiAddress?.toLowerCase(), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message, signature }),
@@ -136,9 +135,17 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
+  useLayoutEffect(() => {
+    console.log("qd isSuccess", isSuccess);
+    if (isSuccess) {
+      signUserOut();
+    }
+  }, [isSuccess]);
+
   const signUserOut = async () => {
     await auth.signOut();
     setSession({ status: "unauthenticated" });
+    wagmiAddress && disconnect();
     return;
   };
 

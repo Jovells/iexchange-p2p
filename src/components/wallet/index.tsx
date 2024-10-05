@@ -13,14 +13,15 @@ import { HOME_PAGE } from '@/common/page-links';
 
 
 const WalletConnect = () => {
-    const { session, address: walletAddress } = useUser();
+    const { session, address: walletAddress, signUserOut } = useUser();
     const { disconnect, isPending } = useDisconnect();
     const { showModal, hideModal } = useModal();
     const router = useRouter();
 
     function handleDisconnect() {
-        disconnect();
-        router.push(HOME_PAGE);
+      console.log("Disconnecting...");
+      router.push(HOME_PAGE);
+      signUserOut();
     }
 
 

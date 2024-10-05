@@ -5,10 +5,14 @@ import { ContentTypeId } from "@xmtp/content-type-primitives";
 import { ContentTypeText } from "@xmtp/content-type-text";
 
 const Messages = ({ conversation }: { conversation: CachedConversation }) => {
-  const { messages, isLoading } = useMessages(conversation);
+  const { messages, isLoading, error, isLoaded } = useMessages(conversation);
   const { address } = useUser();
 
   const { error: streamError } = useStreamMessages(conversation);
+
+  if (streamError || error) {
+    console.log("streamerror", streamError, "", error);
+  }
   return (
     <div className="flex-1 p-3 overflow-y-auto">
       {messages.map((message, i) => {

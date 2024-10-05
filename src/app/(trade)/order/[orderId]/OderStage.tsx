@@ -51,7 +51,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     error: orderError,
     isLoading: orderLoading,
   } = useQuery({
-    queryKey: ["order", orderId],
+    queryKey: ["order", orderId, indexerUrl],
     queryFn: () => fetchOrder(indexerUrl, orderId),
     retry: 3,
   });
