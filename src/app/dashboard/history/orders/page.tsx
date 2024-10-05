@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 import OrdersTable from './table'
 import { OrderState } from '@/common/api/types'
-import DashboardLayout from '../../DashboardLayout'
+import DashboardLayout from '../../layout'
 
 const P2POrderHistory = () => {
   const route = useRouter()
@@ -31,14 +31,14 @@ const P2POrderHistory = () => {
   const stat = activeTab !== undefined ? parseInt(activeTab) : undefined;
 
   return (
-    <DashboardLayout>
+    <>
       <div className="py-12 pt-0 flex flex-col gap-4">
         <div className="w-full lg:w-fit">
           <CustomTab tabs={tabs as any} activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
         <OrdersTable status={stat} />
       </div>
-    </DashboardLayout>
+    </>
   );
 }
 

@@ -8,19 +8,18 @@ import { useEffect, useState } from "react";
 import { DASHBOARD_PAGE, MY_ADS_PAGE, ORDER_HISTORY_PAGE } from "@/common/page-links";
 import useIsMerchant from "@/common/hooks/useIsMerchant";
 import { useUser } from '@/common/contexts/UserContext';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { getImage } from '@/lib/utils';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+
 
 const menuLinks = [
     { href: "/", label: "P2P" },
     { href: "/appeal", label: "Appeals" },
     { href: MY_ADS_PAGE, label: "My Ads" } // should on be visible to merchants
 ];
-const accountLinks = [
-    { link: DASHBOARD_PAGE, icon: "/images/icons/home.png", label: "Dashboard" },
-    { link: ORDER_HISTORY_PAGE, icon: "/images/icons/clock.png", label: "Order History" },
-    { link: "/profile", icon: "/images/icons/profile-circle.png", label: "Profile" },
-    { link: "/settings", icon: "/images/icons/settings.png", label: "Settings" }
-];
+
 
 const helpCenterLinks = [
     { link: "/buy-sell", label: "How to Buy/Sell" },
@@ -32,12 +31,18 @@ const helpCenterLinks = [
 
 const SubNav = () => {
     const navigate = useRouter()
+    const currentPath = usePathname()
 
     const { session } = useUser();
     const [isMounted, setIsMounted] = useState(false);
     const { isMerchant, isLoading } = useIsMerchant()
 
     const isAuthenticated = session?.status === "authenticated";
+
+    //images
+    const helpIcon = getImage("message.svg");
+    const orderIcons = getImage("orders.svg");
+    const profileIcon = getImage("profile.svg");
 
 
     useEffect(() => {
@@ -48,28 +53,55 @@ const SubNav = () => {
         return null;
     }
 
+    const homeIcon = getImage("home.svg");
+    const clockIcon = getImage("clock.svg");
+    const profileCircleIcon = getImage("profile-circle.svg");
+    const settingsIcon = getImage("settings.svg");
+
+    const accountLinks = [
+        { link: DASHBOARD_PAGE, icon: homeIcon, label: "Dashboard" },
+        { link: ORDER_HISTORY_PAGE, icon: clockIcon, label: "Order History" },
+        { link: "/profile", icon: profileCircleIcon, label: "Profile" },
+        { link: "/settings", icon: settingsIcon, label: "Settings" }
+    ];
+
     const renderLinks = (links: { href: string; label: string }[]) => (
-        links.map(link => (
-            <Link
-                key={link.href}
-                href={link.href}
-                className={`text-[#111315] hover:text-[#01A2E4] text-[14px] font-[500px] block px-2 py-2  ${link.label === "My Ads" && !isMerchant ? "hidden" : "flex"}`}
-            >
-                {link.label}
-            </Link>
-        ))
-    );
+
+        links.map(link => {
+            const isActive = currentPath === link.href;
+            return (
+                <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`
+        block px-2 py-2 pl-0 font-medium 
+        ${link.label === "My Ads" && !isMerchant ? "hidden" : "flex"} 
+        text-[14px] 
+        text-[#111315] 
+        dark:text-white 
+        hover:text-[#01A2E4] 
+        dark:hover:text-[#01A2E4] 
+        transition-colors duration-200 ease-in-out
+        ${isActive ? "border-b-2 dark:border-[#01A2E4]" : "border-0"} 
+    `}
+                >
+                    {link.label}
+                </Link>
+            )
+
+        })
+    )
 
     const renderMenuDropdowns = () => (
-        <div className="flex flex-row">
+        <div className="flex flex-row gap-4">
             <MenuDropdown
                 title="Help Center"
-                icon="/images/icons/message.svg"
+                icon={helpIcon as string}
                 dropdownItems={helpCenterLinks}
             />
             <MenuDropdown
                 title="Orders"
-                icon="/images/icons/orders.svg"
+                icon={orderIcons as string}
                 dropdownItems={[]}
                 onClick={() => navigate.push("/dashboard/history/orders")}
             >
@@ -79,21 +111,22 @@ const SubNav = () => {
             </MenuDropdown>
             <MenuDropdown
                 title="Account"
-                icon="/images/icons/profile.svg"
+                icon={profileIcon as string}
                 dropdownItems={isAuthenticated ? accountLinks : []}
             >
-                <div className="p-4 border border-gray-200 border-b-0">
-                    <WalletConnect />
-                    {isAuthenticated && <IsVerifiedButton />}
+                <div className="p-4 border border-gray-200 dark:border-gray-800 border-b-0">
+                    {/* <WalletConnect /> */}
+                    <ConnectButton chainStatus={'none'} accountStatus={'address'} showBalance={false} />
+                    {/* {isAuthenticated && <IsVerifiedButton />} */}
                 </div>
             </MenuDropdown>
         </div>
     );
 
     return (
-        <div className="border-b mt-0 lg:mt-2 mb-0">
+        <div className="border-0 mt-0 lg:mt-2 mb-0">
             <div className="w-full lg:container lg:mx-auto flex flex-row justify-between items-center px-2 lg:px-0">
-                <div className="flex flex-row ">
+                <div className="flex flex-row gap-4 pl-2 lg:pl-0">
                     {renderLinks(menuLinks)}
                 </div>
                 {renderMenuDropdowns()}

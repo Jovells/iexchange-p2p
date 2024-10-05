@@ -121,45 +121,45 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
 
   console.log("qs convos, ", conversation && "convo dey", "streamerr", sendMessageError && "Error sending message");
 
-  return (
-    //TODO @mbawon MAKE CONVOS SCROLL
-    <div id="messagesContainer" className="w-full h-[600px] border rounded-xl flex flex-col">
-      <div className="w-full bg-gray-100 p-3 rounded-t-xl">
-        {otherParty.name} {shortenAddress(otherParty.id)}
-        {otherUserIsOnNetwork ? " is online" : " is offline"}
-      </div>
-
-      {conversation ? (
-        <Messages conversation={conversation} />
-      ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">No messages yet</div>
+    return (
+      //TODO @mbawon MAKE CONVOS SCROLL WELL ON ALL SCREEN SIZES
+      <div id="messagesContainer" className="w-full h-[600px] border rounded-xl flex flex-col dark:border-gray-700">
+        <div className="w-full bg-gray-100 dark:bg-gray-800 p-3 rounded-t-xl text-black dark:text-white">
+          {otherParty.name} {shortenAddress(otherParty.id)}
+          {otherUserIsOnNetwork ? " is online" : " is offline"}
         </div>
-      )}
 
-      <div className="w-full p-3 bg-white rounded-b-xl">
-        <div className="relative flex items-center">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            className="w-full border rounded-xl p-2 pr-10 focus:outline-none bg-gray-100"
-            value={messageInputValue}
-            onChange={handleInputChange}
-            onKeyDown={e => {
-              console.log("keydown", e.key);
-              e.key === "Enter" && sendMessage();
-            }}
-          />
-          <button
-            className="absolute right-2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600"
-            onClick={() => sendMessage()}
-          >
-            <Send className="w-5 h-5" />
-          </button>
+        {conversation ? (
+          <Messages conversation={conversation} />
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">No messages yet</div>
+          </div>
+        )}
+
+        <div className="w-full p-3 bg-white dark:bg-gray-900 rounded-b-xl">
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              placeholder="Type a message..."
+              className="w-full border rounded-xl p-2 pr-10 focus:outline-none bg-gray-100 dark:bg-gray-800 dark:text-white"
+              value={messageInputValue}
+              onChange={handleInputChange}
+              onKeyDown={e => {
+                console.log("keydown", e.key);
+                e.key === "Enter" && sendMessage();
+              }}
+            />
+            <button
+              className="absolute right-2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 dark:bg-blue-400 dark:hover:bg-blue-500"
+              onClick={() => sendMessage()}
+            >
+              <Send className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default ChatWithMerchant;

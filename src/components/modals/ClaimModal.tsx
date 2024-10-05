@@ -107,7 +107,7 @@ const ClaimModal = () => {
     timerComponents.push(
       <div
         key={interval}
-        className="flex-1 h-[100px] p-3 px-2 bg-gradient-to-b from-gray-300 to-gray-800 border text-white rounded-xl"
+        className="flex-1 h-[100px] p-3 px-2 bg-gradient-to-b from-gray-300 to-gray-800 dark:from-gray-600 dark:to-gray-900 border text-white rounded-xl"
       >
         <div className="text-center h-[50%] capitalize">{interval}</div>
         <div className="text-center h-[50%] text-3xl">{timeElapsed[interval as keyof typeof timeElapsed]}</div>
@@ -115,66 +115,72 @@ const ClaimModal = () => {
     );
   });
 
-  if (isFetching) {
-    return <Loader />;
-  }
+  // if (isFetching) {
+  //   return <Loader />;
+  // }
 
   return (
-    <div className="w-full lg:w-[500px] min-h-[500px] rounded-xl bg-white p-8 flex flex-col items-center">
-      <div className="flex flex-col gap-8">
-        <div className="flex justify-end items-center">
-          <button className="" onClick={hideModal} aria-label="Close modal">
-            <X />
-          </button>
-        </div>
-        <div>
-          <h1 className="text-center text-2xl font-medium">Available Tokens</h1>
-          <p className="text-center text-lg text-gray-500">Claim the number of Tokens you have been allocated below.</p>
-        </div>
-        {!isClaimAvailable ? (
-          <div className="flex flex-col gap-6">
-            <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
-              <p className="text-center text-gray-500 text-xs">
-                Currently there are no tokens available for claiming. Kindly visit after a period of 24 hours to claim.
-              </p>
-            </div>
-            <div className="w-full flex flex-row gap-4">
-              {timerComponents.length ? timerComponents : <span>Just now!</span>}
-            </div>
-            <div className="w-full border rounded-xl bg-yellow-100 p-6 py-4 flex flex-col border-red-400 shadow-md">
-              <h1 className="text-xl text-black font-medium">Notice on claiming Tokens</h1>
-              <p className="text-gray-500 text-xs">
-                It is important to note that your allocated tokens can be claimed once daily after 24 hours of initial
-                claim.
-              </p>
-            </div>
+    <>
+      {/* Modal Overlay */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-end lg:items-center">
+        {/* Mobile Bottom-Up Modal */}
+        <div className={`w-full min-h-[500px] bg-white rounded-t-xl p-8 flex flex-col items-center dark:bg-gray-800 lg:rounded-xl lg:w-[500px] lg:min-h-[auto] lg:h-auto`}>
+          <div className="flex justify-end">
+            <button onClick={hideModal} aria-label="Close modal" className="text-gray-600 dark:text-gray-300">
+              <X />
+            </button>
           </div>
-        ) : (
-          <div className="flex flex-col gap-6">
-            <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
-              <h2 className="text-sm text-gray-500 text-center">Amount of RMP</h2>
-              <h2 className="text-xl text-gray-600 text-center">5000 RMP</h2>
+          <div className="flex flex-col gap-8">
+            <div>
+              <h1 className="text-center text-2xl font-medium text-gray-800 dark:text-gray-200">Available Tokens</h1>
+              <p className="text-center text-lg text-gray-500 dark:text-gray-400">Claim the number of Tokens you have been allocated below.</p>
             </div>
-            <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
-              <h2 className="text-sm text-gray-500 text-center">Amount of TRK</h2>
-              <h2 className="text-xl text-gray-600 text-center">5000 TRK</h2>
-            </div>
-            <div className="w-full border rounded-xl bg-gray-100 p-6 py-4 flex flex-col justify-center">
-              <h2 className="text-sm text-gray-500 text-center">Amount of CEDIH</h2>
-              <h2 className="text-xl text-gray-600 text-center">5000 CEDIH</h2>
-            </div>
+            {!isClaimAvailable ? (
+              <div className="flex flex-col gap-6">
+                <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
+                  <p className="text-center text-gray-500 dark:text-gray-300 text-xs">
+                    Currently there are no tokens available for claiming. Kindly visit after a period of 24 hours to claim.
+                  </p>
+                </div>
+                <div className="w-full flex flex-row gap-4">
+                  {timerComponents.length ? timerComponents : <span>Just now!</span>}
+                </div>
+                <div className="w-full border rounded-xl bg-yellow-100 dark:bg-yellow-600 p-6 py-4 flex flex-col border-red-400 shadow-md">
+                  <h1 className="text-xl text-black dark:text-white font-medium">Notice on claiming Tokens</h1>
+                  <p className="text-gray-500 dark:text-gray-300 text-xs">
+                    It is important to note that your allocated tokens can be claimed once daily after 24 hours of initial
+                    claim.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-6">
+                <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
+                  <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of RMP</h2>
+                  <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 RMP</h2>
+                </div>
+                <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
+                  <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of TRK</h2>
+                  <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 TRK</h2>
+                </div>
+                <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
+                  <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of CEDIH</h2>
+                  <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 CEDIH</h2>
+                </div>
+              </div>
+            )}
+            <Button
+              text={isClaiming ? "Claiming..." : "Claim All"}
+              className="bg-black text-white px-4 py-4 rounded-xl dark:bg-gray-700 dark:text-gray-200"
+              icon={<ArrowRight />}
+              iconPosition="right"
+              disabled={!isClaimAvailable || isClaiming}
+              onClick={handleClaim}
+            />
           </div>
-        )}
-        <Button
-          text={isClaiming ? "Claiming..." : "Claim All"}
-          className="bg-black text-white px-4 py-4 rounded-xl"
-          icon={<ArrowRight />}
-          iconPosition="right"
-          disabled={!isClaimAvailable || isClaiming}
-          onClick={() => handleClaim()}
-        />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -270,12 +270,12 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     <Suspense>
       <form
         onSubmit={handleSubmit}
-        className="w-full border-0 lg:border rounded-xl p-0 lg:p-6 min-h-[400px] flex  flex-col-reverse lg:grid lg:grid-cols-2 bg-white lg:bg-gray-200"
+        className="w-full border-0 lg:border rounded-xl p-0 lg:p-6 min-h-[400px] flex flex-col-reverse gap-6 lg:grid lg:grid-cols-2 bg-white dark:bg-gray-800 lg:bg-gray-200 dark:lg:bg-gray-900"
       >
-        <div className="bg-transparent rounded-xl p-0 pt-6">
+        <div className="bg-transparent rounded-xl p-0 pt-0">
           <MerchantProfile offer={data} />
         </div>
-        <div className="bg-white rounded-xl p-0 lg:p-6 space-y-3 pt-6">
+        <div className="bg-white dark:bg-gray-700 rounded-xl p-4 lg:p-6 space-y-3 pt-6">
           <InputWithSelect
             placeholder={isBuy ? "You Pay" : "You Receive"}
             initialCurrencyName={data.currency.currency}

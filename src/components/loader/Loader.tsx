@@ -15,7 +15,7 @@ const Loader: React.FC<Props> = ({ className, loaderType = "spinner", size }) =>
         <div className={`w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin`}></div>
       )}
       {loaderType === "text" && (
-        <div className={`flex items-center text-${size} font-light`}>
+        <div className={`flex items-center text-${size} font-light text-black dark:text-white`}>
           <span>Loading</span>
           <span className="dot-1 ml-1">.</span>
           <span className="dot-2">.</span>

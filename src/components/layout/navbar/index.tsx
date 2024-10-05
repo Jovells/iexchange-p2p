@@ -1,14 +1,12 @@
 'use client'
 import Link from "next/link";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
-import Button from "../../ui/Button";
 import Image from 'next/image';
 import BecomeAMerchant from "../../merchant";
 import { ThemeToggle } from "@/components/shared";
 import { useRouter } from "next/navigation";
-import { useModal } from "@/common/contexts/ModalContext";
-import NetworkSwitcher from "@/components/networkSwitcher";
 import { useUser } from "@/common/contexts/UserContext";
+import { getImage } from "@/lib/utils";
 
 const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
     const navigation = useRouter()
@@ -36,12 +34,14 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
             <Link
                 key={link.href}
                 href={link.href}
-                className="text-[#111315] hover:text-[#01A2E4] font-[500px] block px-2 py-2 text-[14px]"
+                className="block px-2 py-2 text-[14px font-[500] transition duration-300
+                    text-[#111315] hover:text-[#01A2E4] dark:text-white dark:hover:text-[#01A2E4]"
             >
                 {link.label}
             </Link>
         ))
     );
+    
 
     const navLinks = [
         { href: "/", label: "Product" },
@@ -51,37 +51,26 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
         { href: "/news", label: "News" }
     ];
 
-
-
+    const togglerIcon = getImage("toggler.svg")
 
     return (
-        <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 pr-6">
+        <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 pr-3 lg:pr-4">
             <Image src="/images/logo/iexchange-logo.png" alt="iexchange logo" className="h-[50px] w-auto lg:w-auto cursor-pointer" width={150} height={50} onClick={() => navigation.push("/")} />
             <div className="w-full flex flex-row justify-end lg:justify-between items-center">
                 <div className="hidden lg:flex space-x-1 mt-1">
                     {renderLinks(navLinks)}
                 </div>
 
-                <div className="hidden lg:flex flex-row justify-start items-center space-x-6">
-                    {/* {session.status === "authenticated" && (
-                        <div className="lg:w-auto lg:flex">
-                            <NetworkSwitcher />
-                        </div>
-                    )} */}
+                <div className="hidden lg:flex flex-row justify-start items-center space-x-3">
                     <BecomeAMerchant />
                     <Link href="" className="rounded-full border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C] p-0">
-                        <img src="/images/icons/gold.png" alt="gold bars" className="w-auto h-auto" />
+                        <img src="/images/light/gold.png" alt="gold bars" className="w-auto h-auto" />
                     </Link>
                     <ThemeToggle />
                 </div>
                 <div className="lg:hidden flex flex-row justify-start items-center gap-2" id="mobile-menu">
-                    {/* {session.status === "authenticated" && (
-                        <div className="lg:w-auto lg:flex">
-                            <NetworkSwitcher />
-                        </div>
-                    )} */}
                     <Link href="" className="rounded-full border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C] p-0">
-                        <img src="/images/icons/gold.png" alt="gold bars" className="w-auto h-auto" />
+                        <img src="/images/light/gold.png" alt="gold bars" className="w-auto h-auto" />
                     </Link>
                     <button
                         type="button"
@@ -91,11 +80,11 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
                         onClick={toggleDrawer}
                     >
                         <span className="sr-only">Open main menu</span>
-                        <img src="/images/icons/toggler.svg" alt="icon" className="h-14 w-14" />
+                        <img src={togglerIcon as string} alt="icon" className="h-14 w-8" />
                     </button>
                     <div
                         ref={drawerRef}
-                        className={`fixed inset-y-0 right-0 transform ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out bg-white w-64 z-50 shadow-2xl`}
+                        className={`fixed inset-y-0 right-0 transform ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out bg-white dark:bg-[#14161B] w-64 z-50 shadow-2xl`}
                     >
                         <div className="flex flex-col items-start justify-start space-y-4 p-4">
                             <button
