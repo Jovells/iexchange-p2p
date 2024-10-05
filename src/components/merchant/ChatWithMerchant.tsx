@@ -126,7 +126,8 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       <div id="messagesContainer" className="w-full h-[600px] border rounded-xl flex flex-col dark:border-gray-700">
         <div className="w-full bg-gray-100 dark:bg-gray-800 p-3 rounded-t-xl text-black dark:text-white">
           {otherParty.name} {shortenAddress(otherParty.id)}
-          {otherUserIsOnNetwork ? " is online" : " is offline"}
+          {/* TODO @Jovells refine this */}
+          {otherUserIsOnNetwork ? " is on xmpt netword" : " is not on xmptp network"}
         </div>
 
         {conversation ? (
