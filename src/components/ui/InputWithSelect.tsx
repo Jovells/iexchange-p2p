@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { Check, ChevronDown, DollarSign } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 
 interface Currency {
@@ -44,13 +44,11 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleSelect = (currency: Currency) => {
-    let newValue = { ...selectedValue, currency: currency.symbol, id: currency.id };
+    const newValue = { ...selectedValue, currency: currency.symbol, id: currency.id };
     setSelectedValue(prevState => {
       const newCurrencySymbol = prevState.currency === currency.symbol ? "" : currency.symbol;
       const newCurrencyId = prevState.currency === currency.symbol ? null : currency.id;
-      newValue = { ...prevState, currency: newCurrencySymbol, id: newCurrencyId! };
-      console.log("qicurrency, prevstate", currency, prevState, newValue);
-      return newValue;
+      return { ...prevState, currency: newCurrencySymbol, id: newCurrencyId! };
     });
     if (onValueChange) {
       onValueChange(newValue);
@@ -89,16 +87,14 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
     };
   }, [isOpen]);
 
-  console.log("qiAlllllcurrencies", currencies);
-
   return (
-    <div ref={dropdownRef} className="w-full relative border rounded-xl cursor-pointer">
+    <div ref={dropdownRef} className="w-full relative border border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer">
       <div className="w-full flex flex-col px-3 py-1">
-        {selectedValue.amount && label && <span className="text-sm text-gray-500 mb-1">{label}</span>}
+        {selectedValue.amount && label && <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</span>}
         <div className="flex items-center w-full">
           <input
             type="text"
-            className="flex-1 p-2 px-0 border-none outline-none"
+            className="flex-1 p-2 px-0 border-none outline-none bg-transparent text-black dark:text-white"
             value={valueToDisplay.amount}
             readOnly={readOnly}
             placeholder={!selectedValue.amount ? placeholder : ""}
@@ -106,31 +102,31 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
           />
           <div className="flex items-center space-x-1" onClick={toggleDropdown}>
             {currencies.find(c => c.symbol === valueToDisplay.currency)?.icon}
-            <span>{valueToDisplay.currency || <span className=" text-gray-500 mb-1">All</span>}</span>
-            {currencies.length > 1 && <ChevronDown />}
+            <span className="text-black dark:text-white">{valueToDisplay.currency || <span className="text-gray-500 dark:text-gray-400 mb-1">All</span>}</span>
+            {currencies.length > 1 && <ChevronDown className="text-gray-500 dark:text-gray-400" />}
           </div>
         </div>
       </div>
-      {isOpen &&
-        !selectIsReadOnly &&
-        (console.log("qucurrencies", currencies),
-        (
-          <div className="absolute w-full bg-gray-50 p-2 border rounded-lg shadow-md z-10">
-            {currencies.map(currency => (
-              <div
-                key={currency.id}
-                className="flex justify-between p-2 border-b last:border-b-0 hover:bg-gray-100"
-                onClick={() => handleSelect(currency)}
-              >
-                <div className="flex items-center space-x-2">
-                  {currency.icon}
-                  <span>{currency.symbol}</span>
-                </div>
-                {currency.symbol === valueToDisplay.currency && <Check />}
+      {isOpen && !selectIsReadOnly && (
+        <div className="absolute w-full bg-white dark:bg-gray-700 p-2 border border-gray-200 dark:border-gray-600 rounded-[8px] shadow-md z-10">
+          {currencies.map(currency => (
+            <div
+              key={currency.id}
+              className="flex justify-between items-center p-2 border-b border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+              onClick={() => handleSelect(currency)}
+            >
+              <div className="flex items-center space-x-2 text-black dark:text-white">
+                {currency.icon}
+                <span className="text-black dark:text-white">{currency.symbol}</span>
               </div>
-            ))}
-          </div>
-        ))}
+              {currency.symbol === valueToDisplay.currency && (
+                <Check className="text-blue-500 dark:text-blue-400" />
+              )}
+            </div>
+          ))}
+        </div>
+
+      )}
       <input type="hidden" {...props} value={value} />
     </div>
   );

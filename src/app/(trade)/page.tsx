@@ -20,6 +20,7 @@ import Loader from "@/components/loader/Loader";
 import CryptoSelector from "./cryptoSelector";
 import NetworkSwitcher from "@/components/networkSwitcher";
 import { useUser } from "@/common/contexts/UserContext";
+import PostAd from "./postAd";
 
 interface P2PMarketProps { }
 
@@ -87,24 +88,35 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     return null;
   }
 
-  console.log("qiAllp2pcurrencies", currencies);
+  // console.log("qiAllp2pcurrencies", currencies);
 
   return (
     <>
       <WalletConnectSection />
-      <div className="container mx-auto p-4 lg:p-0 lg:py-10 flex flex-col items-start space-y-4">
-        <div className="flex flex-row items-start gap-4">
+      <div className="container mx-auto  p-0 flex flex-col items-start space-y-4">
+        <div className="flex flex-row items-start gap-4 w-full">
           <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
-          <CryptoSelector tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={setSelectedCrypto} />
         </div>
-        <PaymentsSection
-          currencyAmount={currencyAmount}
-          setCurrencyAmount={setCurrencyAmount}
-          setPaymentMethod={setPaymentMethod}
-          currencies={currencies}
-          paymentMethods={paymentMethods}
-          currentChain={currentChain}
-        />
+        <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
+          <div className="w-full lg:w-1/2 flex-shrink-0">
+            <CryptoSelector
+              tokens={tokens}
+              selectedCrypto={selectedCrypto}
+              setSelectedCrypto={setSelectedCrypto}
+            />
+          </div>
+          <div className="w-full lg:w-1/2 flex-grow">
+            <PaymentsSection
+              currencyAmount={currencyAmount}
+              setCurrencyAmount={setCurrencyAmount}
+              setPaymentMethod={setPaymentMethod}
+              currencies={currencies}
+              paymentMethods={paymentMethods}
+              currentChain={currentChain}
+            />
+          </div>
+        </div>
+
         <Suspense fallback={<Loader loaderType="text" className="mt-24" />}>
           <P2PAds
             offerType={activeTab}
@@ -131,26 +143,31 @@ interface TabSelectorProps {
   handleTabChange: (tab: "buy" | "sell" | string) => void;
 }
 
-const TabSelector: React.FC<TabSelectorProps> = ({ activeTab, handleTabChange }) => (
-  <div className="flex flex-row items-center bg-white border border-gray-200 rounded-[10px] p-2 min-w-[150px]">
-    <button
-      onClick={() => handleTabChange("buy")}
-      className={`w-full rounded-[5px] text-center text-[14px] font-[400px] p-2 px-6 ${
-        activeTab.toLowerCase() === "buy" ? "text-black bg-gray-400" : "text-gray-400"
-      }`}
-    >
-      Buy
-    </button>
-    <button
-      onClick={() => handleTabChange("sell")}
-      className={`w-full rounded-[5px] text-center text-[14px] font-[400px] p-2 px-6  ${
-        activeTab.toLowerCase() === "sell" ? "text-black bg-gray-400" : "text-gray-400"
-      }`}
-    >
-      Sell
-    </button>
-  </div>
-);
+const TabSelector: React.FC<TabSelectorProps> = ({ activeTab, handleTabChange }) => {
+  return (
+    <div className="flex flex-row items-center bg-white border border-gray-200 rounded-[10px] p-2 min-w-full lg:min-w-[150px] dark:bg-gray-800 dark:border-gray-700">
+      <button
+        onClick={() => handleTabChange("buy")}
+        className={`w-full rounded-[5px] text-center text-[14px] font-[400] p-2 px-6 ${activeTab.toLowerCase() === "buy"
+          ? "text-black bg-gray-400 dark:text-white dark:bg-gray-600"
+          : "text-gray-400 dark:text-gray-400"
+          }`}
+      >
+        Buy
+      </button>
+      <button
+        onClick={() => handleTabChange("sell")}
+        className={`w-full rounded-[5px] text-center text-[14px] font-[400] p-2 px-6 ${activeTab.toLowerCase() === "sell"
+          ? "text-black bg-gray-400 dark:text-white dark:bg-gray-600"
+          : "text-gray-400 dark:text-gray-400"
+          }`}
+      >
+        Sell
+      </button>
+    </div>
+  );
+};
+
 
 interface PaymentsSectionProps {
   currencies: PreparedCurrency[];
@@ -170,14 +187,14 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
 }) => {
   const { session } = useUser();
   return (
-    <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-6 w-full">
-      <div className="flex flex-row justify-between items-center space-x-0 gap-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap">
-        {session.status === "authenticated" && (
+    <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-0 w-full">
+      <div className="flex flex-row justify-between items-center space-x-0 gap-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap w-full">
+        {/* {session.status === "authenticated" && (
           <div className="w-full block lg:hidden">
             <NetworkSwitcher />
           </div>
-        )}
-        <div className="w-full lg:w-[300px]">
+        )} */}
+        <div className="w-full lg:w-1/2">
           <InputAmount
             label=""
             placeholder="Enter amount"
@@ -189,9 +206,10 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
               console.log(value);
             }}
             readOnly={false}
+            className="bg-white dark:bg-gray-800 text-black dark:text-white" // Adding dark mode styles
           />
         </div>
-        <div className="w-full lg:w-[300px]">
+        <div className="w-full lg:w-1/2">
           <SelectPaymentMethod
             label=""
             initialValue="usd"
@@ -201,15 +219,17 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
               label: method.method,
             }))}
             onValueChange={value => setPaymentMethod(value)}
+            className="bg-white dark:bg-gray-800 text-black dark:text-white" // Adding dark mode styles
           />
         </div>
         {/* <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} /> */}
       </div>
-      {session.status === "authenticated" && (
+      {/* {session.status === "authenticated" && (
         <div className="lg:w-auto lg:flex hidden lg:block">
           <NetworkSwitcher />
         </div>
-      )}
+      )} */}
+      <PostAd className="block lg:hidden" />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { Merchant, OfferType } from "@/common/api/types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import toast, { Renderable, ToastOptions } from "react-hot-toast";
+import { useTheme } from "@/common/contexts/ThemeProvider";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -94,4 +95,13 @@ export const ixToast = {
     }
     toast.error(message, options);
   },
+};
+
+export const getImage = (imageName: string, Element?: JSX.Element) => {
+  const { isDarkMode } = useTheme();
+
+  const basePath = "/images";
+  const imagePath = `${basePath}/${isDarkMode ? 'dark' : 'light'}/${imageName}`;
+
+  return Element || imagePath;
 };

@@ -3,7 +3,7 @@
 import { useUser } from "@/common/contexts/UserContext";
 import { ChevronDown, ChevronRight, Clock, Home, Settings, User } from "lucide-react";
 import Link from "next/link";
-import { usePathname , useRouter} from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import NetworkSwitcher from "../networkSwitcher";
 import Image from "next/image";
@@ -48,7 +48,7 @@ interface SideNavProps {
 }
 
 const SideNav: React.FC<SideNavProps> = ({ isDrawerOpen, toggleDrawer }) => {
-    const navigation = useRouter()
+    const navigation = useRouter();
     const pathname = usePathname();
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const { session } = useUser();
@@ -78,22 +78,29 @@ const SideNav: React.FC<SideNavProps> = ({ isDrawerOpen, toggleDrawer }) => {
     };
 
     return (
-        <div className="flex flex-col">
-            {session.status === "authenticated" && (
-                <div className="px-4 hidden lg:block">
-                    <NetworkSwitcher />
-                </div>
-            )}
-            <nav className={`lg:block ${isDrawerOpen ? 'block' : 'hidden'} pt-6 lg:static absolute top-0 left-0 w-64 bg-white text-gray-600 h-full z-50 lg:z-auto flex flex-col justify-between`}>
+        <div>
+            <nav className={`lg:block ${isDrawerOpen ? 'block' : 'hidden'} pt-6 lg:pt-[130px] lg:fixed absolute top-0 left-0 w-64 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 h-full z-50 lg:z-auto flex flex-col justify-between`}>
+                {session.status === "authenticated" && (
+                    <div className="px-4 hidden lg:block mb-6">
+                        <NetworkSwitcher />
+                    </div>
+                )}
+
                 <div>
-                    {/* <div className="mt-16 block lg:hidden"></div> */}
-                    <Image src="/images/logo/iexchange-logo.png" alt="iexchange logo" className="h-[50px] w-auto lg:w-auto block lg:hidden cursor-pointer " width={150} height={50} onClick={() => navigation.push("/")} />
+                    <Image
+                        src="/images/logo/iexchange-logo.png"
+                        alt="iexchange logo"
+                        className="h-[50px] w-auto lg:w-auto block lg:hidden cursor-pointer"
+                        width={150}
+                        height={50}
+                        onClick={() => navigation.push("/")}
+                    />
                     <ul className="space-y-6 p-0">
                         {navItems.map((item, index) => (
                             <li key={index}>
                                 {item.children.length > 0 ? (
                                     <div
-                                        className={`flex items-center p-4 cursor-pointer ${activeIndex === index ? "bg-gray-100 " : ""}`}
+                                        className={`flex items-center p-4 cursor-pointer ${activeIndex === index ? "bg-gray-100 dark:bg-gray-700" : ""}`}
                                         onClick={() => handleNavClick(index)}
                                     >
                                         <div className="mr-3">{item.icon}</div>
@@ -103,7 +110,11 @@ const SideNav: React.FC<SideNavProps> = ({ isDrawerOpen, toggleDrawer }) => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <Link href={item.link} className={`flex items-center p-4 hover:bg-gray-50 ${pathname === item.link ? "font-bold" : ""}`} onClick={() => handleNavClick(index)}>
+                                    <Link
+                                        href={item.link}
+                                        className={`flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-800 ${pathname === item.link ? "font-bold" : ""}`}
+                                        onClick={() => handleNavClick(index)}
+                                    >
                                         <div className="mr-3">{item.icon}</div>
                                         <div className="flex-1">{item.title}</div>
                                     </Link>
@@ -114,7 +125,7 @@ const SideNav: React.FC<SideNavProps> = ({ isDrawerOpen, toggleDrawer }) => {
                                             <li key={childIndex}>
                                                 <Link
                                                     href={child.link}
-                                                    className={`block p-2 hover:bg-gray-50 text-gray-600 ${pathname === child.link ? "font-bold" : ""}`}
+                                                    className={`block p-2 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 ${pathname === child.link ? "font-bold" : ""}`}
                                                 >
                                                     {child.title}
                                                 </Link>
@@ -126,9 +137,7 @@ const SideNav: React.FC<SideNavProps> = ({ isDrawerOpen, toggleDrawer }) => {
                         ))}
                     </ul>
                 </div>
-
             </nav>
-
             {isDrawerOpen && (
                 <div
                     onClick={toggleDrawer}

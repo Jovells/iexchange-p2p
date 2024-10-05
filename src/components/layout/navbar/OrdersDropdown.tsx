@@ -29,23 +29,23 @@ export function OrdersDropdown() {
 
   console.log("myOrders", myOrders);
 
-  if (!myOrders && !isFetching) {
-    return <Loader />;
-  }
+  // if (!myOrders && !isFetching) {
+  //   return <Loader />;
+  // }
 
-  if (!myOrders) {
+  if (!myOrders && !isFetching) {
     return null;
   }
 
   return (
-    <div className="w-full rounded-[8px] border border-gray-200">
-      <div className="flex flex-row justify-between items-center p-4 border-b">
-        <h2 className="text-black font-bold">Processing</h2>
-        <Link href="/dashboard/history/orders" className="text-blue-600">
+    <div className="w-full rounded-[8px] border border-gray-200 dark:border-gray-800">
+      <div className="flex flex-row justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
+        <h2 className="text-black dark:text-white font-bold">Processing</h2>
+        <Link href="/dashboard/history/orders" className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
           View more
         </Link>
       </div>
-      {myOrders.map((item: Order, index: any) => {
+      {myOrders && myOrders.map((item: Order, index: any) => {
         const { isTrader, isMerchant, isBuy, isSell, isBuyer, otherParty } = getUserConfig({
           trader: item.trader,
           merchant: item.offer.merchant,
@@ -60,9 +60,9 @@ export function OrdersDropdown() {
           <Link
             href={ORDER_PAGE(item.id)}
             key={index}
-            className="flex grid-cols-1 lg:grid-cols-2 gap-4 border-b p-4 hover:bg-gray-100 transition-colors duration-200 w-full"
+            className="flex grid-cols-1 lg:grid-cols-2 gap-4 border-b border-gray-200 dark:border-gray-800 p-4 hover:bg-gray-100 dark:hover:bg-gray-950 transition-colors duration-200 w-full"
           >
-            <div className="w-full flex flex-row justify-between items-start space-y-2 ">
+            <div className="w-full flex flex-row justify-between items-start space-y-2">
               <div className="flex flex-row">
                 <div className={`w-2 ${barColor} mr-4`}></div>
                 <div>
@@ -72,13 +72,13 @@ export function OrdersDropdown() {
                   <p className="text-lg font-medium text-left">
                     {formatCurrency(Number(item.quantity) * Number(item.offer.rate), item.offer.currency.currency)}
                   </p>
-                  {/* <p className="text-sm text-gray-500">{OrderState[item.status]}</p> */}
-                  <p className="text-sm text-gray-500 text-left">{shortenAddress(otherParty.id)}</p>
+                  {/* <p className="text-sm text-gray-500 dark:text-gray-400">{OrderState[item.status]}</p> */}
+                  <p className="text-sm text-gray-500 dark:text-gray-400 text-left">{shortenAddress(otherParty.id)}</p>
                 </div>
               </div>
               <div>
-                <p className="text-sm text-gray-500 text-right">Price: {item.offer.rate}</p>
-                <p className="text-sm text-gray-500 text-right">Date: {formatBlockTimesamp(item.blockTimestamp)}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-right">Price: {item.offer.rate}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-right">Date: {formatBlockTimesamp(item.blockTimestamp)}</p>
               </div>
             </div>
           </Link>

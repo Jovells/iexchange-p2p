@@ -40,7 +40,7 @@ const WalletConnect = () => {
     return (
         <Fragment>
             {session.status === "authenticated" ? (
-                <div className="flex justify-between items-center space-x-2 text-black py-2">
+                <div className="flex justify-between items-center space-x-2 text-black dark:text-white py-2 hidden">
                     <span>{shortenAddress(walletAddress)}</span>
                     <div onClick={() => handleDisconnect()}>
                         <Image

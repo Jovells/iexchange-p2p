@@ -7,10 +7,17 @@ interface DropdownProps {
     dropdownItems: any[];
     children?: ReactNode;
     itemIcon?: string;
-    onClick?:()=>void
+    onClick?: () => void;
 }
 
-const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, children, itemIcon, onClick }) => {
+const MenuDropdown: React.FC<DropdownProps> = ({
+    title,
+    icon,
+    dropdownItems,
+    children,
+    itemIcon,
+    onClick
+}) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -45,11 +52,13 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
             onClick={toggleDropdown}
         >
             <button
-            onClick={()=>onClick?.()}
-                className="inline-flex items-center px-4 py-2 pl-1 pr-0 lg:pl-0 bg-transparent text-[#33343E] font-[500px] text-[14px] rounded-md focus:outline-none"
+                onClick={() => onClick?.()}
+                className="inline-flex items-center px-4 py-2 pl-1 pr-0 lg:pl-0 bg-transparent text-[#33343E] dark:text-white font-medium text-[14px] rounded-md focus:outline-none"
             >
-                <img src={icon} alt="icon" className="w-5 h-5 ml-2 lg:ml-6 mr-2" />
-                <span className="hidden lg:flex">{title}</span>
+                <span className="flex items-center transition-colors duration-200 hover:text-[#01A2E4] dark:hover:text-[#01A2E4]">
+                    <img src={icon} alt="icon" className="w-5 h-5 mr-2 lg:mr-2" />
+                    <span className="hidden lg:flex">{title}</span>
+                </span>
                 <svg
                     className="hidden lg:flex w-5 h-5 ml-2"
                     xmlns="http://www.w3.org/2000/svg"
@@ -66,18 +75,21 @@ const MenuDropdown: React.FC<DropdownProps> = ({ title, icon, dropdownItems, chi
 
             {isOpen && (
                 <div
-                    className="absolute right-0 min-w-48 mt-0 t-6 origin-top-right bg-white pt-2 rounded-lg shadow-[8px] z-10"
+                    className="absolute right-0 min-w-48 mt-0 t-6 origin-top-right bg-white dark:bg-[#14161B] pt-2 rounded-lg shadow-md z-10 transition-opacity duration-200 ease-in-out"
+                    style={{ opacity: isOpen ? 1 : 0 }}
                 >
-                    <div className="">
+                    <div
+                        className="max-h-[500px] overflow-y-auto transition-all duration-200 ease-in-out"
+                    >
                         {children}
                     </div>
                     {dropdownItems.length > 0 && (
-                        <div className="min-w-[200px] py-4 space-y-3 border border-gray-200">
+                        <div className="min-w-[200px] py-4 space-y-3 border border-gray-200 dark:border-gray-800">
                             {dropdownItems.map((item, index) => (
                                 <Link
                                     key={index}
                                     href={item.link}
-                                    className="flex flex-row px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    className="flex flex-row px-4 py-2 text-sm text-black dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
                                 >
                                     {item.icon && <img src={item.icon} alt="icon" className="w-5 h-5 mr-2" />}
                                     <span>

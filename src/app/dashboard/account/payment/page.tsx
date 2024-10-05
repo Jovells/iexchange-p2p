@@ -7,7 +7,7 @@ import AddPaymentMethod from './AddPaymentMethod';
 import { useQuery } from "@tanstack/react-query";
 import fetchPaymentDetails from '@/common/api/fetchPaymentDetails';
 import { parseStringToObject } from '@/lib/utils';
-import DashboardLayout from '../../DashboardLayout';
+import DashboardLayout from '../../layout';
 import useUserPaymentMethods from '@/common/hooks/useUserPaymentMenthods';
 import Loader from '@/components/loader/Loader';
 
@@ -30,7 +30,7 @@ const Payment = () => {
 
 
   return (
-    <DashboardLayout>
+    <>
       <div className='py-12 pt-0 flex flex-col items-start gap-4'>
         <div className='flex flex-col items-start gap-4'>
           <h1 className='py-2 border-b-2 border-[#1ABCFE]'>P2P Payment Methods</h1>
@@ -74,7 +74,7 @@ const Payment = () => {
           <div></div>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   );
 };
 

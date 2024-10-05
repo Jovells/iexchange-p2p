@@ -10,6 +10,8 @@ import { Dispatch, SetStateAction } from "react";
 import Loader from "@/components/loader/Loader";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useUser } from "@/common/contexts/UserContext";
+import CryptoSelectorInput from "./cryptoSelectorInput";
+import Claim from "./claim";
 
 interface CryptoSelectorProps {
   tokens: Token[];
@@ -18,21 +20,9 @@ interface CryptoSelectorProps {
 }
 
 const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto, setSelectedCrypto }) => {
-  const { isConnected } = useUser();
-  const { openConnectModal } = useConnectModal();
-  const { showModal, hideModal } = useModal();
-
-  const showClaimModal = () => {
-    if (isConnected) {
-      const modal = <ClaimModal />;
-      showModal(modal);
-    } else {
-      openConnectModal?.();
-    }
-  };
 
   return (
-    <div className="bg-transparent border-0 lg:border border-gray-200 rounded-[8px]">
+    <div className="bg-transparent border-0 lg:border border-gray-200 rounded-[8px] dark:border-gray-700">
       <div className="hidden sm:flex justify-start items-center space-x-4 p-2 px-3">
         {tokens.map(token => (
           <CryptoButton
@@ -42,17 +32,14 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto,
             setSelectedCrypto={setSelectedCrypto}
           />
         ))}
-        <Button
-          text="Claim"
-          onClick={showClaimModal}
-          className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-xl px-4 py-2 font-bold shadow-lg hover:from-yellow-500 hover:to-yellow-700 border border-yellow-300"
-        />
       </div>
-      <div className="sm:hidden flex flex-row items-center space-x-6">
+      <CryptoSelectorInput tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={(value: any) => setSelectedCrypto(value)} />
+      <Claim className="w-full mt-4 block lg:hidden" />
+      {/* <div className="sm:hidden flex flex-row items-center space-x-6">
         <select
           value={selectedCrypto?.symbol}
           onChange={e => setSelectedCrypto(tokens.find(t => t.symbol === e.target.value)!)}
-          className="w-full px-6 py-4 rounded-xl text-md bg-white border border-gray-300 text-gray-600 outline-none"
+          className="w-full px-6 py-4 rounded-xl text-md bg-white border border-gray-300 text-gray-600 outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
         >
           {tokens.map(crypto => (
             <option key={crypto.id} value={crypto.symbol}>
@@ -60,7 +47,7 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto,
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -98,17 +85,15 @@ const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, setS
           return token;
         })
       }
-      className={`py-1 px-2 rounded-full text-md flex items-center space-x-2 ${
-        selectedCrypto?.symbol === token.symbol ? "bg-blue-500 text-white" : "text-black"
-      }`}
+      className={`py-1 px-2 rounded-full text-md flex items-center space-x-2 ${selectedCrypto?.symbol === token.symbol ? "bg-blue-500 text-white" : "text-black dark:text-white"
+        }`}
     >
       <span>{token.symbol}</span>
-      <span className="bg-gray-200 text-xs text-gray-700 rounded-full px-2 py-1">
+      <span className="bg-gray-200 text-xs text-gray-700 rounded-full px-2 py-1 dark:bg-gray-600 dark:text-gray-300">
         {!isLoading ? "Balance: " + formattedBalance : <Loader size="xs" className="text-xs" loaderType="text" />}
       </span>
     </button>
   );
 };
-
 
 export default CryptoSelector;
