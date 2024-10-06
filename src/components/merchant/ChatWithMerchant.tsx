@@ -107,18 +107,27 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
           <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
             Messaging Enabled
           </span>
-        ) : (
+        ) : client ? (
           <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
             Messaging Disabled. The counterparty has not enabled messaging.
+          </span>
+        ) : (
+          <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
+            Messaging Disabled
           </span>
         )}
       </div>
 
       {conversation ? (
         <Messages conversation={conversation} />
-      ) : (
+      ) : client ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">No messages yet</div>
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="text-center">Messaging not enabled</div>
+          <Button onClick={resolveEnable}>Enable Messaging</Button>
         </div>
       )}
 

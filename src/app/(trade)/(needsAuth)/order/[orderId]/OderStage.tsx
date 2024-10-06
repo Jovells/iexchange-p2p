@@ -33,7 +33,7 @@ const toastId = "order-status";
 function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: () => void }) {
   const { indexerUrl, p2p, tokens, currentChain } = useContracts();
   const queryClient = useQueryClient();
-  const { address } = useUser();
+  const { address, isConnected } = useUser();
   const { writeContractAsync, isPending } = useWriteContractWithToast();
   const [pollToggle, setPollToggle] = React.useState(true);
   const {
@@ -89,12 +89,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   });
 
   const getButtonConfig = () => {
-    if (!order) return { text: "", buttonText: "", onClick: () => { }, disabled: true, shouldPoll: false };
+    if (!order) return { text: "", buttonText: "", onClick: () => {}, disabled: true, shouldPoll: false };
 
     const getDisabledAction = (buttonText: string, text: string, shouldPoll = true) => ({
       buttonText,
       text,
-      onClick: () => { },
+      onClick: () => {},
       disabled: true,
       shouldPoll,
     });
@@ -113,39 +113,39 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         if (isBuyer) {
           return order.offer.offerType === offerTypes.buy
             ? getDisabledAction(
-              "Waiting for Merchant",
-              "Please wait for the merchant to accept your order and send the tokens to the escrow account",
-            )
+                "Waiting for Merchant",
+                "Please wait for the merchant to accept your order and send the tokens to the escrow account",
+              )
             : getEnabledAction(
-              "Done With Payment",
-              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-              handlePayOrder,
-            );
+                "Done With Payment",
+                "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+                handlePayOrder,
+              );
         } else {
           return order.offer.offerType === offerTypes.sell
             ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
             : getEnabledAction(
-              "Accept Order",
-              "Click “Accept Order” your order and send the tokens to the escrow account ",
-              handleAcceptOrder,
-            );
+                "Accept Order",
+                "Click “Accept Order” your order and send the tokens to the escrow account ",
+                handleAcceptOrder,
+              );
         }
       case OrderState.Accepted:
         return isBuyer
           ? getEnabledAction(
-            "Done With Payment",
-            "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-            handlePayOrder,
-          )
+              "Done With Payment",
+              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+              handlePayOrder,
+            )
           : getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment");
       case OrderState.Paid:
         return isBuyer
           ? getDisabledAction("Waiting for Seller to Release", "Please wait for the seller to release")
           : getEnabledAction(
-            "Release Funds",
-            "Click “Release Funds” to release the funds to the buyer",
-            handleReleaseFunds,
-          );
+              "Release Funds",
+              "Click “Release Funds” to release the funds to the buyer",
+              handleReleaseFunds,
+            );
       case OrderState.Released:
         return getDisabledAction("Completed", "Order has been completed", false);
       case OrderState.Cancelled:
@@ -344,7 +344,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   console.log("OrderData", order);
   console.log("qyaccountDetails", accountDetails);
 
-  if (!(isTrader || isMerchant)) {
+  if (!isConnected && !(isTrader || isMerchant)) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <h2 className="text-2xl font-semibold text-gray-700">Unauthorized Access</h2>
@@ -355,6 +355,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
       </div>
     );
   }
+
+ 
 
   const isCancellable =
     (order.status === OrderState.Pending && isMerchant) || (order.status === OrderState.Accepted && isTrader);
