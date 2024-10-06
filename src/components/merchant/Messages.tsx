@@ -1,3 +1,4 @@
+"use client";
 import { useUser } from "@/common/contexts/UserContext";
 import { CachedConversation, DecodedMessage, useMessage, useMessages, useStreamMessages } from "@xmtp/react-sdk";
 import { useCallback, useState } from "react";

@@ -7,7 +7,10 @@ import QueryProvider  from './QueryProvider'
 import { State, WagmiProvider } from 'wagmi';
 import { UserProvider } from './UserContext';
 import { ContractsProvider } from './ContractContext';
-import ChatProvider from "./XMTPContext";
+import dynamic from "next/dynamic";
+
+const ChatProvider = dynamic(() => import("./XMTPContext"), { ssr: false });
+
 
 
 if (!projectId) throw new Error('Project ID is not defined')

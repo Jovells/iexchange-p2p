@@ -39,24 +39,24 @@ const WalletConnect = () => {
 
 
     return (
-        <Fragment>
-            {session.status === "authenticated" ? (
-                <div className="flex justify-between items-center space-x-2 text-black dark:text-white py-2 hidden">
-                    <span>{shortenAddress(walletAddress)}</span>
-                    <div onClick={() => handleDisconnect()}>
-                        <Image
-                            src="/images/icons/disconnect.png"
-                            alt="Disconnect"
-                            width={30}
-                            height={30}
-                            className="cursor-pointer"
-                        />
-                    </div>
-                </div>
-            ) : (
-                <ConnectButton/>
-            )} 
-        </Fragment>
+      <Fragment>
+        {session.status === "authenticated" ? (
+          <div className="justify-between items-center space-x-2 text-black dark:text-white py-2 hidden">
+            <span>{shortenAddress(walletAddress)}</span>
+            <div onClick={() => handleDisconnect()}>
+              <Image
+                src="/images/icons/disconnect.png"
+                alt="Disconnect"
+                width={30}
+                height={30}
+                className="cursor-pointer"
+              />
+            </div>
+          </div>
+        ) : (
+          <ConnectButton />
+        )}
+      </Fragment>
     );
 };
 

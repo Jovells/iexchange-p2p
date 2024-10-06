@@ -44,11 +44,11 @@ export const ContractsProvider: FC<{ children: ReactNode }> = ({
 
 
   useEffect(() => {
-    window.ethereum?.on('chainChanged', (newChainId) => {
-      console.log('chainChanged', newChainId)
-      console.log('chainChanged',newChainId, Number(newChainId))
-      setCurrentChainId(Number(newChainId))
-    })
+    window.ethereum?.on("chainChanged", (newChainId: string) => {
+      console.log("chainChanged", newChainId);
+      console.log("chainChanged", newChainId, Number(newChainId));
+      setCurrentChainId(Number(newChainId));
+    });
     return () =>{}
    }, [])
 
@@ -57,7 +57,6 @@ export const ContractsProvider: FC<{ children: ReactNode }> = ({
    }, [chainId])
  
 
-  console.log('chainid', currentChain?.id, chains)
   console.log('chainIdwagmi', indexerUrl)
 
 

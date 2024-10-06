@@ -88,7 +88,8 @@ const useInitXmtpClient = () => {
       // signature prompt
       resolveEnable: async () => {
         setSigning(true);
-        enableResolve();
+        // enableResolve();
+        return enablePromise;
       },
     };
     // if the signer changes during the onboarding process, reset the promise
@@ -119,11 +120,12 @@ const useInitXmtpClient = () => {
         }
       }
       // skip this if we already have a client and ensure we have a signer
-      console.log("qf there's a client", client);
+      console.log("qg skip if there's a client", client);
       if (!client && signer) {
         onboardingRef.current = true;
         const address = await signer.getAddress();
         let keys = loadKeys(address);
+        console.log("qg load keys", keys);
         // check if we already have the keys
         if (keys) {
           // resolve client promises
@@ -147,6 +149,7 @@ const useInitXmtpClient = () => {
           }
 
           // get client keys
+          console.log("qg getting keys", address);
           keys = await Client.getKeys(signer, {
             ...clientOptions,
             // we don't need to publish the contact here since it
@@ -165,7 +168,7 @@ const useInitXmtpClient = () => {
           storeKeys(address, keys);
         }
         // initialize client
-        console.log("qf initializing client", keys, clientOptions, signer.address);
+        console.log("qg initializing client", keys, clientOptions, signer.address);
         await initialize({ keys, options: clientOptions, signer });
         onboardingRef.current = false;
       }
