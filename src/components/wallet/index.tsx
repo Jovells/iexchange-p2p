@@ -3,8 +3,7 @@ import Image from 'next/image';
 import { useDisconnect } from "wagmi";
 import { shortenAddress } from '@/lib/utils';
 import { useModal } from '@/common/contexts/ModalContext';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import '@rainbow-me/rainbowkit/styles.css';
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useUser } from '@/common/contexts/UserContext';
 import { useRouter } from 'next/navigation';
 import { HOME_PAGE } from '@/common/page-links';
@@ -40,7 +39,7 @@ const WalletConnect = () => {
 
     return (
       <Fragment>
-        {session.status === "authenticated" ? (
+        {walletAddress ? (
           <div className="justify-between items-center space-x-2 text-black dark:text-white py-2 hidden">
             <span>{shortenAddress(walletAddress)}</span>
             <div onClick={() => handleDisconnect()}>

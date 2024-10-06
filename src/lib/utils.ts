@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const shortenAddress = (address: string | any, chars = 4): string => {
+export const shortenAddress = (address: string, chars = 4): string => {
   return `${address.slice(0, chars + 2)}...${address.slice(-chars)}`;
 };
 

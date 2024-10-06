@@ -8,6 +8,8 @@ import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
 import { SiweMessage } from 'siwe';
 import { API_ENDPOINT } from '@/common/api/constants';
 import { useAccount, useDisconnect } from "wagmi";
+import "@rainbow-me/rainbowkit/styles.css";
+
 
 type Session = { status: "authenticated" | "unauthenticated" };
 

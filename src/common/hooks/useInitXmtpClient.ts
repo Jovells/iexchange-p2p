@@ -7,7 +7,7 @@ import { useClient, useCanMessage } from "@xmtp/react-sdk";
 import { Signer } from "ethers";
 import { useUser } from "../contexts/UserContext";
 
-type ClientStatus = "new" | "created" | "enabled" | "preInit";
+type ClientStatus = "new" | "created" | "enabled";
 
 type ResolveReject<T = void> = (value: T | PromiseLike<T>) => void;
 
@@ -41,7 +41,8 @@ const useInitXmtpClient = () => {
   const onboardingRef = useRef(false);
   const signerRef = useRef<Signer | null>();
   // XMTP address status
-  const [status, setStatus] = useState<ClientStatus | undefined>("preInit");
+  const [status, setStatus] = useState<ClientStatus | undefined>();
+  const [preInit, setPreInit] = useState(true);
   // is there a pending signature?
   const [signing, setSigning] = useState(false);
   const signer = useSigner();
@@ -74,39 +75,52 @@ const useInitXmtpClient = () => {
 
   // create promise, callback, and resolver for controlling the display of the
   // enable account signature.
-  const { enableResolve, preEnableIdentityCallback, resolveEnable } = useMemo(() => {
-    const { promise: enablePromise, resolve: enableResolve } = makePromise();
-    return {
-      enableResolve,
-      // this is called right after signing the create identity signature
-      preEnableIdentityCallback: () => {
-        setSigning(false);
-        setStatus("created");
-        return enablePromise;
-      },
-      // executing this function will result in displaying the enable account
-      // signature prompt
-      resolveEnable: async () => {
-        setSigning(true);
-        // enableResolve();
-        return enablePromise;
-      },
-    };
-    // if the signer changes during the onboarding process, reset the promise
-  }, [signer]);
+  const { enableResolve, preEnableIdentityCallback, resolveEnable, postEnableIdentity, postEnableIdentityPromise } =
+    useMemo(() => {
+      const { promise: postEnableIdentityPromise, resolve: postEnableIdentity } = makePromise();
+      const { promise: enablePromise, resolve: enableResolve } = makePromise();
+      return {
+        postEnableIdentity,
+        postEnableIdentityPromise,
+        enableResolve,
+        // this is called right after signing the create identity signature
+        preEnableIdentityCallback: () => {
+          setSigning(false);
+          setStatus("created");
+          return enablePromise;
+        },
+        // executing this function will result in displaying the enable account
+        // signature prompt
+        resolveEnable: async () => {
+          enableResolve();
+          await postEnableIdentityPromise;
+          setSigning(true);
+        },
+      };
+      // if the signer changes during the onboarding process, reset the promise
+    }, [signer]);
 
   const { client, isLoading, disconnect, initialize } = useClient();
   const { canMessageStatic: canMessageUser } = useCanMessage();
 
   useEffect(() => {
     console.log("qf once useeffect", client);
-    if (!client && status !== "preInit") {
+    if (!client) {
       setStatus(undefined);
     }
   }, []);
 
   // the code in this effect should only run once
   useEffect(() => {
+    console.log(
+      "qg promises",
+      "precreate",
+      preCreateIdentityCallback(),
+      "postenable",
+      postEnableIdentityPromise,
+      "preenable",
+      preEnableIdentityCallback(),
+    );
     const updateStatus = async () => {
       // onboarding is in progress
       if (onboardingRef.current) {
@@ -137,7 +151,9 @@ const useInitXmtpClient = () => {
           // demo mode, wallet won't require any signatures
           // no keys found, but maybe the address has already been created
           // let's check
+
           const canMessage = await canMessageUser(address, clientOptions);
+          console.log("qg can message", canMessage);
           if (canMessage) {
             // resolve client promise
             createResolve();
@@ -149,7 +165,8 @@ const useInitXmtpClient = () => {
           }
 
           // get client keys
-          console.log("qg getting keys", address);
+          console.log("qg getting keys", address, status);
+          setPreInit(false);
           keys = await Client.getKeys(signer, {
             ...clientOptions,
             // we don't need to publish the contact here since it
@@ -161,6 +178,7 @@ const useInitXmtpClient = () => {
             preCreateIdentityCallback,
             preEnableIdentityCallback,
           });
+          console.log("qg keys", keys);
           // all signatures have been accepted
           setStatus("enabled");
           setSigning(false);
@@ -171,6 +189,7 @@ const useInitXmtpClient = () => {
         console.log("qg initializing client", keys, clientOptions, signer.address);
         await initialize({ keys, options: clientOptions, signer });
         onboardingRef.current = false;
+        postEnableIdentity();
       }
     };
     updateStatus();
@@ -184,6 +203,7 @@ const useInitXmtpClient = () => {
   return {
     client,
     isLoading: isLoading || signing,
+    preInit,
     resolveCreate,
     resolveEnable,
     disconnect,

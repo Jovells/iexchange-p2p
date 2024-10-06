@@ -47,7 +47,7 @@ const XMTPConnectButton: React.FC<XMTPConnectButtonProps> = ({ label, onFinish }
 };
 
 const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; name?: string } }) => {
-  const { client, status } = useInitXmtpClient();
+  const { client, status, preInit } = useInitXmtpClient();
   const { getCachedByPeerAddress } = useConversation();
   const { startConversation } = useStartConversation();
   const { canMessage } = useCanMessage();
@@ -69,7 +69,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
 
   useEffect(() => {
     console.log("qf useClient", client?.address, client, status);
-    if (!client && status === undefined) {
+    if (!client && !preInit) {
       handleInit();
     }
     if (client) {
@@ -89,7 +89,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       };
       checkIfOtherUserIsOnNetwork();
     }
-  }, [client?.address, status]);
+  }, [client?.address, preInit]);
 
   const sendMessage = async () => {
     const otherPartyAddress = otherParty.id;
