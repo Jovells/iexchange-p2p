@@ -4,12 +4,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Moon, Sun } from "lucide-react"
 
 const ThemeToggle = () => {
-  const { theme, setTheme } = useTheme();
-
-  const isDark = theme === "dark";
+  const { toggleTheme, isDarkMode } = useTheme();
 
   const handleThemeToggle = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    toggleTheme();
   };
 
   return (
@@ -22,7 +20,7 @@ const ThemeToggle = () => {
         <motion.div
           key="light-mode-active"
           initial="inactive"
-          animate={!isDark ? "active" : "inactive"}
+          animate={!isDarkMode ? "active" : "inactive"}
           exit="inactive"
           variants={{
             active: {
@@ -41,14 +39,14 @@ const ThemeToggle = () => {
           <Sun
             width={18}
             height={18}
-            fill={!isDark ? "white" : "#3D4651"}
-            stroke={!isDark ? "white" : "#3D4651"}
+            fill={!isDarkMode ? "white" : "#3D4651"}
+            stroke={!isDarkMode ? "white" : "#3D4651"}
           />
         </motion.div>
         <motion.div
           key="dark-mode-active"
           initial="inactive"
-          animate={isDark ? "active" : "inactive"}
+          animate={isDarkMode ? "active" : "inactive"}
           exit="inactive"
           variants={{
             active: {
@@ -67,8 +65,8 @@ const ThemeToggle = () => {
           <Moon
             width={18}
             height={18}
-            fill={isDark ? "white" : "#3D4651"}
-            stroke={isDark ? "white" : "#3D4651"}
+            fill={isDarkMode ? "white" : "#3D4651"}
+            stroke={isDarkMode ? "white" : "#3D4651"}
           />
         </motion.div>
       </AnimatePresence>

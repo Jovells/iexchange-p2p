@@ -6,9 +6,9 @@ interface Tab {
 }
 
 interface TabComponentProps {
-    tabs: Tab[];
-    activeTab: string | undefined;
-    onTabChange: (value: string | undefined) => void;
+  tabs: Tab[];
+  activeTab: string | undefined;
+  onTabChange: (value: string) => void;
 }
 
 const CustomTab: React.FC<TabComponentProps> = ({ tabs, activeTab, onTabChange }) => {

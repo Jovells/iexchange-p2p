@@ -1,5 +1,6 @@
-import { Timer } from './timer';
-import React from "react";
+"use client";
+import { Timer } from "./timer";
+import React, { lazy, Suspense } from "react";
 import { offerTypes } from "@/common/api/constants";
 import fetchAccountDetails from "@/common/api/fetchAccountDetails";
 import fetchOrder from "@/common/api/fetchOrder";
@@ -24,8 +25,10 @@ import { useUser } from "@/common/contexts/UserContext";
 import SellerPaymentConfirmedModal from "@/components/modals/SellerPaymentConfirmedModal";
 import OrderCancellationModal from "@/components/modals/OrderCancelledModal";
 import { ToggleLeft, ToggleRight } from "lucide-react";
-import ChatWithMerchant from "@/components/merchant/ChatWithMerchant";
 
+const ChatWithMerchant = lazy(() => import("@/components/merchant/ChatWithMerchant"));
+
+// Later in your component, when you use ChatWithMerchant:
 
 const POLLING_INTERVAL = 5000;
 const toastId = "order-status";
@@ -356,39 +359,37 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     );
   }
 
- 
-
   const isCancellable =
     (order.status === OrderState.Pending && isMerchant) || (order.status === OrderState.Accepted && isTrader);
 
   const isBuyerAndNotYetAccepted = order?.status === OrderState.Pending && isBuyer && isTrader;
   return (
-    <>
-<div className="w-full py-6 bg-[#CCE0F6] dark:bg-gray-800">
-  <div className="w-full lg:container lg:mx-auto px-0 lg:px-0 flex flex-col lg:flex-row lg:items-center lg:justify-between">
-    <div className="space-y-3">
-      <span className="font-bold text-gray-600 dark:text-gray-300">Order Created</span>
-      <div className="flex flex-row space-x-2">
-        {order.status === OrderState.Pending && (
-          <>
-            <span className="text-gray-500 dark:text-gray-400">Time Limit Exhaustion:</span>
-            <Timer timestamp={order.blockTimestamp} seconds={30 * 60} />
-          </>
-        )}
+    <Suspense fallback={<Loader />}>
+      <div className="w-full py-6 bg-[#CCE0F6] dark:bg-gray-800">
+        <div className="w-full lg:container lg:mx-auto px-0 lg:px-0 flex flex-col lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-3">
+            <span className="font-bold text-gray-600 dark:text-gray-300">Order Created</span>
+            <div className="flex flex-row space-x-2">
+              {order.status === OrderState.Pending && (
+                <>
+                  <span className="text-gray-500 dark:text-gray-400">Time Limit Exhaustion:</span>
+                  <Timer timestamp={order.blockTimestamp} seconds={30 * 60} />
+                </>
+              )}
+            </div>
+          </div>
+          <div className="space-y-0 lg:space-y-2">
+            <div className="flex flex-row items-center space-x-2">
+              <span className="text-gray-500 dark:text-gray-400">Order number:</span>
+              <span className="text-black dark:text-white text-sm">{orderId}</span>
+            </div>
+            <div className="flex flex-row items-center space-x-2">
+              <span className="text-gray-500 dark:text-gray-400">Date created:</span>
+              <span className="text-black dark:text-white text-sm">{formatBlockTimesamp(order?.blockTimestamp)}</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div className="space-y-0 lg:space-y-2">
-      <div className="flex flex-row items-center space-x-2">
-        <span className="text-gray-500 dark:text-gray-400">Order number:</span>
-        <span className="text-black dark:text-white text-sm">{orderId}</span>
-      </div>
-      <div className="flex flex-row items-center space-x-2">
-        <span className="text-gray-500 dark:text-gray-400">Date created:</span>
-        <span className="text-black dark:text-white text-sm">{formatBlockTimesamp(order?.blockTimestamp)}</span>
-      </div>
-    </div>
-  </div>
-</div>
 
       <div className="container mx-auto px-0 py-4">
         <div className="w-full h-[500px] grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
@@ -396,7 +397,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl space-y-6">
             <div className="flex justify-between">
               <h2 className="text-lg text-gray-500 dark:text-gray-400">Order Info</h2>
-              <div className={`px-4 py-1 rounded-xl ${isBuyer ? "bg-green-200 dark:bg-green-700" : "bg-red-200 dark:bg-red-700"}`}>
+              <div
+                className={`px-4 py-1 rounded-xl ${
+                  isBuyer ? "bg-green-200 dark:bg-green-700" : "bg-red-200 dark:bg-red-700"
+                }`}
+              >
                 {isBuyer ? "Buy" : "Sell"}
               </div>
             </div>
@@ -404,7 +409,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
             <div className="flex flex-col justify-start items-start lg:flex-row lg:justify-between gap-3 lg:gap-10 mt-6">
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
                 <div className="text-sm text-gray-600 dark:text-gray-400 font-light">Amount</div>
-                <div className={`text-lg font-medium ${isBuyer ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>
+                <div
+                  className={`text-lg font-medium ${
+                    isBuyer ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"
+                  }`}
+                >
                   {isBuyer ? fiatAmount : cryptoAmount}
                 </div>
               </div>
@@ -416,7 +425,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
               <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
                 <div className="text-sm text-gray-600 dark:text-gray-400 font-light">Receive Quantity</div>
-                <div className="text-gray-700 dark:text-gray-300 text-lg font-light">{isBuyer ? cryptoAmount : fiatAmount}</div>
+                <div className="text-gray-700 dark:text-gray-300 text-lg font-light">
+                  {isBuyer ? cryptoAmount : fiatAmount}
+                </div>
               </div>
             </div>
 
@@ -431,12 +442,16 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
                   <div>
                     <div className="font-light text-gray-500 dark:text-gray-400 text-sm">Account Name</div>
-                    <div className="text-gray-600 dark:text-gray-300">{isBuyerAndNotYetAccepted ? "********" : accountDetails?.name}</div>
+                    <div className="text-gray-600 dark:text-gray-300">
+                      {isBuyerAndNotYetAccepted ? "********" : accountDetails?.name}
+                    </div>
                   </div>
 
                   <div>
                     <div className="font-light text-gray-500 dark:text-gray-400 text-sm">Account Number</div>
-                    <div className="text-gray-600 dark:text-gray-300">{isBuyerAndNotYetAccepted ? "********" : accountDetails?.number}</div>
+                    <div className="text-gray-600 dark:text-gray-300">
+                      {isBuyerAndNotYetAccepted ? "********" : accountDetails?.number}
+                    </div>
                   </div>
                 </div>
 
@@ -478,8 +493,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               <Button
                 loading={isPending}
                 text={buttonText}
-                className={`${disabled ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400" : "bg-[#000000] text-white"
-                  } rounded-xl px-4 py-2`}
+                className={`${
+                  disabled
+                    ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
+                    : "bg-[#000000] text-white"
+                } rounded-xl px-4 py-2`}
                 onClick={onClick}
                 disabled={disabled}
               />
@@ -497,10 +515,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               )}
             </div>
           </div>
-
         </div>
       </div>
-    </>
+    </Suspense>
   );
 }
 

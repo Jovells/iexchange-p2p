@@ -4,8 +4,7 @@ import CustomTab from '@/common/tab'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import OrdersTable from './table'
-import { OrderState } from '@/common/api/types'
-import DashboardLayout from '../../layout'
+import { OrderState } from "@/common/api/types";
 
 const P2POrderHistory = () => {
   const route = useRouter()
