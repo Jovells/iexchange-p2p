@@ -1,6 +1,6 @@
 'use client';
 
-import AddPaymentMethod from "@/app/dashboard/account/payment/AddPaymentMethod";
+import AddPaymentMethod from "@/app/(trade)/(needsAuth)/dashboard/account/payment/AddPaymentMethod";
 import { PaymentMethod } from "@/common/api/types";
 import { useModal } from "@/common/contexts/ModalContext";
 import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";

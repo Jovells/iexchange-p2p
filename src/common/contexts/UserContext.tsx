@@ -34,7 +34,6 @@ export const useUser = () => {
 
 export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const auth = getAuth(app);
-  console.log("auth", { ...auth });
   const [session, setSession] = useState<Session>({ status: auth.currentUser ? "authenticated" : "unauthenticated" });
   const { address: wagmiAddress } = useAccount();
   const { isSuccess, disconnect } = useDisconnect();

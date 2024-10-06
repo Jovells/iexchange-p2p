@@ -13,7 +13,7 @@ import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethod
 
 
 const Faqs = React.lazy(() => import('@/components/sections/Faqs'));
-const P2PAds = React.lazy(() => import('./order/P2PAds'));
+const P2PAds = React.lazy(() => import("./P2PAds"));
 const InputAmount = React.lazy(() => import('@/components/ui/InputWithSelect'));
 const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect'));
 import Loader from "@/components/loader/Loader";

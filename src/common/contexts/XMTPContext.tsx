@@ -11,7 +11,6 @@ const contentTypeConfigs = [attachmentContentTypeConfig, reactionContentTypeConf
 
 import { Children, ReactNode, useEffect } from "react";
 import { useUser } from "./UserContext";
-import useInitXmtpClient from "../hooks/useInitXmtpClient";
 import { wipeKeys } from "../helpers";
 
 const ChatProvider = ({ children }: { children: ReactNode }) => (

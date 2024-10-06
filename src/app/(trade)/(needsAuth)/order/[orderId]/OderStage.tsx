@@ -5,7 +5,6 @@ import fetchAccountDetails from "@/common/api/fetchAccountDetails";
 import fetchOrder from "@/common/api/fetchOrder";
 import { useContracts } from "@/common/contexts/ContractContext";
 import Loader from "@/components/loader/Loader";
-import ChatWithMerchant from "@/components/merchant/ChatWithMerchant";
 import Button from "@/components/ui/Button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useReadContract } from "wagmi";
@@ -25,6 +24,8 @@ import { useUser } from "@/common/contexts/UserContext";
 import SellerPaymentConfirmedModal from "@/components/modals/SellerPaymentConfirmedModal";
 import OrderCancellationModal from "@/components/modals/OrderCancelledModal";
 import { ToggleLeft, ToggleRight } from "lucide-react";
+import ChatWithMerchant from "@/components/merchant/ChatWithMerchant";
+
 
 const POLLING_INTERVAL = 5000;
 const toastId = "order-status";

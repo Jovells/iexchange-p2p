@@ -6,7 +6,7 @@ import {  useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import Button from "@/components/ui/Button";
 import { useContracts } from '@/common/contexts/ContractContext';
-import OrderStage from '@/app/(trade)/order/[orderId]/OderStage';
+import OrderStage from "@/app/(trade)/(needsAuth)/order/[orderId]/OderStage";
 import { fetchOrders } from "@/common/api/fetchOrders";
 import { OfferType, Order, OrderOptions, OrderState } from "@/common/api/types";
 import { formatEther } from "ethers";

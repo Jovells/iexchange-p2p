@@ -1,14 +1,14 @@
-'use client'
-import ExpandableTable from '@/components/data-grid'
-import { useSearchParams } from 'next/navigation';
-import React, { FC, Suspense, useRef, useState } from 'react'
-import CreateOrder from './create-order';
+"use client";
+import ExpandableTable from "@/components/data-grid";
+import { useSearchParams } from "next/navigation";
+import React, { FC, Suspense, useRef, useState } from "react";
+import CreateOrder from "@/app/(trade)/create-order";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
-import { useContracts } from '@/common/contexts/ContractContext';
-import { Currency, Offer, PaymentMethod, PreparedCurrency, Token } from '@/common/api/types';
-import { formatCurrency, shortenAddress } from '@/lib/utils';
-import { offerTypes } from '@/common/api/constants';
+import { useContracts } from "@/common/contexts/ContractContext";
+import { Currency, Offer, PaymentMethod, PreparedCurrency, Token } from "@/common/api/types";
+import { formatCurrency, shortenAddress } from "@/lib/utils";
+import { offerTypes } from "@/common/api/constants";
 
 const columns: any = [
   {
@@ -58,7 +58,15 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
 
   console.log("paymentMethod", paymentMethod);
 
-  const options = { page: currentPage, isActive, offerType, tokenId: token?.id, currency: currency?.id, amount, paymentMethod: paymentMethod?.id };
+  const options = {
+    page: currentPage,
+    isActive,
+    offerType,
+    tokenId: token?.id,
+    currency: currency?.id,
+    amount,
+    paymentMethod: paymentMethod?.id,
+  };
 
   const { isPending, error, data } = useQuery({
     queryKey: ["ads", indexerUrl, options],
@@ -69,11 +77,14 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    console.log('Page changed to:', page);
+    console.log("Page changed to:", page);
   };
 
   const actions = [
-    { label: (row: Offer) => (row.offerType === offerTypes.buy ? "Buy " : "Sell ") + row.token.symbol, onClick: (row: any) => console.log(row) },
+    {
+      label: (row: Offer) => (row.offerType === offerTypes.buy ? "Buy " : "Sell ") + row.token.symbol,
+      onClick: (row: any) => console.log(row),
+    },
   ];
 
   if (error) {
@@ -93,19 +104,11 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
           pageSize={10}
           onPageChange={handlePageChange}
         >
-          {(row, toggleExpand) => (
-            <CreateOrder
-              data={row}
-              toggleExpand={toggleExpand}
-              orderType={trade}
-            />
-          )}
+          {(row, toggleExpand) => <CreateOrder data={row} toggleExpand={toggleExpand} orderType={trade} />}
         </ExpandableTable>
-
       </div>
     </Suspense>
-
   );
 };
 
-export default P2PAds
+export default P2PAds;

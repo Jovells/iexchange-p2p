@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { FC, Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import InputWithSelect from "@/components/ui/InputWithSelect";
@@ -17,7 +17,7 @@ import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast"
 import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
 import storeAccountDetails from "@/common/api/storeAccountDetails";
 import { Link } from "lucide-react";
-import AddPaymentMethod from "@/app/dashboard/account/payment/AddPaymentMethod";
+import AddPaymentMethod from "@/app/(trade)/(needsAuth)/dashboard/account/payment/AddPaymentMethod";
 import { useModal } from "@/common/contexts/ModalContext";
 import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
 import { useUser } from "@/common/contexts/UserContext";
