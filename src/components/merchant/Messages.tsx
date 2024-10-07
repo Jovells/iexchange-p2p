@@ -1,7 +1,7 @@
 "use client";
 import { useUser } from "@/common/contexts/UserContext";
 import { CachedConversation, DecodedMessage, useMessage, useMessages, useStreamMessages } from "@xmtp/react-sdk";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ContentTypeId } from "@xmtp/content-type-primitives";
 import { ContentTypeText } from "@xmtp/content-type-text";
 
@@ -14,6 +14,18 @@ const Messages = ({ conversation }: { conversation: CachedConversation }) => {
   if (streamError || error) {
     console.log("streamerror", streamError, "", error);
   }
+  useEffect(() => {
+    function scrollLastMessageIntoView() {
+      const lastMessage = document.querySelector("#lastMessage");
+      console.log("qs lastMessage", lastMessage);
+      if (lastMessage) {
+        lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+    }
+    console.log("qf messages", messages.length);
+    scrollLastMessageIntoView();
+  }, [messages]);
+
   return (
     <div className="flex-1 p-3 overflow-y-auto">
       {messages.map((message, i) => {
