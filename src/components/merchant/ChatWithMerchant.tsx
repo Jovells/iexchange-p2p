@@ -24,7 +24,7 @@ import ModalAlert from "../modals";
 const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; name?: string } }) => {
   const { client, status, preInit, resolveEnable } = useInitXmtpClient();
   const { getCachedByPeerAddress } = useConversation();
-  const { startConversation } = useStartConversation();
+  const { startConversation, error: startConversationError } = useStartConversation();
   const { canMessage } = useCanMessage();
   const { sendMessage: sendXMTPMessage, error: sendMessageError } = useSendMessage();
   const { showModal, hideModal } = useModal();
@@ -32,6 +32,8 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
   const [otherUserIsOnNetwork, setOtherUserIsOnNetwork] = useState(false);
   const [conversation, setConversation] = useState<CachedConversation | undefined>();
   const signer = useEthersSigner();
+
+  const mixedCaseOtherPartyAddress = checksumAddress(otherParty.id);
 
   useEffect(() => {
     console.log("qf useClient", client?.address, client, status);
@@ -50,15 +52,12 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
     }
     if (client) {
       const checkIfOtherUserIsOnNetwork = async () => {
-        const otherPartyAddress = otherParty.id;
-        const _canMessage = await canMessage(otherPartyAddress);
+        const _canMessage = await canMessage(mixedCaseOtherPartyAddress);
         if (_canMessage) {
-          const mixedCaseOtherPartyAddress = checksumAddress(otherPartyAddress);
           console.log("qs mixedCase", mixedCaseOtherPartyAddress);
-          const _conversation = await getCachedByPeerAddress(checksumAddress(mixedCaseOtherPartyAddress));
+          const _conversation = await getCachedByPeerAddress(mixedCaseOtherPartyAddress);
 
           setConversation(_conversation);
-          scrollLastMessageIntoView();
           console.log("qs convos", _conversation);
           setOtherUserIsOnNetwork(_canMessage);
         }
@@ -76,8 +75,11 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
     if (messageInputValue.trim()) {
       if (otherUserIsOnNetwork) {
         if (!conversation) {
-          await startConversation(otherPartyAddress, messageInputValue, undefined);
-          console.log("qs sent start conversation", conversation);
+          const convo = await startConversation(mixedCaseOtherPartyAddress, messageInputValue);
+          console.log("qs sent start conversation", convo);
+          if (convo) {
+            setConversation(convo.cachedConversation);
+          }
         } else {
           const sentMessage = await sendXMTPMessage(conversation, messageInputValue);
           console.log("qs sent message", sentMessage);
@@ -85,7 +87,6 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       }
 
       // Scroll to the bottom of the messages container
-      scrollLastMessageIntoView();
 
       setInputValue("");
     }
@@ -95,7 +96,14 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
     setInputValue(e.target.value);
   };
 
-  console.log("qs convos, ", conversation && "convo dey", "streamerr", sendMessageError && "Error sending message");
+  console.log(
+    "qs convos:, ",
+    conversation ? "convo dey" : "null convo",
+    "sendMessageError:",
+    sendMessageError && "Error sending message",
+    "startConversationError",
+    startConversationError,
+  );
 
   return (
     //TODO @mbawon MAKE CONVOS SCROLL WELL ON ALL SCREEN SIZES
@@ -158,11 +166,5 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
 
 export default ChatWithMerchant;
 
-function scrollLastMessageIntoView() {
-  const lastMessage = document.querySelector("#lastMessage");
-  console.log("qs lastMessage", lastMessage);
-  if (lastMessage) {
-    lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
-  }
-}
+
 

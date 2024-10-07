@@ -36,6 +36,8 @@ const clientOptions = {
   appVersion: getAppVersion(),
 };
 
+console.log("qf client options", clientOptions);
+
 const useInitXmtpClient = () => {
   // track if onboarding is in progress
   const onboardingRef = useRef(false);
