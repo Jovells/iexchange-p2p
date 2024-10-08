@@ -347,7 +347,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   console.log("OrderData", order);
   console.log("qyaccountDetails", accountDetails);
 
-  if (!isConnected && !(isTrader || isMerchant)) {
+  if (isConnected && !(isTrader || isMerchant)) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <h2 className="text-2xl font-semibold text-gray-700">Unauthorized Access</h2>

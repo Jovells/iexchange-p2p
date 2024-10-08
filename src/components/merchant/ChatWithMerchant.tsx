@@ -22,7 +22,7 @@ import useInitXmtpClient from "@/common/hooks/useInitXmtpClient";
 import ModalAlert from "../modals";
 
 const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; name?: string } }) => {
-  const { client, status, preInit, resolveEnable } = useInitXmtpClient();
+  const { client, status, preInit, resolveEnable, resolveCreate } = useInitXmtpClient();
   const { getCachedByPeerAddress } = useConversation();
   const { startConversation, error: startConversationError } = useStartConversation();
   const { canMessage } = useCanMessage();
@@ -46,6 +46,19 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
             description="To enable secure messaging through XMTP, you need to sign a message. This is separate from your initial login and ensures end-to-end encryption for your conversations."
             buttonText="Connect to XMTP"
             buttonClick={resolveEnable}
+          />
+        </>,
+      );
+    }
+    if (status === "new") {
+      showModal(
+        <>
+          <ModalAlert
+            modalType="info"
+            title="Create Your XMTP Account"
+            description="To enable secure messaging, we need to create your XMTP account. This requires signing a message, which is separate from your initial login. This process ensures end-to-end encryption for all your conversations."
+            buttonText="Create XMTP Account"
+            buttonClick={resolveCreate}
           />
         </>,
       );

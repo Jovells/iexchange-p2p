@@ -60,30 +60,36 @@ const useInitXmtpClient = () => {
 
   // create promise, callback, and resolver for controlling the display of the
   // create account signature.
-  const { createResolve, preCreateIdentityCallback, resolveCreate } = useMemo(() => {
-    const { promise: createPromise, resolve: createResolve } = makePromise();
-    return {
-      createResolve,
-      preCreateIdentityCallback: () => createPromise,
-      // executing this function will result in displaying the create account
-      // signature prompt
-      resolveCreate: () => {
-        createResolve();
-        setSigning(true);
-      },
-    };
-    // if the signer changes during the onboarding process, reset the promise
-  }, [signer]);
+  const { createResolve, preCreateIdentityCallback, resolveCreate, postCreatePromise, postCreateResolve } =
+    useMemo(() => {
+      const { promise: postCreatePromise, resolve: postCreateResolve } = makePromise();
+
+      const { promise: createPromise, resolve: createResolve } = makePromise();
+      return {
+        createResolve,
+        postCreatePromise,
+        postCreateResolve,
+        preCreateIdentityCallback: () => createPromise,
+        // executing this function will result in displaying the create account
+        // signature prompt
+        resolveCreate: async () => {
+          createResolve();
+          await postCreatePromise;
+          setSigning(true);
+        },
+      };
+      // if the signer changes during the onboarding process, reset the promise
+    }, [signer]);
 
   // create promise, callback, and resolver for controlling the display of the
   // enable account signature.
-  const { enableResolve, preEnableIdentityCallback, resolveEnable, postEnableIdentity, postEnableIdentityPromise } =
+  const { enableResolve, preEnableIdentityCallback, resolveEnable, postEnableResolve, postEnablePromise } =
     useMemo(() => {
-      const { promise: postEnableIdentityPromise, resolve: postEnableIdentity } = makePromise();
+      const { promise: postEnablePromise, resolve: postEnableResolve } = makePromise();
       const { promise: enablePromise, resolve: enableResolve } = makePromise();
       return {
-        postEnableIdentity,
-        postEnableIdentityPromise,
+        postEnableResolve,
+        postEnablePromise,
         enableResolve,
         // this is called right after signing the create identity signature
         preEnableIdentityCallback: () => {
@@ -95,7 +101,7 @@ const useInitXmtpClient = () => {
         // signature prompt
         resolveEnable: async () => {
           enableResolve();
-          await postEnableIdentityPromise;
+          await postEnablePromise;
           setSigning(true);
         },
       };
@@ -119,9 +125,11 @@ const useInitXmtpClient = () => {
       "precreate",
       preCreateIdentityCallback(),
       "postenable",
-      postEnableIdentityPromise,
+      postEnablePromise,
       "preenable",
       preEnableIdentityCallback(),
+      "postcreate",
+      postCreatePromise,
     );
     const updateStatus = async () => {
       // onboarding is in progress
@@ -167,7 +175,8 @@ const useInitXmtpClient = () => {
           }
 
           // get client keys
-          console.log("qg getting keys", address, status);
+          console.log("qg getting keys", { address, status });
+
           setPreInit(false);
           keys = await Client.getKeys(signer, {
             ...clientOptions,
@@ -183,15 +192,17 @@ const useInitXmtpClient = () => {
           console.log("qg keys", keys);
           // all signatures have been accepted
           setStatus("enabled");
+          postCreateResolve();
           setSigning(false);
           // persist client keys
           storeKeys(address, keys);
         }
+
         // initialize client
         console.log("qg initializing client", keys, clientOptions, signer.address);
         await initialize({ keys, options: clientOptions, signer });
         onboardingRef.current = false;
-        postEnableIdentity();
+        postEnableResolve();
       }
     };
     updateStatus();
