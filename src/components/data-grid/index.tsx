@@ -9,7 +9,7 @@ import React, {
 import Loader from '../loader/Loader';
 import { X } from 'lucide-react';
 import { Offer } from '@/common/api/types';
-import { offerTypes } from '@/common/api/constants';
+import { offerTypes } from "@/common/constants";
 
 type Column = {
   key: string;

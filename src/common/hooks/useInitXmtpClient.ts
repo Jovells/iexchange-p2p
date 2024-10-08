@@ -6,6 +6,8 @@ import { getAppVersion, getEnv, loadKeys, storeKeys } from "@/common/helpers";
 import { useClient, useCanMessage } from "@xmtp/react-sdk";
 import { Signer } from "ethers";
 import { useUser } from "../contexts/UserContext";
+import { reset } from "viem/actions";
+import { ixToast } from "@/lib/utils";
 
 type ClientStatus = "new" | "created" | "enabled";
 
@@ -50,6 +52,7 @@ const useInitXmtpClient = () => {
   const signer = useSigner();
   const { isConnected } = useUser();
   const { connect: connectWallet } = useConnect();
+  const [reset, setReset] = useState(false);
 
   /**
    * In order to have more granular control of the onboarding process, we must
@@ -60,53 +63,56 @@ const useInitXmtpClient = () => {
 
   // create promise, callback, and resolver for controlling the display of the
   // create account signature.
-  const { createResolve, preCreateIdentityCallback, resolveCreate, postCreatePromise, postCreateResolve } =
-    useMemo(() => {
-      const { promise: postCreatePromise, resolve: postCreateResolve } = makePromise();
-
-      const { promise: createPromise, resolve: createResolve } = makePromise();
-      return {
-        createResolve,
-        postCreatePromise,
-        postCreateResolve,
-        preCreateIdentityCallback: () => createPromise,
-        // executing this function will result in displaying the create account
-        // signature prompt
-        resolveCreate: async () => {
-          createResolve();
-          await postCreatePromise;
-          setSigning(true);
-        },
-      };
-      // if the signer changes during the onboarding process, reset the promise
-    }, [signer]);
+  const { createResolve, preCreateIdentityCallback, resolveCreate } = useMemo(() => {
+    const { promise: createPromise, resolve: createResolve } = makePromise();
+    return {
+      createResolve,
+      preCreateIdentityCallback: () => createPromise,
+      // executing this function will result in displaying the create account
+      // signature prompt
+      resolveCreate: async () => {
+        setSigning(true);
+        createResolve();
+        enableResolve();
+        return postEnablePromise;
+      },
+    };
+    // if the signer changes during the onboarding process, reset the promise
+  }, [signer, reset]);
 
   // create promise, callback, and resolver for controlling the display of the
   // enable account signature.
-  const { enableResolve, preEnableIdentityCallback, resolveEnable, postEnableResolve, postEnablePromise } =
-    useMemo(() => {
-      const { promise: postEnablePromise, resolve: postEnableResolve } = makePromise();
-      const { promise: enablePromise, resolve: enableResolve } = makePromise();
-      return {
-        postEnableResolve,
-        postEnablePromise,
-        enableResolve,
-        // this is called right after signing the create identity signature
-        preEnableIdentityCallback: () => {
-          setSigning(false);
-          setStatus("created");
-          return enablePromise;
-        },
-        // executing this function will result in displaying the enable account
-        // signature prompt
-        resolveEnable: async () => {
-          enableResolve();
-          await postEnablePromise;
-          setSigning(true);
-        },
-      };
-      // if the signer changes during the onboarding process, reset the promise
-    }, [signer]);
+  const {
+    enableResolve,
+    preEnableIdentityCallback,
+    postEnableReject,
+    resolveEnable,
+    postEnableResolve,
+    postEnablePromise,
+  } = useMemo(() => {
+    const { promise: postEnablePromise, reject: postEnableReject, resolve: postEnableResolve } = makePromise();
+    const { promise: enablePromise, resolve: enableResolve } = makePromise();
+    return {
+      postEnableResolve,
+      postEnablePromise,
+      postEnableReject,
+      enableResolve,
+      // this is called right after signing the create identity signature
+      preEnableIdentityCallback: () => {
+        setSigning(false);
+        setStatus("created");
+        return enablePromise;
+      },
+      // executing this function will result in displaying the enable account
+      // signature prompt
+      resolveEnable: async () => {
+        enableResolve();
+        setSigning(true);
+        await postEnablePromise;
+      },
+    };
+    // if the signer changes during the onboarding process, reset the promise
+  }, [signer, reset]);
 
   const { client, isLoading, disconnect, initialize } = useClient();
   const { canMessageStatic: canMessageUser } = useCanMessage();
@@ -120,6 +126,7 @@ const useInitXmtpClient = () => {
 
   // the code in this effect should only run once
   useEffect(() => {
+    console.log("qg client only once", client, signer?.address);
     console.log(
       "qg promises",
       "precreate",
@@ -128,8 +135,6 @@ const useInitXmtpClient = () => {
       postEnablePromise,
       "preenable",
       preEnableIdentityCallback(),
-      "postcreate",
-      postCreatePromise,
     );
     const updateStatus = async () => {
       // onboarding is in progress
@@ -178,21 +183,28 @@ const useInitXmtpClient = () => {
           console.log("qg getting keys", { address, status });
 
           setPreInit(false);
-          keys = await Client.getKeys(signer, {
-            ...clientOptions,
-            // we don't need to publish the contact here since it
-            // will happen when we create the client later
-            skipContactPublishing: true,
-            // we can skip persistence on the keystore for this short-lived
-            // instance
-            persistConversations: false,
-            preCreateIdentityCallback,
-            preEnableIdentityCallback,
-          });
+
+          try {
+            keys = await Client.getKeys(signer, {
+              ...clientOptions,
+              // we don't need to publish the contact here since it
+              // will happen when we create the client later
+              skipContactPublishing: true,
+              // we can skip persistence on the keystore for this short-lived
+              // instance
+              persistConversations: false,
+              preCreateIdentityCallback,
+              preEnableIdentityCallback,
+            });
+          } catch (error: any) {
+            onboardingRef.current = false;
+            ixToast.error(error.message);
+            postEnableReject(error);
+            return setReset(!reset);
+          }
           console.log("qg keys", keys);
           // all signatures have been accepted
           setStatus("enabled");
-          postCreateResolve();
           setSigning(false);
           // persist client keys
           storeKeys(address, keys);
@@ -206,12 +218,14 @@ const useInitXmtpClient = () => {
       }
     };
     updateStatus();
-  }, [client, signer]);
+  }, [client, signer, reset]);
 
   // it's important that this effect runs last
   useEffect(() => {
     signerRef.current = signer;
   }, [signer]);
+
+  console.log("qg stat", status);
 
   return {
     client,
@@ -221,6 +235,7 @@ const useInitXmtpClient = () => {
     resolveEnable,
     disconnect,
     status,
+    reset,
     setStatus,
   };
 };

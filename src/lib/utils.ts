@@ -1,4 +1,4 @@
-import { offerTypes } from "@/common/api/constants";
+import { offerTypes } from "@/common/constants";
 import { Merchant, OfferType } from "@/common/api/types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -101,7 +101,7 @@ export const getImage = (imageName: string, Element?: JSX.Element) => {
   const { isDarkMode } = useTheme();
 
   const basePath = "/images";
-  const imagePath = `${basePath}/${isDarkMode ? 'dark' : 'light'}/${imageName}`;
+  const imagePath = `${basePath}/${isDarkMode ? "dark" : "light"}/${imageName}`;
 
   return Element || imagePath;
 };

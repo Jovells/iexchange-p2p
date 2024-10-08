@@ -1,7 +1,7 @@
 "use client";
 import { Timer } from "./timer";
 import React, { lazy, Suspense } from "react";
-import { offerTypes } from "@/common/api/constants";
+import { offerTypes } from "@/common/constants";
 import fetchAccountDetails from "@/common/api/fetchAccountDetails";
 import fetchOrder from "@/common/api/fetchOrder";
 import { useContracts } from "@/common/contexts/ContractContext";
@@ -25,6 +25,7 @@ import { useUser } from "@/common/contexts/UserContext";
 import SellerPaymentConfirmedModal from "@/components/modals/SellerPaymentConfirmedModal";
 import OrderCancellationModal from "@/components/modals/OrderCancelledModal";
 import { ToggleLeft, ToggleRight } from "lucide-react";
+import { ORDER, ORDER_STATUS, TOKEN_BALANCE } from "@/common/constants/queryKeys";
 
 const ChatWithMerchant = lazy(() => import("@/components/merchant/ChatWithMerchant"));
 
@@ -53,7 +54,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     error: orderError,
     isLoading: orderLoading,
   } = useQuery({
-    queryKey: ["order", orderId, indexerUrl],
+    queryKey: ORDER({ orderId, indexerUrl }),
     queryFn: () => fetchOrder(indexerUrl, orderId),
     retry: 3,
   });
@@ -240,9 +241,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   function handleOptimisticUpdate(status: OrderState, writeResult: WriteContractWithToastReturnType) {
     const updatedStatus = { ...orderStatus, status };
     if (status === OrderState.Released || status === OrderState.Accepted || status === OrderState.Cancelled) {
-      queryClient.refetchQueries({ queryKey: ["balance", order?.offer.token.id] });
+      queryClient.refetchQueries({ queryKey: TOKEN_BALANCE({ address: order?.offer.token.id! }) });
     }
-    queryClient.setQueryData(["orderStatus", orderId], updatedStatus);
+    queryClient.setQueryData(ORDER_STATUS({ indexerUrl, orderId }), updatedStatus);
     setTransactionHashes([...(transactionHashes || []), { hash: writeResult.txHash, status: OrderState[status] }]);
   }
 
@@ -276,7 +277,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
   //poll order status
   const { data: orderStatus } = useQuery({
-    queryKey: ["orderStatus", orderId],
+    queryKey: ORDER_STATUS({ orderId, indexerUrl }),
     queryFn: () => fetchOrderStatus(indexerUrl, orderId),
     retry: 3,
     enabled: shouldPoll && pollToggle,
@@ -294,25 +295,26 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         showModal(<BuyerReleaseModal txHash={address!} cryptoAmount={cryptoAmount!} fiatAmount={fiatAmount!} />);
       } else if (fetchedStatus === OrderState.Paid) {
         showModal(<SellerPaymentConfirmedModal txHash={address!} fiatAmount={fiatAmount!} />);
-      } else if (fetchedStatus === OrderState.Accepted && isBuyer) {
-        toast.success(
-          t => {
-            return (
-              <div>
-                <div className="text-gray-500">Order Accepted</div>
-                <div className="text-gray-500">Please Proceed to pay</div>
-              </div>
-            );
-          },
-          {
-            duration: 5000,
-          },
-        );
+      } else if (fetchedStatus === OrderState.Accepted) {
+        isBuyer &&
+          toast.success(
+            t => {
+              return (
+                <div>
+                  <div className="text-gray-500">Order Accepted</div>
+                  <div className="text-gray-500">Please Proceed to pay</div>
+                </div>
+              );
+            },
+            {
+              duration: 5000,
+            },
+          );
       } else {
-        toast.success("Order Status Updated", { id: toastId });
+        toast.success("Order Status Updated: " + fetchedStatus, { id: toastId });
       }
 
-      queryClient.setQueryData(["order", orderId], updatedOrder);
+      queryClient.setQueryData(ORDER({ indexerUrl, orderId }), updatedOrder);
       console.log("qeRefetching order status", order?.status, updatedOrder.status);
 
       return POLLING_INTERVAL;

@@ -11,9 +11,10 @@ import Button from "@/components/ui/Button";
 import { useContracts } from "@/common/contexts/ContractContext";
 import TradeLayout from "../layout";
 import { Offer } from "@/common/api/types";
-import { offerTypes } from "@/common/api/constants";
+import { offerTypes } from "@/common/constants";
 import { useUser } from "@/common/contexts/UserContext";
 import { formatCurrency } from "@/lib/utils";
+import { MY_ADS } from "@/common/constants/queryKeys";
 
 const columns: any = [
   {
@@ -66,7 +67,7 @@ const MyAds = () => {
   const options = { page: currentPage, merchant: address?.toLowerCase() };
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } = useQuery({
-    queryKey: ["my-ads", indexerUrl, options],
+    queryKey: MY_ADS({ indexerUrl, options }),
     queryFn: () => fetchAds(indexerUrl, options),
     // placeholderData: keepPreviousData,
   });

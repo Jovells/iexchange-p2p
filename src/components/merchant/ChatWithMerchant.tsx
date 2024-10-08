@@ -22,7 +22,7 @@ import useInitXmtpClient from "@/common/hooks/useInitXmtpClient";
 import ModalAlert from "../modals";
 
 const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; name?: string } }) => {
-  const { client, status, preInit, resolveEnable, resolveCreate } = useInitXmtpClient();
+  const { client, status, reset, preInit, resolveEnable, resolveCreate } = useInitXmtpClient();
   const { getCachedByPeerAddress } = useConversation();
   const { startConversation, error: startConversationError } = useStartConversation();
   const { canMessage } = useCanMessage();
@@ -36,8 +36,9 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
   const mixedCaseOtherPartyAddress = checksumAddress(otherParty.id);
 
   useEffect(() => {
-    console.log("qf useClient", client?.address, client, status);
+    console.log("qg useClient", client?.address, client, status);
     if (!client && !preInit) {
+      console.log("qg client not initialized");
       showModal(
         <>
           <ModalAlert
@@ -51,12 +52,13 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       );
     }
     if (status === "new") {
+      console.log("qg status new");
       showModal(
         <>
           <ModalAlert
             modalType="info"
             title="Create Your XMTP Account"
-            description="To enable secure messaging, we need to create your XMTP account. This requires signing a message, which is separate from your initial login. This process ensures end-to-end encryption for all your conversations."
+            description="To enable secure messaging, we need to create your XMTP account. This requires signing two(2) messages. One to create your xmtp account and one to enable messaging for your account. This process ensures end-to-end encryption for all your conversations."
             buttonText="Create XMTP Account"
             buttonClick={resolveCreate}
           />
@@ -77,7 +79,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       };
       checkIfOtherUserIsOnNetwork();
     }
-  }, [client?.address, preInit]);
+  }, [client?.address, preInit, reset, status]);
 
   const sendMessage = async () => {
     const otherPartyAddress = otherParty.id;

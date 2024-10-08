@@ -1,5 +1,5 @@
 "use client";
-import { offerTypes } from "@/common/api/constants";
+import { offerTypes } from "@/common/constants";
 import { fetchOrders } from "@/common/api/fetchOrders";
 import { Order, OrderState } from "@/common/api/types";
 import { useContracts } from "@/common/contexts/ContractContext";

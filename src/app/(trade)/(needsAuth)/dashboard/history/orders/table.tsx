@@ -11,6 +11,7 @@ import { fetchOrders } from "@/common/api/fetchOrders";
 import { OfferType, Order, OrderOptions, OrderState } from "@/common/api/types";
 import { formatEther } from "ethers";
 import { useUser } from "@/common/contexts/UserContext";
+import { ORDERS } from "@/common/constants/queryKeys";
 
 const columns: any = [
   {
@@ -64,7 +65,7 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
   };
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } = useQuery({
-    queryKey: ["orders", currentPage, orderType, options],
+    queryKey: ORDERS({ indexerUrl, currentPage, orderType, options }),
     queryFn: () => fetchOrders(indexerUrl, options),
     //TODO @Jovells: add retry logic
     retry: false,

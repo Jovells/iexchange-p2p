@@ -6,7 +6,7 @@ import { app } from "../configs/firebase";
 import { darkTheme, RainbowKitAuthenticationProvider, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
 import { SiweMessage } from 'siwe';
-import { API_ENDPOINT } from '@/common/api/constants';
+import { API_ENDPOINT } from "@/common/constants";
 import { useAccount, useDisconnect } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 

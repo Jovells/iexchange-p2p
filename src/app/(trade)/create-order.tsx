@@ -24,6 +24,7 @@ import { useUser } from "@/common/contexts/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { getBlock } from "@wagmi/core";
 import { config } from "@/common/configs";
+import { ORDER } from "@/common/constants/queryKeys";
 
 interface Props {
   data: Offer;
@@ -41,7 +42,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   });
   const queryClient = useQueryClient();
   const [errors, setErrors] = useState<z.ZodIssue[]>([]);
-  const { p2p, tokens, currentChain } = useContracts();
+  const { p2p, tokens, currentChain, indexerUrl } = useContracts();
   const token = tokens.find(token => token.address.toLowerCase() === data.token.id.toLowerCase());
   const { address: userAddress } = useUser();
   const prevOrderType = useRef(orderType);
@@ -239,8 +240,8 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
               eventName: "NewOrder",
             });
             const args = decoded?.args;
-            console.log("qsargs", args);
-            console.log("qslog1", log);
+            console.log("qwargs", args);
+            console.log("qwlog1", log);
             orderId = args.orderId.toString();
 
             //TODO: @Jovells MOVE BLOCKTIMESTAMP ELSEWHERE
@@ -249,7 +250,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
             const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder.current } as Order;
             console.log("qworder", order);
             navigate.push("/order/" + orderId);
-            queryClient.setQueryData(["order", orderId], order);
+            queryClient.setQueryData(ORDER({ indexerUrl, orderId }), order);
             afterRef.current?.("done");
 
             break;

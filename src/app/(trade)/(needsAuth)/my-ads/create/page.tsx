@@ -11,7 +11,7 @@ import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import { fetchTokens } from "@/common/api/fetchTokens";
 import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
-import { offerTypes, TIME_LIMITS } from "@/common/api/constants";
+import { offerTypes, TIME_LIMITS } from "@/common/constants";
 import { useRouter } from "next/navigation";
 import storeAccountDetails from "@/common/api/storeAccountDetails";
 import Loader from "@/components/loader/Loader";
@@ -22,6 +22,8 @@ import { useUser } from "@/common/contexts/UserContext";
 import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
 import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
 import { AccountDetails, Offer, PaymentMethod } from "@/common/api/types";
+import { MY_ADS } from "@/common/constants/queryKeys";
+import { MY_ADS_PAGE } from "@/common/page-links";
 
 const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 const formSchema = z
@@ -183,10 +185,10 @@ const CreateAd = () => {
           //replace with proper optimistic update
           // Redirect or handle success
           console.log("//////////////////////////////////////");
-          queryClient.refetchQueries({ queryKey: ["my-ads", indexerUrl] }).then(() => {
+          queryClient.refetchQueries({ queryKey: MY_ADS({ indexerUrl }) }).then(() => {
             setSubmitting(false);
             toast.success("Ad created successfully", { id });
-            router.push("/my-ads");
+            router.push(MY_ADS_PAGE);
           });
         } catch (error: any) {
           console.error("Transaction failed:", error);

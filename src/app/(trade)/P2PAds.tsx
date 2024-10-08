@@ -8,7 +8,7 @@ import { fetchAds } from "@/common/api/fetchAds";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { Currency, Offer, PaymentMethod, PreparedCurrency, Token } from "@/common/api/types";
 import { formatCurrency, shortenAddress } from "@/lib/utils";
-import { offerTypes } from "@/common/api/constants";
+import { offerTypes } from "@/common/constants";
 
 const columns: any = [
   {

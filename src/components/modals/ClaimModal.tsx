@@ -10,6 +10,7 @@ import useWriteContractWithToast from '@/common/hooks/useWriteContractWithToast'
 import { useModal } from '@/common/contexts/ModalContext';
 import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/common/contexts/UserContext";
+import { TOKEN_BALANCES } from "@/common/constants/queryKeys";
 
 const ClaimModal = () => {
   const queryClient = useQueryClient();
@@ -48,7 +49,7 @@ const ClaimModal = () => {
         },
       );
       hideModal();
-      queryClient.refetchQueries({ queryKey: ["readContract", { functionName: "balanceOf" }] });
+      queryClient.refetchQueries({ queryKey: TOKEN_BALANCES });
     } catch (error) {
       console.log(error);
     }
