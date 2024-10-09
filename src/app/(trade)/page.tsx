@@ -146,19 +146,21 @@ const TabSelector: React.FC<TabSelectorProps> = ({ activeTab, handleTabChange })
     <div className="flex flex-row items-center bg-white border border-gray-200 rounded-[10px] p-2 min-w-full lg:min-w-[150px] dark:bg-gray-800 dark:border-gray-700">
       <button
         onClick={() => handleTabChange("buy")}
-        className={`w-full rounded-[5px] text-center text-[14px] font-[400] p-2 px-6 ${activeTab.toLowerCase() === "buy"
-          ? "text-black bg-gray-400 dark:text-white dark:bg-gray-600"
-          : "text-gray-400 dark:text-gray-400"
-          }`}
+        className={`w-full rounded-[5px] text-center text-[14px] font-[400] p-2 px-6 transition-all duration-300 ease-in-out ${
+          activeTab.toLowerCase() === "buy"
+            ? "text-black bg-gray-200 dark:text-white dark:bg-gray-600"
+            : "text-gray-400 dark:text-gray-400 hover:text-black hover:bg-gray-200 dark:hover:text-white dark:hover:bg-gray-700"
+        }`}
       >
         Buy
       </button>
       <button
         onClick={() => handleTabChange("sell")}
-        className={`w-full rounded-[5px] text-center text-[14px] font-[400] p-2 px-6 ${activeTab.toLowerCase() === "sell"
-          ? "text-black bg-gray-400 dark:text-white dark:bg-gray-600"
-          : "text-gray-400 dark:text-gray-400"
-          }`}
+        className={`w-full rounded-[5px] text-center text-[14px] font-[400] p-2 px-6 transition-all duration-300 ease-in-out ${
+          activeTab.toLowerCase() === "sell"
+            ? "text-black bg-gray-200 dark:text-white dark:bg-gray-600"
+            : "text-gray-400 dark:text-gray-400 hover:text-black hover:bg-gray-200 dark:hover:text-white dark:hover:bg-gray-700"
+        }`}
       >
         Sell
       </button>

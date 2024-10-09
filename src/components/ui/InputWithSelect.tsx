@@ -88,9 +88,14 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
   }, [isOpen]);
 
   return (
-    <div ref={dropdownRef} className="w-full relative border border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer">
+    <div
+      ref={dropdownRef}
+      className="w-full relative border transition-all duration-100 ease-in-out hover:border-[#01a2e4] border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer"
+    >
       <div className="w-full flex flex-col px-3 py-1">
-        {selectedValue.amount && label && <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</span>}
+        {selectedValue.amount && label && (
+          <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</span>
+        )}
         <div className="flex items-center w-full">
           <input
             type="text"
@@ -102,7 +107,9 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
           />
           <div className="flex items-center space-x-1" onClick={toggleDropdown}>
             {currencies.find(c => c.symbol === valueToDisplay.currency)?.icon}
-            <span className="text-black dark:text-white">{valueToDisplay.currency || <span className="text-gray-500 dark:text-gray-400 mb-1">All</span>}</span>
+            <span className="text-black dark:text-white">
+              {valueToDisplay.currency || <span className="text-gray-500 dark:text-gray-400 mb-1">All</span>}
+            </span>
             {currencies.length > 1 && <ChevronDown className="text-gray-500 dark:text-gray-400" />}
           </div>
         </div>
@@ -119,13 +126,10 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
                 {currency.icon}
                 <span className="text-black dark:text-white">{currency.symbol}</span>
               </div>
-              {currency.symbol === valueToDisplay.currency && (
-                <Check className="text-blue-500 dark:text-blue-400" />
-              )}
+              {currency.symbol === valueToDisplay.currency && <Check className="text-blue-500 dark:text-blue-400" />}
             </div>
           ))}
         </div>
-
       )}
       <input type="hidden" {...props} value={value} />
     </div>

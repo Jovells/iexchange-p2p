@@ -15,7 +15,7 @@ const columns: any = [
     key: "advertisers",
     label: "Advertiser",
     render: (row: Offer) => (
-      <span className="font-bold">{row.merchant.name + " (" + shortenAddress(row.merchant.id, 2) + ")"}</span>
+      <span className="">{row.merchant.name + " (" + shortenAddress(row.merchant.id, 2) + ")"}</span>
     ),
   },
   {
@@ -27,7 +27,7 @@ const columns: any = [
           <span className="font-bold text-2xl">{row.rate}</span>
           <span className="ml-2 text-sm">{row.currency.currency}</span>
         </div>
-      )
+      );
     },
   },
   {
@@ -42,7 +42,11 @@ const columns: any = [
   {
     key: "payment",
     label: "Payment Options",
-    render: (row: Offer) => <span className={`border-l-4 pl-1 ${getPaymentMethodColor(row.paymentMethod.method.toLowerCase())}`}>{row.paymentMethod.method}</span>,
+    render: (row: Offer) => (
+      <span className={`border-l-4 pl-1 ${getPaymentMethodColor(row.paymentMethod.method.toLowerCase())}`}>
+        {row.paymentMethod.method}
+      </span>
+    ),
   },
 ];
 

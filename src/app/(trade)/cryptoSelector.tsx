@@ -85,11 +85,12 @@ const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, setS
           return token;
         })
       }
-      className={`py-1 px-2 rounded-full text-md flex items-center space-x-2 ${selectedCrypto?.symbol === token.symbol ? "bg-blue-500 text-white" : "text-black dark:text-white"
-        }`}
+      className={`px-1.5 p-1 rounded-[7px] text-md flex items-center space-x-2 ${
+        selectedCrypto?.symbol === token.symbol ? "  text-[#01a2e4]" : "text-black dark:text-gray-300"
+      } hover:bg-gray-100 dark:hover:bg-gray-600  transition duration-300 ease-in-out`}
     >
-      <span>{token.symbol}</span>
-      <span className="bg-gray-200 text-xs text-gray-700 rounded-full px-2 py-1 dark:bg-gray-600 dark:text-gray-300">
+      <span className="">{token.symbol}</span>
+      <span className="bg-gray-100 text-xs rounded-[3.5px] px-2 py-0.5 dark:bg-gray-700 ">
         {!isLoading ? "Balance: " + formattedBalance : <Loader size="xs" className="text-xs" loaderType="text" />}
       </span>
     </button>

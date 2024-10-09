@@ -22,15 +22,19 @@ const Input: React.FC<InputProps> = ({ label, value, onChange, ...props }) => {
   const handleBlur = () => setIsFocused(false);
 
   return (
-    <div className="relative w-full h-auto border rounded-xl px-2 py-1">
+    <div className="relative w-full h-auto border rounded-xl px-2 py-1 transition-all duration-300 hover:shadow-lg hover:border-gray-500">
       {/* Floating label inside the container */}
       <label
         className={`absolute left-2 transition-all duration-200 bg-white px-1 pointer-events-none
-          ${inputValue || isFocused ? 'top-1 text-sm text-gray-500' : 'top-1/2 text-lg text-gray-400 transform -translate-y-1/2'}`}
+        ${
+          inputValue || isFocused
+            ? "top-1 text-sm text-gray-500"
+            : "top-1/2 text-lg text-gray-400 transform -translate-y-1/2"
+        }`}
       >
         {label}
       </label>
-      
+
       {/* Input field */}
       <input
         type="text"

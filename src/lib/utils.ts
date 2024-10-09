@@ -117,7 +117,7 @@ export const getPaymentMethodColor = (label: string) => {
     case 'mtn mobile money':
       return 'border-yellow-600';
     case 'mobile money':
-      return 'border-green-600';
+      return "border-yellow-600";
     case 'telecel mobile money':
       return 'border-red-600';
     default:
