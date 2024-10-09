@@ -22,7 +22,7 @@ const Input: React.FC<InputProps> = ({ label, value, onChange, ...props }) => {
   const handleBlur = () => setIsFocused(false);
 
   return (
-    <div className="relative w-full h-auto border rounded-xl px-2 py-1 transition-all duration-300 hover:shadow-lg hover:border-gray-500">
+    <div className="relative w-full h-auto border rounded-xl px-2 py-1 transition-all duration-300  hover:border-[#01a2e4]">
       {/* Floating label inside the container */}
       <label
         className={`absolute left-2 transition-all duration-200 bg-white px-1 pointer-events-none
