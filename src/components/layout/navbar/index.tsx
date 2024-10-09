@@ -44,11 +44,11 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
     
 
     const navLinks = [
-        { href: "/", label: "Product" },
-        { href: "/solution", label: "Solutions" },
-        { href: "/whitepaper", label: "Whitepaper" },
-        { href: "/faqs", label: "FAQ's" },
-        { href: "/news", label: "News" }
+        { href: "", label: "Product" },
+        { href: "", label: "Solutions" },
+        { href: "", label: "Whitepaper" },
+        { href: "", label: "FAQ's" },
+        { href: "", label: "News" }
     ];
 
     const togglerIcon = getImage("toggler.svg")

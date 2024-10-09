@@ -18,9 +18,7 @@ const InputAmount = React.lazy(() => import('@/components/ui/InputWithSelect'));
 const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect'));
 import Loader from "@/components/loader/Loader";
 import CryptoSelector from "./cryptoSelector";
-import NetworkSwitcher from "@/components/networkSwitcher";
 import { useUser } from "@/common/contexts/UserContext";
-import PostAd from "./postAd";
 
 interface P2PMarketProps { }
 
@@ -229,7 +227,6 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
           <NetworkSwitcher />
         </div>
       )} */}
-      <PostAd className="block lg:hidden" />
     </div>
   );
 };

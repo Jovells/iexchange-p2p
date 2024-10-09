@@ -4,7 +4,7 @@ export const footerNavSections = [
     links: [
       {
         label: "iExchange",
-        href: "#!",
+        href: "",
       },
     ],
   },
@@ -13,19 +13,19 @@ export const footerNavSections = [
     links: [
       {
         label: "Conversion",
-        href: "#!",
+        href: "",
       },
       {
         label: "Security",
-        href: "#!",
+        href: "",
       },
       {
         label: "Gold Bars",
-        href: "#!",
+        href: "",
       },
       {
         label: "Integration Support",
-        href: "#!",
+        href: "",
       },
     ],
   },
@@ -34,11 +34,11 @@ export const footerNavSections = [
     links: [
       {
         label: "Questions",
-        href: "#!",
+        href: "",
       },
       {
         label: "Answers",
-        href: "#!",
+        href: "",
       },
     ],
   },
@@ -47,11 +47,11 @@ export const footerNavSections = [
     links: [
       {
         label: "Be Part of Us",
-        href: "#!",
+        href: "",
       },
       {
         label: "Read Whitepaper",
-        href: "#!",
+        href: "",
       },
     ],
   },

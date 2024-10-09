@@ -105,3 +105,22 @@ export const getImage = (imageName: string, Element?: JSX.Element) => {
 
   return Element || imagePath;
 };
+
+export const getPaymentMethodColor = (label: string) => {
+  switch (label) {
+    case 'm-pesa':
+      return 'border-red-600';
+    case 'airtel tigo mobile money':
+      return 'border-blue-600';
+    case 'fidelity bank':
+      return 'border-yellow-800';
+    case 'mtn mobile money':
+      return 'border-yellow-600';
+    case 'mobile money':
+      return 'border-green-600';
+    case 'telecel mobile money':
+      return 'border-red-600';
+    default:
+      return 'border-gray-400'; 
+  }
+};

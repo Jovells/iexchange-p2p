@@ -72,8 +72,8 @@ const Footer = () => {
         {/* separator */}
         <hr className="border-[#DFE2E7] dark:border-[#3D4651]" />
         {/* copyright and terms */}
-        <div className="py-5">
-          <div className="grid lg:grid-cols-2 items-center lg:items-start justify-center gap-5">
+        <div className="pt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 items-center lg:items-start justify-center">
             <Image
               src="/images/logo/iexchange-logo.png"
               alt="logo"

@@ -1,67 +1,63 @@
 "use client";
 import { useUser } from "@/common/contexts/UserContext";
-import { CachedConversation, DecodedMessage, useMessage, useMessages, useStreamMessages } from "@xmtp/react-sdk";
-import { useCallback, useEffect, useState } from "react";
+import { CachedConversation, useMessages, useStreamMessages } from "@xmtp/react-sdk";
+import { useEffect, useRef } from "react";
 import { ContentTypeId } from "@xmtp/content-type-primitives";
 import { ContentTypeText } from "@xmtp/content-type-text";
 
 const Messages = ({ conversation }: { conversation: CachedConversation }) => {
-  const { messages, isLoading, error, isLoaded } = useMessages(conversation);
+  const { messages, error } = useMessages(conversation);
   const { address } = useUser();
-
   const { error: streamError } = useStreamMessages(conversation);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   if (streamError || error) {
-    console.log("streamerror", streamError, "", error);
+    console.log("streamerror", streamError, error);
   }
+
   useEffect(() => {
-    function scrollLastMessageIntoView() {
-      const lastMessage = document.querySelector("#lastMessage");
-      console.log("qs lastMessage", lastMessage);
-      if (lastMessage) {
-        lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
+    const scrollToBottom = () => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
       }
-    }
-    console.log("qf messages", messages.length);
-    scrollLastMessageIntoView();
+    };
+    
+    scrollToBottom();
   }, [messages]);
 
   return (
-    <div className="flex-1 p-3 overflow-y-auto">
-      {messages.map((message, i) => {
-        const contentType = ContentTypeId.fromString(message.contentType);
-        let content: any;
+    <div className="flex flex-col h-full max-h-[80vh] p-3 overflow-hidden">
+      <div className="flex-1 overflow-y-auto px-3"> 
+        {messages.map((message, i) => {
+          const contentType = ContentTypeId.fromString(message.contentType);
+          let content: any;
 
-        // text messages
-        if (contentType.sameAs(ContentTypeText)) {
-          if (typeof message.content === "string")
+          if (contentType.sameAs(ContentTypeText)) {
             content = typeof message.content === "string" ? message.content : undefined;
-        }
+          }
 
-        // attachment messages
-        //   if (
-        //     contentType.sameAs(ContentTypeAttachment) ||
-        //     contentType.sameAs(ContentTypeRemoteAttachment)
-        //   ) {
-        //     content = <AttachmentContent message={message} />;
-        //   }
-
-        return content ? (
-          <div
-            id={i == messages.length - 1 ? "lastMessage" : message.id}
-            key={message.id}
-            className={`mb-2 ${message.senderAddress.toLocaleLowerCase() === address ? "text-right" : "text-left"}`}
-          >
-            <span
-              className={`${
-                message.senderAddress === address ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
-              } inline-block p-2 rounded-lg`}
+          return content ? (
+            <div
+              key={message.id}
+              className={`mb-2 ${message.senderAddress.toLowerCase() === address ? "text-right" : "text-left"}`}
             >
-              {content}
-            </span>
-          </div>
-        ) : null;
-      })}
+              <span
+                className={`${
+                  message.senderAddress === address
+                    ? "bg-blue-500 text-white ml-auto"
+                    : "bg-gray-200 text-black mr-auto"
+                } inline-block p-3 max-w-xs rounded-[8px] shadow-md ${
+                  message.senderAddress === address ? "rounded-tr-none" : "rounded-tl-none"
+                }`}
+              >
+                {content}
+              </span>
+            </div>
+          ) : null;
+        })}
+
+        {/* <div ref={messagesEndRef} />  */}
+      </div>
     </div>
   );
 };

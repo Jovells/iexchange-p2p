@@ -1,19 +1,16 @@
 'use client'
 
 import { shortenAddress } from "@/lib/utils";
-import { Send, X } from "lucide-react";
-import React, { use, useCallback, useEffect, useMemo, useState } from "react";
+import { Send } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useEthersSigner } from "@/common/hooks/useEthersSigner";
 import {
-  useClient,
-  useConversations,
   useCanMessage,
   useStartConversation,
   CachedConversation,
   useSendMessage,
   useConversation,
 } from "@xmtp/react-sdk";
-import { useUser } from "@/common/contexts/UserContext";
 import { useModal } from "@/common/contexts/ModalContext";
 import Button from "../ui/Button";
 import Messages from "./Messages";
@@ -145,12 +142,12 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
         <Messages conversation={conversation} />
       ) : client ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">No messages yet</div>
+          <div className="text-center text-gray-800 dark:text-white">No messages yet</div>
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center">
-          <div className="text-center">Messaging not enabled</div>
-          <Button onClick={resolveEnable}>Enable Messaging</Button>
+          <div className="text-center text-gray-800 dark:text-white">Messaging not enabled</div>
+          <Button onClick={resolveEnable} className="text-gray-800 dark:text-white">Enable Messaging</Button>
         </div>
       )}
 
@@ -165,6 +162,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
             onKeyDown={e => {
               console.log("keydown", e.key);
               e.key === "Enter" && sendMessage();
+              e.key === "Enter" && setInputValue("")
             }}
           />
           <button

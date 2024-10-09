@@ -1,6 +1,6 @@
 "use client";
 import { Timer } from "./timer";
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import { offerTypes } from "@/common/constants";
 import fetchAccountDetails from "@/common/api/fetchAccountDetails";
 import fetchOrder from "@/common/api/fetchOrder";
@@ -26,6 +26,8 @@ import SellerPaymentConfirmedModal from "@/components/modals/SellerPaymentConfir
 import OrderCancellationModal from "@/components/modals/OrderCancelledModal";
 import { ToggleLeft, ToggleRight } from "lucide-react";
 import { ORDER, ORDER_STATUS, TOKEN_BALANCE } from "@/common/constants/queryKeys";
+import InfoBlock from "../infoBlock";
+import DetailBlock from "./detailBlock";
 
 const ChatWithMerchant = lazy(() => import("@/components/merchant/ChatWithMerchant"));
 
@@ -48,6 +50,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   } = useWriteContractWithToast();
   const [transactionHashes, setTransactionHashes] = React.useState<{ hash: string; status: string }[] | null>(null);
   const { showModal } = useModal();
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   const {
     data: order,
@@ -93,12 +96,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   });
 
   const getButtonConfig = () => {
-    if (!order) return { text: "", buttonText: "", onClick: () => {}, disabled: true, shouldPoll: false };
+    if (!order) return { text: "", buttonText: "", onClick: () => { }, disabled: true, shouldPoll: false };
 
     const getDisabledAction = (buttonText: string, text: string, shouldPoll = true) => ({
       buttonText,
       text,
-      onClick: () => {},
+      onClick: () => { },
       disabled: true,
       shouldPoll,
     });
@@ -117,39 +120,39 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         if (isBuyer) {
           return order.offer.offerType === offerTypes.buy
             ? getDisabledAction(
-                "Waiting for Merchant",
-                "Please wait for the merchant to accept your order and send the tokens to the escrow account",
-              )
+              "Waiting for Merchant",
+              "Please wait for the merchant to accept your order and send the tokens to the escrow account",
+            )
             : getEnabledAction(
-                "Done With Payment",
-                "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-                handlePayOrder,
-              );
+              "Done With Payment",
+              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+              handlePayOrder,
+            );
         } else {
           return order.offer.offerType === offerTypes.sell
             ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
             : getEnabledAction(
-                "Accept Order",
-                "Click “Accept Order” your order and send the tokens to the escrow account ",
-                handleAcceptOrder,
-              );
+              "Accept Order",
+              "Click “Accept Order” your order and send the tokens to the escrow account ",
+              handleAcceptOrder,
+            );
         }
       case OrderState.Accepted:
         return isBuyer
           ? getEnabledAction(
-              "Done With Payment",
-              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-              handlePayOrder,
-            )
+            "Done With Payment",
+            "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+            handlePayOrder,
+          )
           : getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment");
       case OrderState.Paid:
         return isBuyer
           ? getDisabledAction("Waiting for Seller to Release", "Please wait for the seller to release")
           : getEnabledAction(
-              "Release Funds",
-              "Click “Release Funds” to release the funds to the buyer",
-              handleReleaseFunds,
-            );
+            "Release Funds",
+            "Click “Release Funds” to release the funds to the buyer",
+            handleReleaseFunds,
+          );
       case OrderState.Released:
         return getDisabledAction("Completed", "Order has been completed", false);
       case OrderState.Cancelled:
@@ -367,9 +370,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   const isBuyerAndNotYetAccepted = order?.status === OrderState.Pending && isBuyer && isTrader;
   return (
     <Suspense fallback={<Loader />}>
-      <div className="w-full py-6 bg-[#CCE0F6] dark:bg-gray-800">
-        <div className="w-full lg:container lg:mx-auto px-0 lg:px-0 flex flex-col lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-3">
+      <div className="w-full bg-[#CCE0F6] dark:bg-gray-800 px-6 lg:px-0">
+        <div className="w-full lg:container lg:mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between py-10 lg:px-0">
+          <div className="gap-3">
             <span className="font-bold text-gray-600 dark:text-gray-300">Order Created</span>
             <div className="flex flex-row space-x-2">
               {order.status === OrderState.Pending && (
@@ -393,86 +396,58 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         </div>
       </div>
 
-      <div className="container mx-auto px-0 py-4">
-        <div className="w-full h-[500px] grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
-          <ChatWithMerchant otherParty={otherParty} />
+      <div className="container mx-auto px-0 py-4 ">
+        <div className="w-full h-auto grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
+          {/* Chat Section */}
+          <div className="hidden lg:block">
+            <ChatWithMerchant otherParty={otherParty} />
+          </div>
+
+          {/* Order Information Section */}
           <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl space-y-6">
+            {/* Header */}
             <div className="flex justify-between">
               <h2 className="text-lg text-gray-500 dark:text-gray-400">Order Info</h2>
               <div
-                className={`px-4 py-1 rounded-xl ${
-                  isBuyer ? "bg-green-200 dark:bg-green-700" : "bg-red-200 dark:bg-red-700"
-                }`}
+                className={`px-4 py-1 rounded-xl ${isBuyer ? "bg-green-200 dark:bg-green-700" : "bg-red-200 dark:bg-red-700"
+                  }`}
               >
                 {isBuyer ? "Buy" : "Sell"}
               </div>
             </div>
 
+            {/* Order Details */}
             <div className="flex flex-col justify-start items-start lg:flex-row lg:justify-between gap-3 lg:gap-10 mt-6">
-              <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-light">Amount</div>
-                <div
-                  className={`text-lg font-medium ${
-                    isBuyer ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"
-                  }`}
-                >
-                  {isBuyer ? fiatAmount : cryptoAmount}
-                </div>
-              </div>
-
-              <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-light">Price</div>
-                <div className="text-gray-700 dark:text-gray-300 text-lg font-light">{order?.offer.rate}</div>
-              </div>
-
-              <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-light">Receive Quantity</div>
-                <div className="text-gray-700 dark:text-gray-300 text-lg font-light">
-                  {isBuyer ? cryptoAmount : fiatAmount}
-                </div>
-              </div>
+              <InfoBlock label="Amount" value={isBuyer ? fiatAmount : cryptoAmount} isBuyer={isBuyer} />
+              <InfoBlock label="Price" value={order?.offer.rate} />
+              <InfoBlock label="Receive Quantity" value={isBuyer ? cryptoAmount : fiatAmount} />
             </div>
 
+            {/* Payment Details */}
             <div>
               <h2 className="text-gray-500 dark:text-gray-400 mb-1">Payment Details</h2>
               <div className="w-full flex gap-10 border rounded-xl p-4 h-auto border-gray-300 dark:border-gray-700">
                 <div className="w-full space-y-4">
-                  <div>
-                    <div className="font-light text-gray-500 dark:text-gray-400 text-sm">Payment Method</div>
-                    <div className="text-gray-600 dark:text-gray-300">{order?.offer.paymentMethod.method}</div>
-                  </div>
-
-                  <div>
-                    <div className="font-light text-gray-500 dark:text-gray-400 text-sm">Account Name</div>
-                    <div className="text-gray-600 dark:text-gray-300">
-                      {isBuyerAndNotYetAccepted ? "********" : accountDetails?.name}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="font-light text-gray-500 dark:text-gray-400 text-sm">Account Number</div>
-                    <div className="text-gray-600 dark:text-gray-300">
-                      {isBuyerAndNotYetAccepted ? "********" : accountDetails?.number}
-                    </div>
-                  </div>
+                  <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
+                  <DetailBlock label="Account Name" value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.name} />
+                  <DetailBlock label="Account Number" value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.number} />
                 </div>
 
                 {accountDetails?.details && (
                   <div className="w-full">
-                    <div className="font-light text-gray-500 dark:text-gray-400 text-sm">Extra Details</div>
-                    <div className="text-gray-600 dark:text-gray-300">
-                      {isBuyerAndNotYetAccepted ? "********" : accountDetails?.details}
-                    </div>
+                    <DetailBlock label="Extra Details" value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.details} />
                   </div>
                 )}
               </div>
             </div>
 
+            {/* Proceed Information */}
             <div>
               <h2 className="text-gray-700 dark:text-gray-300">Proceed:</h2>
               <p className="text-gray-500 dark:text-gray-400">{text}</p>
             </div>
 
+            {/* Transactions */}
             {transactionHashes && (
               <div>
                 <h2 className="text-gray-700 dark:text-gray-300">Transactions:</h2>
@@ -491,15 +466,15 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               </div>
             )}
 
+            {/* Action Buttons */}
             <div className="flex flex-col lg:flex-row gap-6">
               <Button
                 loading={isPending}
                 text={buttonText}
-                className={`${
-                  disabled
-                    ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
-                    : "bg-[#000000] text-white"
-                } rounded-xl px-4 py-2`}
+                className={`${disabled
+                  ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
+                  : "bg-[#000000] text-white"
+                  } rounded-xl px-4 py-2`}
                 onClick={onClick}
                 disabled={disabled}
               />
@@ -519,6 +494,18 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           </div>
         </div>
       </div>
+
+      {isChatModalOpen && (
+        <div className="fixed inset-0 flex items-end bg-black bg-opacity-50 z-50">
+          <div className="w-full bg-white dark:bg-gray-800 rounded-t-xl p-4">
+            <button onClick={() => { }} className="text-gray-500 mb-4">
+              Close
+            </button>
+            <ChatWithMerchant otherParty={otherParty} />
+          </div>
+        </div>
+      )}
+
     </Suspense>
   );
 }

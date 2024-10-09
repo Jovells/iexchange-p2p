@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { Currency, Offer, PaymentMethod, PreparedCurrency, Token } from "@/common/api/types";
-import { formatCurrency, shortenAddress } from "@/lib/utils";
+import { formatCurrency, getPaymentMethodColor, shortenAddress } from "@/lib/utils";
 import { offerTypes } from "@/common/constants";
 
 const columns: any = [
@@ -21,13 +21,20 @@ const columns: any = [
   {
     key: "price",
     label: "Price",
-    render: (row: Offer) => <span className="font-bold">{row.rate}</span>,
+    render: (row: Offer) => {
+      return (
+        <div className="">
+          <span className="font-bold text-2xl">{row.rate}</span>
+          <span className="ml-2 text-sm">{row.currency.currency}</span>
+        </div>
+      )
+    },
   },
   {
     key: "funds",
     label: "Limits",
     render: (row: Offer) => (
-      <span className="italic">
+      <span className="">
         {formatCurrency(row.minOrder, row.token.symbol)} - {formatCurrency(row.maxOrder, row.token.symbol)}
       </span>
     ),
@@ -35,7 +42,7 @@ const columns: any = [
   {
     key: "payment",
     label: "Payment Options",
-    render: (row: Offer) => <span className="italic">{row.paymentMethod.method}</span>,
+    render: (row: Offer) => <span className={`border-l-4 pl-1 ${getPaymentMethodColor(row.paymentMethod.method.toLowerCase())}`}>{row.paymentMethod.method}</span>,
   },
 ];
 
@@ -54,9 +61,8 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
   const [currentPage, setCurrentPage] = useState<number>(0);
 
   const trade = searchParams.get("trade") || "Buy";
-  const crypto = searchParams.get("crypto") || "";
+  // const crypto = searchParams.get("crypto") || "";
 
-  console.log("paymentMethod", paymentMethod);
 
   const options = {
     page: currentPage,

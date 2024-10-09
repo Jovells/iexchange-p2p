@@ -1,5 +1,6 @@
 'use client';
 
+import { getPaymentMethodColor } from '@/lib/utils';
 import { Check, ChevronDown, Square } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 
@@ -15,6 +16,7 @@ interface InputSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
     options: SelectOption[];
     onValueChange?: (value: string) => void;
     placeholder?: string;
+    selectType?: string;
 }
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -23,6 +25,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     options,
     onValueChange,
     placeholder = "Select",
+    selectType = "payment method",
     ...props
 }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -91,7 +94,9 @@ const InputSelect: React.FC<InputSelectProps> = ({
                                 ) : (
                                     <Square className='text-gray-300 w-4 h-4' />
                                 )}
-                                <span className='text-black dark:text-white'>{option.label}</span>
+
+                                {selectType === "payment method" && <span className={`text-black dark:text-white border-l-4 ${getPaymentMethodColor(option.label.toLowerCase())} pl-1`}>{option.label}</span>}
+                                {selectType !== "payment method" && <span className='text-black dark:text-white border-l-2 border-red-600 pl-1'>{option.label}</span>}
                             </div>
                         </div>
                     ))}

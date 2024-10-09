@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React from 'react';
 import Button from '../ui/Button';
 import { useModal } from '@/common/contexts/ModalContext';
 import Image from "next/image";
@@ -14,9 +14,17 @@ interface Props {
   buttonText?: string;
 }
 
-const ModalAlert: React.FC<Props> = ({ modalType, icon, description, title, buttonClick, buttonText }) => {
+const ModalAlert: React.FC<Props> = ({
+  modalType,
+  icon,
+  description,
+  title,
+  buttonClick,
+  buttonText,
+}) => {
   const [loading, setLoading] = React.useState(false);
   const { hideModal } = useModal();
+
   const handleClick = async () => {
     if (buttonClick) {
       try {
@@ -32,9 +40,10 @@ const ModalAlert: React.FC<Props> = ({ modalType, icon, description, title, butt
       hideModal();
     }
   };
+
   return (
-    <div className="flex  flex-col justify-center items-center">
-      <div className="flex  p-10 flex-col justify-center items-center gap-8 bg-white shadow-xl rounded-xl py-10 w-[500px] min-h-[250px]">
+    <div className="flex flex-col justify-center items-center">
+      <div className="flex p-10 flex-col justify-center items-center gap-8 bg-white dark:bg-gray-800 shadow-xl rounded-xl py-10 w-[500px] min-h-[250px]">
         {icon ? (
           typeof icon === "string" ? (
             <img src={icon} alt="icon" className="h-28 w-28" />
@@ -43,7 +52,7 @@ const ModalAlert: React.FC<Props> = ({ modalType, icon, description, title, butt
           )
         ) : (
           modalType && (
-            <div className={`h-20 w-20 flex items-center justify-center rounded-full `}>
+            <div className={`h-20 w-20 flex items-center justify-center rounded-full`}>
               {modalType === "success" && (
                 <Image width={50} height={50} src="/images/light/success.png" alt="success" className="h-16 w-16" />
               )}
@@ -59,17 +68,17 @@ const ModalAlert: React.FC<Props> = ({ modalType, icon, description, title, butt
             </div>
           )
         )}
-        <h1 className="text-center text-lg">{title}</h1>
-        <p className="text-md text-gray-400 text-center">{description}</p>
+        <h1 className="text-center text-lg text-black dark:text-white">{title}</h1>
+        <p className="text-md text-gray-400 dark:text-gray-300 text-center">{description}</p>
         <Button
           loading={loading}
           text={buttonText}
           onClick={handleClick}
-          className="bg-transparent border rounded-xl border-gray-200 px-10 py-1"
+          className="bg-transparent border rounded-xl border-gray-200 dark:border-gray-600 px-10 py-1 text-black dark:text-white"
         />
       </div>
     </div>
   );
 };
 
-export default ModalAlert
+export default ModalAlert;

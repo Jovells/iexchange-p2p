@@ -10,6 +10,7 @@ import ErrorBoundary from "@/components/error/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/common/contexts/ThemeProvider";
 import { Suspense } from "react";
+import PostAd from "./(trade)/postAd";
 
 const inter = Inter({ subsets: ["latin"] });
 const roboto = Roboto({
@@ -41,6 +42,7 @@ export default function RootLayout({
                 <Toaster />
                 <Suspense fallback={<TopLoader />}>
                   {children}
+                  <PostAd className="block lg:hidden" text="Post Ad" />
                 </Suspense>
                 <ModalManager />
               </ModalContextProvider>

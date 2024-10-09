@@ -7,7 +7,7 @@ interface Props{
 }
 const PostAd:React.FC<Props> = ({className, text}) => {
     return (
-        <button className={`fixed bottom-4 right-4 shadow-lg mt-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold p-4 rounded-full ${className}`}>
+        <button className={`flex flex-row gap-3 fixed bottom-4 right-4 shadow-lg mt-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold p-4 rounded-[8px] ${className}`}>
             <Plus /> <span>{text}</span>
         </button>
     );
