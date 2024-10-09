@@ -24,7 +24,7 @@ import BuyerReleaseModal from "@/components/modals/BuyerReleaseModal";
 import { useUser } from "@/common/contexts/UserContext";
 import SellerPaymentConfirmedModal from "@/components/modals/SellerPaymentConfirmedModal";
 import OrderCancellationModal from "@/components/modals/OrderCancelledModal";
-import { ToggleLeft, ToggleRight } from "lucide-react";
+import { MessageCircle, ToggleLeft, ToggleRight, X } from "lucide-react";
 import { ORDER, ORDER_STATUS, TOKEN_BALANCE } from "@/common/constants/queryKeys";
 import InfoBlock from "../infoBlock";
 import DetailBlock from "./detailBlock";
@@ -485,6 +485,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                   onClick={handleCancelOrder}
                 />
               )}
+              <Button
+                text="Chat With Merchant"
+                icon={<MessageCircle />}
+                className="bg-blue-700 text-black dark:text-white rounded-xl px-4 py-2 hover:bg-red-300 dark:hover:bg-red-600"
+                onClick={() => setIsChatModalOpen(true)}
+              />
               {pollToggle ? (
                 <ToggleLeft onClick={() => setPollToggle(!pollToggle)}>On</ToggleLeft>
               ) : (
@@ -497,10 +503,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
       {isChatModalOpen && (
         <div className="fixed inset-0 flex items-end bg-black bg-opacity-50 z-50">
-          <div className="w-full bg-white dark:bg-gray-800 rounded-t-xl p-4">
-            <button onClick={() => { }} className="text-gray-500 mb-4">
-              Close
-            </button>
+          <div className="w-full bg-white dark:bg-gray-800 rounded-t-xl p-0">
+            <div className="flex flex-row justify-between items-center px-0 py-2 mb-3">
+              <div className="text-gray-400 dark:text-white">Chat</div>
+              <X className="text-gray-400 dark:text-white" onClick={()=>setIsChatModalOpen(false)} />
+            </div>
             <ChatWithMerchant otherParty={otherParty} />
           </div>
         </div>
