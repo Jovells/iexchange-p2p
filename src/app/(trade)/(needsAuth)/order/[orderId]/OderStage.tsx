@@ -503,7 +503,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
       {isChatModalOpen && (
         <div className="fixed inset-0 flex items-end bg-black bg-opacity-50 z-50">
-          <div className="w-full bg-white dark:bg-gray-800 rounded-t-xl p-0">
+          <div className="w-full bg-white dark:bg-gray-800 rounded-t-xl p-4">
             <div className="flex flex-row justify-between items-center px-0 py-2 mb-3">
               <div className="text-gray-400 dark:text-white">Chat</div>
               <X className="text-gray-400 dark:text-white" onClick={()=>setIsChatModalOpen(false)} />
