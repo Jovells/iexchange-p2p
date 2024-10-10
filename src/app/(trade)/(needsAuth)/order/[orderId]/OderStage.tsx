@@ -409,8 +409,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
             <div className="flex justify-between">
               <h2 className="text-lg text-gray-500 dark:text-gray-400">Order Info</h2>
               <div
-                className={`px-4 py-1 rounded-xl ${isBuyer ? "bg-green-200 dark:bg-green-700" : "bg-red-200 dark:bg-red-700"
-                  }`}
+                className={`px-2 py-1 text-sm text-gray-100 rounded-xl ${isBuyer ? " bg-[#4ade80]" : "bg-[#f6465d]"}`}
               >
                 {isBuyer ? "Buy" : "Sell"}
               </div>
@@ -418,7 +417,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
             {/* Order Details */}
             <div className="flex flex-col justify-start items-start lg:flex-row lg:justify-between gap-3 lg:gap-10 mt-6">
-              <InfoBlock label="Amount" value={isBuyer ? fiatAmount : cryptoAmount} isBuyer={isBuyer} />
+              <InfoBlock isAmount label="Amount" value={isBuyer ? fiatAmount : cryptoAmount} isBuyer={isBuyer} />
               <InfoBlock label="Price" value={order?.offer.rate} />
               <InfoBlock label="Receive Quantity" value={isBuyer ? cryptoAmount : fiatAmount} />
             </div>
@@ -429,13 +428,22 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               <div className="w-full flex gap-10 border rounded-xl p-4 h-auto border-gray-300 dark:border-gray-700">
                 <div className="w-full space-y-4">
                   <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
-                  <DetailBlock label="Account Name" value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.name} />
-                  <DetailBlock label="Account Number" value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.number} />
+                  <DetailBlock
+                    label="Account Name"
+                    value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.name}
+                  />
+                  <DetailBlock
+                    label="Account Number"
+                    value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.number}
+                  />
                 </div>
 
                 {accountDetails?.details && (
                   <div className="w-full">
-                    <DetailBlock label="Extra Details" value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.details} />
+                    <DetailBlock
+                      label="Extra Details"
+                      value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.details}
+                    />
                   </div>
                 )}
               </div>
@@ -471,31 +479,42 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               <Button
                 loading={isPending}
                 text={buttonText}
-                className={`${disabled
-                  ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
-                  : "bg-[#000000] text-white"
-                  } rounded-xl px-4 py-2`}
+                className={`${
+                  disabled
+                    ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
+                    : "bg-black dark:bg-slate-100 dark:text-gray-900 text-white hover:bg-gray-400 dark:hover:bg-gray-400 transition duration-300 ease-in-out"
+                } rounded-xl px-4 py-2`}
                 onClick={onClick}
                 disabled={disabled}
               />
               {isCancellable && (
                 <Button
                   text="Cancel Order"
-                  className="bg-red-200 dark:bg-red-700 text-black dark:text-white rounded-xl px-4 py-2 hover:bg-red-300 dark:hover:bg-red-600"
+                  className="text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 rounded-xl px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-300 ease-in-out"
                   onClick={handleCancelOrder}
                 />
               )}
               <Button
                 text="Chat With Merchant"
                 icon={<MessageCircle />}
-                className="block lg:hidden bg-blue-700 text-black dark:text-white rounded-xl px-4 py-2 hover:bg-red-300 dark:hover:bg-red-600"
+                className="block lg:hidden bg-blue-700 text-black dark:text-white rounded-xl px-4 py-2 hover:bg-blue-600 dark:hover:bg-blue-500 transition duration-300 ease-in-out"
                 onClick={() => setIsChatModalOpen(true)}
               />
-              {pollToggle ? (
-                <ToggleLeft onClick={() => setPollToggle(!pollToggle)}>On</ToggleLeft>
+              {/* {pollToggle ? (
+                <ToggleLeft
+                  onClick={() => setPollToggle(!pollToggle)}
+                  className="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition duration-300 ease-in-out"
+                >
+                  On
+                </ToggleLeft>
               ) : (
-                <ToggleRight onClick={() => setPollToggle(!pollToggle)}>Off</ToggleRight>
-              )}
+                <ToggleRight
+                  onClick={() => setPollToggle(!pollToggle)}
+                  className="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition duration-300 ease-in-out"
+                >
+                  Off
+                </ToggleRight>
+              )} */}
             </div>
           </div>
         </div>
@@ -506,13 +525,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           <div className="w-full bg-white dark:bg-gray-800 rounded-t-xl p-4">
             <div className="flex flex-row justify-between items-center px-0 py-2 mb-3">
               <div className="text-gray-400 dark:text-white">Chat</div>
-              <X className="text-gray-400 dark:text-white" onClick={()=>setIsChatModalOpen(false)} />
+              <X className="text-gray-400 dark:text-white" onClick={() => setIsChatModalOpen(false)} />
             </div>
             <ChatWithMerchant otherParty={otherParty} />
           </div>
         </div>
       )}
-
     </Suspense>
   );
 }

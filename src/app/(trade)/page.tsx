@@ -19,8 +19,9 @@ const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect
 import Loader from "@/components/loader/Loader";
 import CryptoSelector from "./cryptoSelector";
 import { useUser } from "@/common/contexts/UserContext";
+import { ACCEPTED_TOKENS } from "@/common/constants/queryKeys";
 
-interface P2PMarketProps { }
+interface P2PMarketProps {}
 
 const P2PMarket: React.FC<P2PMarketProps> = () => {
   const { session } = useUser();
@@ -30,7 +31,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const { currentChain, indexerUrl } = useContracts();
   const [paymentMethod, setPaymentMethod] = useState("");
   const { data: tokens } = useQuery({
-    queryKey: ["tokens"],
+    queryKey: ACCEPTED_TOKENS(indexerUrl),
     queryFn: () => fetchTokens(indexerUrl),
     enabled: !!indexerUrl,
   });
@@ -92,18 +93,12 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     <>
       <WalletConnectSection />
       <div className="container mx-auto  p-0 flex flex-col items-start space-y-4">
-        <div className="flex flex-row items-start gap-4 w-full">
-          <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
-        </div>
         <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
-          <div className="w-full lg:w-1/2 flex-shrink-0">
-            <CryptoSelector
-              tokens={tokens}
-              selectedCrypto={selectedCrypto}
-              setSelectedCrypto={setSelectedCrypto}
-            />
+          <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
+          <div className="w-full ">
+            <CryptoSelector tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={setSelectedCrypto} />
           </div>
-          <div className="w-full lg:w-1/2 flex-grow">
+          <div className="w-full">
             <PaymentsSection
               currencyAmount={currencyAmount}
               setCurrencyAmount={setCurrencyAmount}

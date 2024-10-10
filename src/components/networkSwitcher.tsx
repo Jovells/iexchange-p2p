@@ -4,7 +4,7 @@ import React, { Suspense } from "react";
 import Loader from "./loader/Loader";
 import Button from "./ui/Button";
 import { ChevronsUpDown } from "lucide-react";
-import { FaChevronCircleRight } from "react-icons/fa";
+import { FaChevronCircleRight, FaPlug } from "react-icons/fa";
 
 function NetworkSwitcher() {
   const { openChainModal } = useChainModal();
@@ -16,19 +16,19 @@ function NetworkSwitcher() {
   return (
     <Suspense fallback={<Loader loaderType="text" />}>
       {openChainModal ? (
-        <Button
-          text={text}
-          className="justify-end bg-transparent border border-blue-300 dark:border-blue-600 px-4 py-2 w-full text-black dark:text-white"
-          onClick={() => openChainModal()}
-          icon={<ChevronsUpDown />}
-        />
+      <Button
+        text={text}
+        className="justify-end bg-transparent border border-[#01a2e4] px-4 py-2 w-full text-black dark:text-white transition duration-300 ease-in-out hover:bg-[#01a2e4] hover:text-white"
+        onClick={() => openChainModal()}
+        icon={<ChevronsUpDown />}
+      />
       ) : (
-        <Button
-          text={text}
-          className="justify-end bg-transparent border border-blue-300 dark:border-blue-600 px-4 py-2 w-full text-black dark:text-white"
-          onClick={() => openConnectModal?.()}
-          icon={<FaChevronCircleRight />}
-        />
+      <Button
+        text={text}
+        className="justify-end bg-transparent border dark:border-[#01a2e4] px-4 py-2 w-full text-black dark:text-white transition duration-300 ease-in-out hover:bg-[#01a2e4] hover:text-white"
+        onClick={() => openConnectModal?.()}
+        icon={<FaPlug />}
+      />
       )}
     </Suspense>
   );

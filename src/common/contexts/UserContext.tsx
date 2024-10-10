@@ -3,13 +3,13 @@
 import { getAuth, signInWithCustomToken } from "firebase/auth";
 import { createContext, useContext, ReactNode, FC, useState, useEffect, useLayoutEffect } from "react";
 import { app } from "../configs/firebase";
-import { darkTheme, RainbowKitAuthenticationProvider, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
-import { SiweMessage } from 'siwe';
+import { darkTheme, lightTheme, RainbowKitAuthenticationProvider, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { createAuthenticationAdapter } from "@rainbow-me/rainbowkit";
+import { SiweMessage } from "siwe";
 import { API_ENDPOINT } from "@/common/constants";
 import { useAccount, useDisconnect } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
-
+import { useTheme } from "./ThemeProvider";
 
 type Session = { status: "authenticated" | "unauthenticated" };
 
@@ -34,6 +34,7 @@ export const useUser = () => {
 
 export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const auth = getAuth(app);
+  const { isDarkMode } = useTheme();
   const [session, setSession] = useState<Session>({ status: auth.currentUser ? "authenticated" : "unauthenticated" });
   const { address: wagmiAddress } = useAccount();
   const { isSuccess, disconnect } = useDisconnect();
@@ -158,12 +159,21 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     <UserContext.Provider value={{ address, session, mixedCaseAddress, isConnected, signUserOut, signUserIn }}>
       <RainbowKitAuthenticationProvider status={session.status} adapter={authenticationAdapter}>
         <RainbowKitProvider
-          theme={darkTheme({
-            accentColor: "#000000",
-            // accentColorForeground: '#',
-            borderRadius: "medium",
-            fontStack: "system",
-          })}
+          theme={
+            isDarkMode
+              ? darkTheme({
+                  accentColor: "#fffeee",
+                  accentColorForeground: "#000011",
+                  borderRadius: "medium",
+                  fontStack: "system",
+                })
+              : lightTheme({
+                  accentColor: "#000000",
+                  // accentColorForeground: '#',
+                  borderRadius: "medium",
+                  fontStack: "system",
+                })
+          }
         >
           {children}
         </RainbowKitProvider>

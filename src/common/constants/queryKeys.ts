@@ -33,3 +33,4 @@ export const TOKEN_BALANCE = ({ address }: { address: string }) => [
   "readContract",
   { functionName: "balanceOf", args: [address] },
 ];
+export const ACCEPTED_TOKENS = (indexerUrl: string) => ["acceptedTokens", indexerUrl];

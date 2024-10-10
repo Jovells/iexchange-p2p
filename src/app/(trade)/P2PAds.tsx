@@ -15,7 +15,14 @@ const columns: any = [
     key: "advertisers",
     label: "Advertiser",
     render: (row: Offer) => (
-      <span className="">{row.merchant.name + " (" + shortenAddress(row.merchant.id, 2) + ")"}</span>
+      <div className="flex items-center">
+        <div className="w-6 h-6 rounded-full bg-gray-800 dark:bg-white flex items-center justify-center mr-2">
+          <span className="text-white dark:text-gray-800 text-sm font-bold">
+            {row.merchant.name?.charAt(0).toUpperCase() || row.merchant.id.charAt(2)}
+          </span>
+        </div>
+        <span className="">{(row.merchant.name || "") + " (" + shortenAddress(row.merchant.id, 2) + ")"}</span>
+      </div>
     ),
   },
   {
@@ -34,8 +41,8 @@ const columns: any = [
     key: "funds",
     label: "Limits",
     render: (row: Offer) => (
-      <span className="">
-        {formatCurrency(row.minOrder, row.token.symbol)} - {formatCurrency(row.maxOrder, row.token.symbol)}
+      <span className=" text-sm text-gray-700 dark:text-gray-300">
+        {formatCurrency(row.minOrder, "")} - {formatCurrency(row.maxOrder, row.token.symbol)}
       </span>
     ),
   },
@@ -43,7 +50,11 @@ const columns: any = [
     key: "payment",
     label: "Payment Options",
     render: (row: Offer) => (
-      <span className={`border-l-4 pl-1 ${getPaymentMethodColor(row.paymentMethod.method.toLowerCase())}`}>
+      <span
+        className={`text-sm dark:text-gray-300 text-gray-700 border-l-4 pl-1 ${getPaymentMethodColor(
+          row.paymentMethod.method.toLowerCase(),
+        )}`}
+      >
         {row.paymentMethod.method}
       </span>
     ),

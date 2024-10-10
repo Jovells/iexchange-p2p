@@ -120,7 +120,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
   return (
     //TODO @mbawon MAKE CONVOS SCROLL WELL ON ALL SCREEN SIZES
     <div id="messagesContainer" className="w-full h-[600px] border rounded-xl flex flex-col dark:border-gray-700">
-      <div className="w-full bg-gray-100 dark:bg-gray-800 p-3 rounded-t-xl text-black dark:text-white">
+      <div className="w-full flex content-between justify-between bg-gray-100 dark:bg-gray-800 p-3 rounded-t-xl text-black dark:text-white">
         {otherParty.name} {shortenAddress(otherParty.id)}
         {/* TODO @Jovells refine this */}
         {otherUserIsOnNetwork ? (
@@ -128,11 +128,11 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
             Messaging Enabled
           </span>
         ) : client ? (
-          <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
+          <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-[#f6465d] bg-red-100 rounded-full">
             Messaging Disabled. The counterparty has not enabled messaging.
           </span>
         ) : (
-          <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
+          <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-[#f6465d] bg-red-100 rounded-full">
             Messaging Disabled
           </span>
         )}
@@ -147,31 +147,33 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="text-center text-gray-800 dark:text-white">Messaging not enabled</div>
-          <Button onClick={resolveEnable} className="text-gray-800 dark:text-white">Enable Messaging</Button>
+          <Button onClick={resolveEnable} className="text-gray-800 dark:text-white">
+            Enable Messaging
+          </Button>
         </div>
       )}
 
-      <div className="w-full p-3 bg-white dark:bg-gray-900 rounded-b-xl">
-        <div className="relative flex items-center">
+      <div className="w-full p-3 flex gap-2 bg-white dark:bg-gray-900 rounded-b-xl">
+        <div className="relative flex-1 flex items-center">
           <input
             type="text"
             placeholder="Type a message..."
-            className="w-full border rounded-xl p-2 pr-10 focus:outline-none bg-gray-100 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-xl p-2 pr-10 focus:outline-none bg-gray-100 dark:bg-gray-800 dark:text-white transition-all duration-300 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-700"
             value={messageInputValue}
             onChange={handleInputChange}
             onKeyDown={e => {
               console.log("keydown", e.key);
               e.key === "Enter" && sendMessage();
-              e.key === "Enter" && setInputValue("")
+              e.key === "Enter" && setInputValue("");
             }}
           />
-          <button
-            className="absolute right-2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 dark:bg-blue-400 dark:hover:bg-blue-500"
-            onClick={() => sendMessage()}
-          >
-            <Send className="w-5 h-5" />
-          </button>
         </div>
+        <button
+          className="bg-[#01A2E4] w-10 h-10 text-white p-2 rounded-full hover:bg-blue-600 dark:bg-blue-400 dark:hover:bg-blue-500"
+          onClick={() => sendMessage()}
+        >
+          <Send className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );

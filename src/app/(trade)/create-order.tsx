@@ -322,12 +322,18 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
             <p className="text-red-500">{errors.find(e => e.path[0] === "paymentMethod")?.message}</p>
           )}
           <div className="grid grid-cols-2 gap-8 pt-4">
-            <Button text="Cancel" className="bg-[#EAEBEC] text-black rounded-xl px-4 py-2" onClick={toggleExpand} />
+            <Button
+              text="Cancel"
+              className="bg-slate-50 dark:bg-gray-500 dark:text-gray-100 text-black rounded-xl px-4 py-2 transition duration-300 ease-in-out transform  hover:bg-slate-100 dark:hover:bg-gray-600"
+              onClick={toggleExpand}
+            />
             <Button
               loading={isApprovePending || isPending}
               type="submit"
               text={alreadyApproved ? `${trade} ${crypto}` : `Approve and ${trade} ${crypto}`}
-              className={`${isBuy ? "bg-[#2D947A]" : "bg-[#f14e4e]"} text-white rounded-xl px-4 py-2`}
+              className={`${
+                isBuy ? "bg-[#2ebd85]" : "bg-[#f14e4e]"
+              } text-white rounded-xl px-4 py-2 transition duration-300 ease-in-out transform hover:bg-opacity-90`}
             />
           </div>
         </div>

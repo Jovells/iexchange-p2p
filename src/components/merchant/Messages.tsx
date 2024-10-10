@@ -45,8 +45,8 @@ const Messages = ({ conversation }: { conversation: CachedConversation }) => {
               <span
                 className={`${
                   message.senderAddress === mixedCaseAddress
-                    ? "bg-blue-500 text-white ml-auto"
-                    : "bg-gray-200 text-black mr-auto"
+                    ? "bg-[#01A2E4] text-white ml-auto"
+                    : "bg-gray-200 text-black dark:text-gray-100 dark:bg-gray-700 mr-auto"
                 } inline-block p-3 max-w-xs rounded-[8px] shadow-md ${
                   message.senderAddress === mixedCaseAddress ? "rounded-tr-none" : "rounded-tl-none"
                 }`}

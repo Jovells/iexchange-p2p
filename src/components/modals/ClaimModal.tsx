@@ -8,17 +8,24 @@ import { useReadContract } from "wagmi";
 import Loader from '../loader/Loader';
 import useWriteContractWithToast from '@/common/hooks/useWriteContractWithToast';
 import { useModal } from '@/common/contexts/ModalContext';
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/common/contexts/UserContext";
-import { TOKEN_BALANCES } from "@/common/constants/queryKeys";
+import { ACCEPTED_TOKENS, TOKEN_BALANCES } from "@/common/constants/queryKeys";
+import { fetchTokens } from "@/common/api/fetchTokens";
 
 const ClaimModal = () => {
   const queryClient = useQueryClient();
   const { hideModal } = useModal();
-  const { faucet } = useContracts();
+  const { faucet, indexerUrl } = useContracts();
   const { address } = useUser();
 
-  const { data: lastClaimed, isFetching } = useReadContract({
+  const { data: acceptedTokens, isPending: isAcceptedTokensPending } = useQuery({
+    queryKey: ACCEPTED_TOKENS(indexerUrl),
+    queryFn: () => fetchTokens(indexerUrl),
+    enabled: !!indexerUrl,
+  });
+
+  const { data: lastClaimed, isLoading: isClaimLoading } = useReadContract({
     abi: faucet.abi,
     address: faucet.address,
     functionName: "lastClaimed",
@@ -116,16 +123,18 @@ const ClaimModal = () => {
     );
   });
 
-  // if (isFetching) {
-  //   return <Loader />;
-  // }
+  if (isAcceptedTokensPending || isClaimLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
       {/* Modal Overlay */}
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-end lg:items-center">
         {/* Mobile Bottom-Up Modal */}
-        <div className={`w-full min-h-[500px] bg-white rounded-t-xl p-8 flex flex-col items-center dark:bg-gray-800 lg:rounded-xl lg:w-[500px] lg:min-h-[auto] lg:h-auto`}>
+        <div
+          className={`w-full min-h-[500px] bg-white rounded-t-xl p-8 flex flex-col items-center dark:bg-gray-800 lg:rounded-xl lg:w-[500px] lg:min-h-[auto] lg:h-auto`}
+        >
           <div className="flex justify-end">
             <button onClick={hideModal} aria-label="Close modal" className="text-gray-600 dark:text-gray-300">
               <X />
@@ -134,13 +143,16 @@ const ClaimModal = () => {
           <div className="flex flex-col gap-8">
             <div>
               <h1 className="text-center text-2xl font-medium text-gray-800 dark:text-gray-200">Available Tokens</h1>
-              <p className="text-center text-lg text-gray-500 dark:text-gray-400">Claim the number of Tokens you have been allocated below.</p>
+              <p className="text-center text-lg text-gray-500 dark:text-gray-400">
+                Claim the number of Tokens you have been allocated below.
+              </p>
             </div>
             {!isClaimAvailable ? (
               <div className="flex flex-col gap-6">
                 <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
                   <p className="text-center text-gray-500 dark:text-gray-300 text-xs">
-                    Currently there are no tokens available for claiming. Kindly visit after a period of 24 hours to claim.
+                    Currently there are no tokens available for claiming. Kindly visit after a period of 24 hours to
+                    claim.
                   </p>
                 </div>
                 <div className="w-full flex flex-row gap-4">
@@ -149,25 +161,22 @@ const ClaimModal = () => {
                 <div className="w-full border rounded-xl bg-yellow-100 dark:bg-yellow-600 p-6 py-4 flex flex-col border-red-400 shadow-md">
                   <h1 className="text-xl text-black dark:text-white font-medium">Notice on claiming Tokens</h1>
                   <p className="text-gray-500 dark:text-gray-300 text-xs">
-                    It is important to note that your allocated tokens can be claimed once daily after 24 hours of initial
-                    claim.
+                    It is important to note that your allocated tokens can be claimed once daily after 24 hours of
+                    initial claim.
                   </p>
                 </div>
               </div>
             ) : (
               <div className="flex flex-col gap-6">
-                <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
-                  <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of RMP</h2>
-                  <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 RMP</h2>
-                </div>
-                <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
-                  <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of TRK</h2>
-                  <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 TRK</h2>
-                </div>
-                <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
-                  <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of CEDIH</h2>
-                  <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 CEDIH</h2>
-                </div>
+                {acceptedTokens?.map((token, i) => (
+                  <div
+                    key={token.id}
+                    className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center"
+                  >
+                    <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of {token.symbol}</h2>
+                    <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 {token.symbol}</h2>
+                  </div>
+                ))}
               </div>
             )}
             <Button

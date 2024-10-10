@@ -81,23 +81,28 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
   }, [isOpen]);
 
   return (
-    <div ref={dropdownRef} className="relative border border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer w-full">
+    <div
+      ref={dropdownRef}
+      className="relative border border-gray-300 dark:border-gray-600 dark:hover:border-[#01a2e4]   hover:border-[#01a2e4] rounded-xl cursor-pointer w-full"
+    >
       <div className="w-full flex flex-col px-3 py-3">
-        {label && selectedValue && <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>}
+        {label && selectedValue && <span className="text-sm text-gray-500 dark:text-gray-200">{label}</span>}
         <div className="flex items-center w-full" onClick={toggleDropdown}>
           <div className="flex items-center flex-1 space-x-1">
-            {!selectedValue && <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>}
+            {!selectedValue && <span className="text-sm text-gray-500 dark:text-gray-200">{label}</span>}
             {selectedValue?.method ? (
               <div className="flex w-full justify-between">
                 <div className="flex items-center space-x-4">
-                  <span className="border-l-4 border-blue-500 pl-2 text-gray-800 dark:text-gray-200">{selectedValue.method}</span>
+                  <span className="border-l-4 border-blue-500 pl-2 text-gray-800 dark:text-gray-200">
+                    {selectedValue.method}
+                  </span>
                 </div>
                 <div className="pr-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
                   <div>{selectedValue.number}</div>
                 </div>
               </div>
             ) : (
-              <span className="text-gray-400 dark:text-gray-500">{placeholder}</span>
+              <span className="text-gray-400 dark:text-gray-400">{placeholder}</span>
             )}
           </div>
           <ChevronDown className="text-gray-600 dark:text-gray-300" />
@@ -118,7 +123,9 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
                   ) : (
                     <Square className="text-black dark:text-white w-4 h-4" />
                   )}
-                  <span className="border-l-4 border-blue-500 pl-2 text-gray-800 dark:text-gray-200">{option.method}</span>
+                  <span className="border-l-4 border-blue-500 pl-2 text-gray-800 dark:text-gray-200">
+                    {option.method}
+                  </span>
                 </div>
                 <div className="min-w-40 text-sm text-gray-500 dark:text-gray-400">
                   <div>{option.name}</div>

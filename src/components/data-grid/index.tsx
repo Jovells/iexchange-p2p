@@ -91,7 +91,7 @@ const ExpandableTable = forwardRef(
           {/* Column Headers */}
           {!isMobile && (
             <div
-              className="grid grid-cols-12 gap-4 p-4 border border-gray-200 dark:border-gray-600  dark:bg-gray-900 rounded-xl text-white text-sm font-light"
+              className="grid grid-cols-12 gap-4 p-4 border-b border-gray-200 dark:border-gray-600  dark:bg-gray-900 rounded-xl text-white text-sm font-light"
               style={{ gridTemplateColumns: columnGridTemplate }}
             >
               {columns.map(column => (
@@ -193,8 +193,10 @@ const ExpandableTable = forwardRef(
                                       handleRowClick(index);
                                     }}
                                     className={`${
-                                      row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
-                                    } text-white text-sm px-4 py-3 rounded-xl min-w-[130px]`}
+                                      row.offerType === offerTypes.buy
+                                        ? "bg-[#2ebd85] hover:bg-[#249d6e]"
+                                        : "bg-[#F14E4E] hover:bg-[#d13e3e]"
+                                    } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
                                   >
                                     {label}
                                   </button>

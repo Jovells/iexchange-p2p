@@ -23,14 +23,16 @@ export function Timer({timestamp, seconds}: {timestamp: number | BigInt | string
 
     const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
     const remainingSeconds = (timeLeft % 60).toString().padStart(2, '0');
-  return <div className="flex flex-row justify-start items-start space-x-1">
-                <span className="bg-blue-500 rounded-lg w-6 h-6 p-1 flex justify-center items-center px-3 text-white text-sm">
-                  {minutes}
-                </span>
-                <span>:</span>
-                <span className="bg-blue-500 rounded-lg w-6 h-6 p-1 flex justify-center items-center px-3 text-white text-sm">
-                  {remainingSeconds}
-                </span>
-              </div>;
+  return (
+    <div className="flex flex-row dark:text-white justify-start items-start space-x-1">
+      <span className="bg-blue-500 rounded-[4px] w-6 h-6 p-1 flex justify-center items-center px-3 text-white text-sm">
+        {minutes}
+      </span>
+      <span>:</span>
+      <span className="bg-blue-500 rounded-[4px] w-6 h-6 p-1 flex justify-center items-center px-3 text-white text-sm">
+        {remainingSeconds}
+      </span>
+    </div>
+  );
 }
   

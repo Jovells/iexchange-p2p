@@ -90,7 +90,7 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className="w-full relative border transition-all duration-100 ease-in-out hover:border-[#01a2e4] border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer"
+      className="w-full hover:dark:border-[#01a2e4] relative border transition-all duration-300 ease-in-out hover:border-[#01a2e4] border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer"
     >
       <div className="w-full flex flex-col px-3 py-1">
         {selectedValue.amount && label && (

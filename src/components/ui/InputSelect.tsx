@@ -68,7 +68,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
     return (
       <div
         ref={dropdownRef}
-        className="relative border   border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer w-full transition-all duration-100 ease-in-out hover:border-[#01a2e4]"
+        className="relative border   border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer w-full transition-all duration-300 ease-in-out hover:border-[#01a2e4] hover:dark:border-[#01a2e4]"
       >
         <div className="w-full flex flex-col">
           {label && selectedValue && <span className="text-sm text-gray-500">{label}</span>}

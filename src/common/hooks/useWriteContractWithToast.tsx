@@ -67,6 +67,7 @@ function useWriteContractWithToast(numConfirmations = 1) {
         promiseRef.current = { resolve, reject };
         if (!waitForReceipt) {
           resolve({ txHash });
+          toast.success(successMessage || "Transaction Successful", { id: toastId });
         }
       });
     } catch (error: any) {
@@ -91,6 +92,7 @@ function useWriteContractWithToast(numConfirmations = 1) {
   };
 
   useEffect(() => {
+    //TODO:@Jovells refactor to prevent running if user is not waiting for receipt
     if (receipt) {
       let logs = [];
       console.log("qs receipt", receipt.logs);
@@ -111,21 +113,22 @@ function useWriteContractWithToast(numConfirmations = 1) {
 
       setDecodedLogs(logs);
       promiseRef.current?.resolve({ receipt, decodedLogs: logs, txHash: receipt.transactionHash });
-
-      options?.shouldShowModal
-        ? showModal(
-            <ModalAlert
-              buttonText="Done"
-              buttonClick={options.modalAction}
-              modalType="success"
-              title="Successful"
-              description={options.successMessage || options.args[0].functionName + " successful"}
-              icon="../../images/icons/success.png"
-            />,
-          )
-        : toast.success(options?.successMessage || options?.args[0].functionName + " successful", {
-            id: options?.toastId,
-          });
+      if (options?.waitForReceipt) {
+        options?.shouldShowModal
+          ? showModal(
+              <ModalAlert
+                buttonText="Done"
+                buttonClick={options.modalAction}
+                modalType="success"
+                title="Successful"
+                description={options.successMessage || options.args[0].functionName + " successful"}
+                icon="../../images/icons/success.png"
+              />,
+            )
+          : toast.success(options?.successMessage || options?.args[0].functionName + " successful", {
+              id: options?.toastId,
+            });
+      }
     }
   }, [receipt, options?.toastId]);
 
