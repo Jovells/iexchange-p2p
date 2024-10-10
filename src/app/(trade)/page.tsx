@@ -20,10 +20,12 @@ import Loader from "@/components/loader/Loader";
 import CryptoSelector from "./cryptoSelector";
 import { useUser } from "@/common/contexts/UserContext";
 import { ACCEPTED_TOKENS } from "@/common/constants/queryKeys";
+import { useModal } from "@/common/contexts/ModalContext";
 
 interface P2PMarketProps {}
 
 const P2PMarket: React.FC<P2PMarketProps> = () => {
+  const { showModal, hideModal} = useModal()
   const { session } = useUser();
   const router = useRouter();
   const pathname = usePathname();
@@ -87,13 +89,21 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     return null;
   }
 
-  // console.log("qiAllp2pcurrencies", currencies);
+// const showModal1 = () =>{
+//   showModal(
+//     <div className="w-[500px] bg-white">
+//       <div>addd</div>
+//       <button onClick={hideModal}></button>
+//     </div>
+//   )
+// }
 
   return (
     <>
       <WalletConnectSection />
       <div className="container mx-auto  p-0 flex flex-col items-start space-y-4">
         <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
+          {/* <button onClick={showModal1}>ddd</button> */}
           <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
           <div className="w-full ">
             <CryptoSelector tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={setSelectedCrypto} />
