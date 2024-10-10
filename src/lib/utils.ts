@@ -111,7 +111,7 @@ export const getPaymentMethodColor = (label: string) => {
     case 'm-pesa':
       return 'border-red-600';
     case 'airtel tigo mobile money':
-      return 'border-blue-600';
+      return "border-[#01a2e4]";
     case 'fidelity bank':
       return 'border-yellow-800';
     case 'mtn mobile money':

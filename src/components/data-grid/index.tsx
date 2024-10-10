@@ -245,7 +245,7 @@ const ExpandableTable = forwardRef(
                     <button
                       onClick={() => onPageChange(1)}
                       className={`px-4 py-2 rounded-[8px] border ${
-                        page === 0 ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]" : "bg-transparent text-blue-600"
+                        page === 0 ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]" : "bg-transparent text-[#01a2e4]"
                       } hover:bg-blue-200 transition-colors duration-200`}
                     >
                       1
@@ -265,7 +265,7 @@ const ExpandableTable = forwardRef(
                         className={`px-4 py-2 rounded-[8px] border ${
                           page === pageNum - 1
                             ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]"
-                            : "bg-transparent text-blue-600"
+                            : "bg-transparent text-[#01a2e4]"
                         } hover:bg-blue-200 transition-colors duration-200`}
                       >
                         {pageNum}
@@ -282,7 +282,7 @@ const ExpandableTable = forwardRef(
                     className={`px-4 py-2 rounded-[8px] border ${
                       page === totalPages - 1
                         ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]"
-                        : "bg-transparent text-blue-600"
+                        : "bg-transparent text-[#01a2e4]"
                     } hover:bg-blue-200 transition-colors duration-200`}
                   >
                     {totalPages}

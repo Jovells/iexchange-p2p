@@ -335,7 +335,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
       <div className="flex flex-col items-center justify-center h-screen">
         <h2 className="text-2xl font-semibold text-gray-700">Order Not Found</h2>
         <p className="text-gray-500 mt-2">The order you are looking for does not exist</p>
-        <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-blue-600">
+        <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4]">
           Go Home
         </Link>
       </div>
@@ -357,7 +357,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
       <div className="flex flex-col items-center justify-center h-screen">
         <h2 className="text-2xl font-semibold text-gray-700">Unauthorized Access</h2>
         <p className="text-gray-500 mt-2">You are not authorized to view this page.</p>
-        <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-blue-600">
+        <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4]">
           Go Home
         </Link>
       </div>
@@ -497,7 +497,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               <Button
                 text="Chat With Merchant"
                 icon={<MessageCircle />}
-                className="block lg:hidden bg-blue-700 text-black dark:text-white rounded-xl px-4 py-2 hover:bg-blue-600 dark:hover:bg-blue-500 transition duration-300 ease-in-out"
+                className="block lg:hidden bg-[#01a2e4] text-black dark:text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4] dark:hover:bg-blue-500 transition duration-300 ease-in-out"
                 onClick={() => setIsChatModalOpen(true)}
               />
               {/* {pollToggle ? (

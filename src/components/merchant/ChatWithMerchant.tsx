@@ -179,7 +179,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
             />
           </div>
           <Button
-            className="bg-[#01A2E4] w-10 h-10 text-white p-2 rounded-full hover:bg-blue-600 dark:bg-blue-400 dark:hover:bg-blue-500"
+            className="bg-[#01A2E4] w-10 h-10 text-white p-2 rounded-full hover:bg-[#01a2e4] dark:bg-blue-400 dark:hover:bg-blue-500"
             onClick={() => sendMessage()}
           >
             <Send className="w-5 h-5" />
