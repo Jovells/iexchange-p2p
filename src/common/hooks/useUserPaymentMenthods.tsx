@@ -10,6 +10,7 @@ const useUserPaymentMethods = () => {
   const {
     data: paymentMethods,
     isFetching,
+    isLoading,
     refetch,
   } = useQuery({
     queryKey: ["userPaymentMethods", address],
@@ -21,7 +22,7 @@ const useUserPaymentMethods = () => {
 
   console.log("fetchced user paymentMethods", paymentMethods);
 
-  return { paymentMethods, isFetching, refetch };
+  return { paymentMethods, isLoading, isFetching, refetch };
 };
 
 export default useUserPaymentMethods;

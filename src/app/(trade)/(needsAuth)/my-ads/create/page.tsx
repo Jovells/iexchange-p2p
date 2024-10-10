@@ -58,13 +58,13 @@ const CreateAd = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const queryClient = useQueryClient();
 
-  const { paymentMethods } = useUserPaymentMethods();
+  const { paymentMethods, isLoading: isPaymentMethodsLoading } = useUserPaymentMethods();
 
-  const { data: currencies } = useQuery({
+  const { data: currencies, isLoading: isCurrenciesLoading } = useQuery({
     queryKey: ["currencies"],
     queryFn: () => fetchCurrencies(indexerUrl),
   });
-  const { data: tokens } = useQuery({
+  const { data: tokens, isLoading: isTokensLoading } = useQuery({
     queryKey: ["tokens"],
     queryFn: () => fetchTokens(indexerUrl),
   });
@@ -202,7 +202,10 @@ const CreateAd = () => {
     }
   };
 
-  if (!currencies || !tokens || !paymentMethods) {
+  if (
+    !(currencies && tokens && paymentMethods) &&
+    (isCurrenciesLoading || isPaymentMethodsLoading || isTokensLoading)
+  ) {
     return <Loader />;
   }
 
@@ -284,7 +287,7 @@ const CreateAd = () => {
               selectedMethod={selectedPaymentMethod}
               placeholder="Select Payment Method"
               name="paymentMethod"
-              options={paymentMethods}
+              options={paymentMethods || []}
               onValueChange={value => setSelectedPaymentMethod(value)}
             />
             <span className="text-gray-700 dark:text-white font-light">Time Limit</span>
