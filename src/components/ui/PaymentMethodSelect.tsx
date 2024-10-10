@@ -137,8 +137,10 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
           ))}
           {addButton && (
             <Button
+              type="button"
+              //TODO: @mbawon fix icon
               icon="/images/icons/add-circle.png"
-              className="bg-black text-white hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-xl px-4 py-2"
+              className="bg-black mt-2 w-full text-white hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-[5px] px-4 py-2"
               text={addButtonText}
               onClick={handleAddPaymentMethodClick}
             />

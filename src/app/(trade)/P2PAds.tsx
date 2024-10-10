@@ -116,6 +116,7 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
     <Suspense>
       <div className="w-full">
         <ExpandableTable
+          requiresAuthToOpen
           ref={tableRef}
           columns={columns}
           data={data?.offers || []}

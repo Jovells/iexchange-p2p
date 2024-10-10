@@ -129,7 +129,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
           </span>
         ) : client ? (
           <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-[#f6465d] bg-red-100 rounded-full">
-            Messaging Disabled. The counterparty has not enabled messaging.
+            Messaging Disabled.
           </span>
         ) : (
           <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-[#f6465d] bg-red-100 rounded-full">
@@ -141,9 +141,17 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       {conversation ? (
         <Messages conversation={conversation} />
       ) : client ? (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center text-gray-800 dark:text-white">No messages yet</div>
-        </div>
+        otherUserIsOnNetwork ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-gray-800 dark:text-white">No messages yet</div>
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center font-bold text-sm p-2 rounded-[5px] bg-slate-400 dark:bg-slate-800  text-gray-800 dark:text-slate-300">
+              The counterparty has not yet enabled messaging.
+            </div>
+          </div>
+        )
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="text-center text-gray-800 dark:text-white">Messaging not enabled</div>
@@ -153,28 +161,31 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
         </div>
       )}
 
-      <div className="w-full p-3 flex gap-2 bg-white dark:bg-gray-900 rounded-b-xl">
-        <div className="relative flex-1 flex items-center">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            className="w-full rounded-xl p-2 pr-10 focus:outline-none bg-gray-100 dark:bg-gray-800 dark:text-white transition-all duration-300 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-700"
-            value={messageInputValue}
-            onChange={handleInputChange}
-            onKeyDown={e => {
-              console.log("keydown", e.key);
-              e.key === "Enter" && sendMessage();
-              e.key === "Enter" && setInputValue("");
-            }}
-          />
+      {otherUserIsOnNetwork && (
+        <div className="w-full p-3 flex gap-2 bg-white dark:bg-gray-900 rounded-b-xl">
+          <div className="relative flex-1 flex items-center">
+            <input
+              type="text"
+              disabled
+              placeholder="Type a message..."
+              className="w-full rounded-xl p-2 pr-10 focus:outline-none bg-gray-100 dark:bg-gray-800 dark:text-white transition-all duration-300 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-700"
+              value={messageInputValue}
+              onChange={handleInputChange}
+              onKeyDown={e => {
+                console.log("keydown", e.key);
+                e.key === "Enter" && sendMessage();
+                e.key === "Enter" && setInputValue("");
+              }}
+            />
+          </div>
+          <Button
+            className="bg-[#01A2E4] w-10 h-10 text-white p-2 rounded-full hover:bg-blue-600 dark:bg-blue-400 dark:hover:bg-blue-500"
+            onClick={() => sendMessage()}
+          >
+            <Send className="w-5 h-5" />
+          </Button>
         </div>
-        <button
-          className="bg-[#01A2E4] w-10 h-10 text-white p-2 rounded-full hover:bg-blue-600 dark:bg-blue-400 dark:hover:bg-blue-500"
-          onClick={() => sendMessage()}
-        >
-          <Send className="w-5 h-5" />
-        </button>
-      </div>
+      )}
     </div>
   );
 };

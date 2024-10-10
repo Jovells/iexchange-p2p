@@ -44,7 +44,7 @@ export function OrdersDropdown() {
         <h2 className="text-grey-800 text-sm dark:text-white font-bold">Processing</h2>
         <Link
           href={ORDER_HISTORY_PAGE}
-          className=" flex hover:text-[#01A2E4] dark:text-grey-100 dark:hover:text-blue-300"
+          className=" flex hover:text-[#01A2E4] text-gray-200 dark:text-gray-400 dark:hover:text-blue-300"
         >
           <span> View more </span> {<ChevronRight />}
         </Link>

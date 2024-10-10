@@ -10,6 +10,8 @@ import Loader from '../loader/Loader';
 import { X } from 'lucide-react';
 import { Offer } from '@/common/api/types';
 import { offerTypes } from "@/common/constants";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useUser } from "@/common/contexts/UserContext";
 
 type Column = {
   key: string;
@@ -23,6 +25,7 @@ type Action = {
 };
 
 type ExpandableTableProps = {
+  requiresAuthToOpen?: boolean;
   columns: Column[];
   data: any[];
   actions?: Action[];
@@ -41,6 +44,7 @@ const ExpandableTable = forwardRef(
       columns,
       data,
       actions = [],
+      requiresAuthToOpen,
       styles,
       isLoading,
       children,
@@ -49,22 +53,27 @@ const ExpandableTable = forwardRef(
       totalRecords = data.length,
       onPageChange,
     }: ExpandableTableProps,
-    ref
+    ref,
   ) => {
     const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
     const [isMobile, setIsMobile] = useState<boolean>(window?.innerWidth <= 768);
+    const { openConnectModal } = useConnectModal();
+    const { isConnected } = useUser();
 
     useEffect(() => {
       const handleResize = () => {
         setIsMobile(window?.innerWidth <= 768);
       };
-      window?.addEventListener('resize', handleResize);
+      window?.addEventListener("resize", handleResize);
       return () => {
-        window?.removeEventListener('resize', handleResize);
+        window?.removeEventListener("resize", handleResize);
       };
     }, []);
 
     const handleRowClick = (index: number) => {
+      if (requiresAuthToOpen && !isConnected) {
+        return openConnectModal?.();
+      }
       if (expandedRowIndex === index) {
         closeExpandedRow();
         return;
@@ -80,8 +89,7 @@ const ExpandableTable = forwardRef(
       closeExpandedRow,
     }));
 
-    const columnGridTemplate = `repeat(${columns.length + (actions.length > 0 ? 1 : 0)
-      }, minmax(0, 1fr))`;
+    const columnGridTemplate = `repeat(${columns.length + (actions.length > 0 ? 1 : 0)}, minmax(0, 1fr))`;
 
     const totalPages = Math.ceil(data.length / pageSize);
 
@@ -293,7 +301,7 @@ const ExpandableTable = forwardRef(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default ExpandableTable;
