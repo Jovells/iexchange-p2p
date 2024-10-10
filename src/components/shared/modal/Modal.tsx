@@ -34,7 +34,7 @@ const ModalManager: React.FC = () => {
       ></div>
       <div
         className={classnames(
-          "relative rounded-lg z-20 p-6 transition-transform transition-opacity duration-300 ease-in-out transform",
+          "relative rounded-lg z-20 p-6 transition-opacity duration-300 ease-in-out transform",
           isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95",
           modalProps?.hasPadding
             ? "bg-white border border-gray-300 text-black dark:bg-gray-800 dark:border-gray-600 dark:text-white"
