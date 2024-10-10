@@ -25,8 +25,14 @@ const MerchantProfile = ({
             <p className="text-gray-500 dark:text-gray-400">99% Completion</p>
           </div>
           <div className="flex flex-col items-start">
-            <p className="font-bold text-gray-200 bg-slate-500 rounded p-1">{offer.paymentMethod.method}</p>
+            <p className=" text-gray-800 ">{offer.paymentMethod.method}</p>
             <p className="text-gray-500 dark:text-gray-400">Payment Method</p>
+          </div>
+          <div className="flex flex-col items-start">
+            <p className="font-bold  text-gray-800 rounded ">
+              {offer.rate} {offer.currency.currency}
+            </p>
+            <p className="text-gray-500 dark:text-gray-400">Rate</p>
           </div>
         </div>
 
@@ -50,7 +56,6 @@ const MerchantProfile = ({
             <span className="text-gray-500 dark:text-gray-400">Limit</span>
           </div>
         </div>
-
       </div>
       {/* Terms */}
       <div className="space-y-3 bg-white dark:bg-gray-800 p-0 lg:p-6 pt-6 h-full mt-5 rounded-xl">

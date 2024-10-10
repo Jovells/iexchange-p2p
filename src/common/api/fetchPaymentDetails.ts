@@ -12,7 +12,7 @@ const paymentMethodsRef = collection(db, `Users/${address}/paymentMethods`);
           console.log(paymentMethods);
           return paymentMethods as PaymentMethod[];
         } else {
-          throw new Error('No payment methods found');
+          return [];
         }
 
     }
