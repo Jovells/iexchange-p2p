@@ -17,7 +17,7 @@ const Tabs: FC<Props> = ({ onTabChange }) => {
 
     return (
         <div className="flex flex-row justify-between lg:justify-start items-center flex-wrap lg:flex-nowrap w-full lg:w-auto">
-            <div className="flex flex-row items-center bg-white border border-gray-200 rounded-xl p-1 min-w-[150px]">
+            <div className="flex flex-row items-center bg-white dark:bg-gray-700 border border-gray-700 rounded-xl p-1 min-w-[150px]">
                 <button
                     type="button"
                     onClick={() => handleTabChange("buy")}

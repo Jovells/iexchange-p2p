@@ -19,14 +19,16 @@ const ModalManager: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true">
       <div
-        className="absolute inset-0 bg-gray-700 opacity-75"
+        className="absolute inset-0 bg-gray-700 opacity-75 dark:bg-gray-900 dark:opacity-80"
         onClick={hideModal}
         aria-hidden="true"
       ></div>
       <div
         className={classnames(
           "relative rounded-lg z-20 p-6",
-          modalProps?.hasPadding ? "bg-black border border-gray-100 border-opacity-50 text-white" : ""
+          modalProps?.hasPadding
+            ? "bg-white border border-gray-300 text-black dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+            : ""
         )}
       >
         {/* <button

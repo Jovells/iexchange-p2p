@@ -138,7 +138,7 @@ interface TabSelectorProps {
 
 const TabSelector: React.FC<TabSelectorProps> = ({ activeTab, handleTabChange }) => {
   return (
-    <div className="flex flex-row items-center bg-white border border-gray-200 rounded-[10px] p-2 min-w-full lg:min-w-[150px] dark:bg-gray-800 dark:border-gray-700">
+    <div className="flex flex-row items-center bg-white border border-gray-200 rounded-[10px] p-2 min-w-full lg:min-w-[170px] dark:bg-gray-800 dark:border-gray-700">
       <button
         onClick={() => handleTabChange("buy")}
         className={`w-full rounded-[5px] text-center text-[14px] font-[400] p-2 px-6 transition-all duration-300 ease-in-out ${

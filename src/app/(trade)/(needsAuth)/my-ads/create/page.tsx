@@ -4,13 +4,11 @@ import Tabs from '@/components/tabs'
 import Button from '@/components/ui/Button'
 import InputSelect from '@/components/ui/InputSelect'
 import Input from '@/components/ui/input'
-import React, { useEffect, useState } from "react";
-import RenderAddedPaymentMethod from "./RenderAddedPaymentMethod";
+import React, { useState } from "react";
 import { useContracts } from "@/common/contexts/ContractContext";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import { fetchTokens } from "@/common/api/fetchTokens";
-import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
 import { offerTypes, TIME_LIMITS } from "@/common/constants";
 import { useRouter } from "next/navigation";
 import storeAccountDetails from "@/common/api/storeAccountDetails";
@@ -21,7 +19,7 @@ import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast"
 import { useUser } from "@/common/contexts/UserContext";
 import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
 import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
-import { AccountDetails, Offer, PaymentMethod } from "@/common/api/types";
+import { AccountDetails, PaymentMethod } from "@/common/api/types";
 import { MY_ADS } from "@/common/constants/queryKeys";
 import { MY_ADS_PAGE } from "@/common/page-links";
 
@@ -209,7 +207,7 @@ const CreateAd = () => {
   }
 
   return (
-    <div className="container mx-auto p-0 py-4">
+    <div className="container mx-auto p-0 py-4 bg-white dark:bg-[#14161B]">
       <div className="my-4 flex flex-col gap-4">
         <Tabs onTabChange={setActiveTab as any} />
         <div className="flex flex-col gap-2">
@@ -219,7 +217,7 @@ const CreateAd = () => {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="shadow-lg border border-gray-200 p-10 py-10 bg-white rounded-xl flex flex-col gap-10"
+        className="shadow-lg border border-gray-200 dark:border-gray-800 p-10 py-10 bg-white dark:bg-gray-800 rounded-xl flex flex-col gap-10"
       >
         <div className="flex flex-col gap-8">
           <h1 className="text-[#01a2e4] font-bold">Type and Price</h1>
@@ -261,7 +259,7 @@ const CreateAd = () => {
         <div className="flex flex-col gap-8">
           <h1 className="text-[#01a2e4] font-bold">Amount and Method</h1>
           <div className="flex flex-col gap-3">
-            <span className="text-gray-700 font-light">Order Limit</span>
+            <span className="text-gray-700 dark:text-white font-light">Order Limit</span>
             <div className="flex flex-row items-start gap-6">
               <div className="flex flex-col gap-2 flex-1">
                 <div className="flex flex-col">
@@ -278,7 +276,7 @@ const CreateAd = () => {
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            <span className="text-gray-700 font-light">Payment Methods</span>
+            <span className="text-gray-700 dark:text-white font-light">Payment Methods</span>
             <PaymentMethodSelect
               addButton
               label=""
@@ -289,7 +287,7 @@ const CreateAd = () => {
               options={paymentMethods}
               onValueChange={value => setSelectedPaymentMethod(value)}
             />
-            <span className="text-gray-700 font-light">Time Limit</span>
+            <span className="text-gray-700 dark:text-white font-light">Time Limit</span>
 
             <div className="flex flex-col">
               <InputSelect
@@ -304,14 +302,14 @@ const CreateAd = () => {
               />
               {errors.timeLimit && <span className="text-red-500 text-sm">{errors.timeLimit}</span>}
             </div>
-            <span className="text-gray-700 font-light">Deposit Address</span>
+            <span className="text-gray-700 dark:text-white font-light">Deposit Address</span>
             <div className="flex flex-col">
               <Input defaultValue={address} name="depositAddress" label="Deposit Address" />
               {errors.depositAddress && <span className="text-red-500 text-sm">{errors.depositAddress}</span>}
             </div>
             <div className="flex flex-col gap-4 my-4">
-              <span className="text-sm text-gray-500">Terms (Optional)</span>
-              <textarea name="terms" rows={10} className="resize-none w-full border p-5 border-gray-200 rounded-xl" />
+              <span className="text-sm text-gray-500 dark:text-white">Terms (Optional)</span>
+              <textarea name="terms" rows={10} className="resize-none w-full  p-5 border border-gray-300 dark:border-gray-600 rounded-[8px] bg-transparent text-gray-800 dark:text-white" />
               {errors.terms && <span className="text-red-500 text-sm">{errors.terms}</span>}
             </div>
           </div>
@@ -320,7 +318,7 @@ const CreateAd = () => {
               type="button"
               text="Cancel"
               iconPosition="right"
-              className="bg-transparent border border-gray-300 text-black rounded-xl px-4 py-2 w-fit"
+              className="bg-transparent border border-gray-300 text-black dark:text-white rounded-xl px-4 py-2 w-fit"
               onClick={() => {
                 router.back();
               }}
@@ -328,9 +326,9 @@ const CreateAd = () => {
             <Button
               loading={submitting}
               text="Add Post"
-              icon="/images/icons/add-circle.png"
+              // icon="/images/icons/add-circle.png"
               iconPosition="right"
-              className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2 w-fit"
+              className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-600 rounded-xl px-4 py-2 w-fit"
               type="submit"
             />
           </div>
