@@ -52,7 +52,7 @@ function useWriteContractWithToast(numConfirmations = 1) {
       afterAction,
       successMessage,
     } = options;
-    const toastId = tId || toast.loading(loadingMessage || "Calling " + args[0].functionName + "...");
+    const toastId = toast.loading(loadingMessage || "Calling " + args[0].functionName + "...", { id: tId });
     setOptions({ ...options, toastId, args });
     try {
       setIspending(true);
@@ -63,13 +63,15 @@ function useWriteContractWithToast(numConfirmations = 1) {
       const timeTimeToWait = ttw || afterAction ? 0 : 5000;
       await new Promise(resolve => setTimeout(resolve, timeTimeToWait));
       console.log("vb after wait");
-      return new Promise((resolve, reject) => {
+      const p = new Promise((resolve, reject) => {
         promiseRef.current = { resolve, reject };
         if (!waitForReceipt) {
           resolve({ txHash });
           toast.success(successMessage || "Transaction Successful", { id: toastId });
         }
       });
+      console.log("vb after promise", p);
+      return p as Promise<WriteContractWithToastReturnType>;
     } catch (error: any) {
       toast.error(errorMessage || `Transaction Failed: ${error.message}`, { id: toastId });
       throw new Error(error);
@@ -112,6 +114,7 @@ function useWriteContractWithToast(numConfirmations = 1) {
       }
 
       setDecodedLogs(logs);
+      console.log("qs decoded", logs, promiseRef.current);
       promiseRef.current?.resolve({ receipt, decodedLogs: logs, txHash: receipt.transactionHash });
       if (options?.waitForReceipt) {
         options?.shouldShowModal

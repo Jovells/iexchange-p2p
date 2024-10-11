@@ -14,6 +14,7 @@ const useIsMerchant = () => {
     isError,
     isLoading,
     error,
+    refetch,
   } = useReadContract({
     address: p2p.address,
     abi: p2p.abi,
@@ -43,6 +44,7 @@ const useIsMerchant = () => {
     isLoading,
     isError,
     error,
+    refetch,
   };
 };
 

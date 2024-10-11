@@ -13,6 +13,10 @@ import { useContracts } from "@/common/contexts/ContractContext";
 import { useState } from "react";
 import { ixToast as toast } from "@/lib/utils";
 import { useUser } from "@/common/contexts/UserContext";
+import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
+import useIsMerchant from "@/common/hooks/useIsMerchant";
+import { POST_AD_PAGE } from "@/common/page-links";
+import { useRouter } from "next/navigation";
 
 interface MerchantModalProps {
   hideModal: () => void;
@@ -21,10 +25,13 @@ interface MerchantModalProps {
 
 const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
   const { writeContractAsync } = useWriteContract();
+  const { writeContractAsync: write } = useWriteContractWithToast();
   const { address } = useUser();
   const [isStaking, setIsStaking] = useState(false);
   const { showModal } = useModal();
   const { p2p, tokens } = useContracts();
+  const { refetch } = useIsMerchant();
+  const router = useRouter();
 
   const { data: allowance } = useReadContract({
     abi: CediH,
@@ -38,40 +45,47 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     const id = toast.loading("Staking...");
     try {
       const stakeAmount = BigInt(1500 * 1e18);
-      if (allowance! < stakeAmount) {
-        const approveHash = await writeContractAsync({
-          abi: CediH,
-          address: tokens[0].address,
-          functionName: "approve",
-          args: [p2p.address, stakeAmount],
-        });
+      if (allowance! <= stakeAmount) {
+        const approveHash = await write(
+          { waitForReceipt: true, toastId: id },
+          {
+            abi: CediH,
+            address: tokens[0].address,
+            functionName: "approve",
+            args: [p2p.address, stakeAmount],
+          },
+        );
         console.log("Approved:", approveHash);
       } else {
         console.log("Already Approved");
       }
 
-      const registerHash = await writeContractAsync({
-        abi: OptimisticP2P,
-        address: p2p.address,
-        functionName: "registerMerchant",
-      });
+      const registerHash = await write(
+        { waitForReceipt: true },
+        {
+          abi: OptimisticP2P,
+          address: p2p.address,
+          functionName: "registerMerchant",
+        },
+      );
       console.log("Registered:", registerHash);
       const content = (
         <ModalAlert
-          buttonText="Done"
-          buttonClick={async () => {}}
+          buttonText="Post an ad"
+          buttonClick={async () => router.push(POST_AD_PAGE)}
           modalType="success"
           title="Successfully Staked"
           description="You have successfully secured a merchant placement."
-          icon="../../images/icons/alert-success.png"
+          //TODO: @mbawon ICON
+          icon="../../images/icons/success.png"
         />
       );
+      refetch?.();
       showModal(content);
-    } catch (error) {
-      toast.error("Error staking", { id });
+    } catch (error: any) {
+      toast.error(error.message, { id });
       console.error("Error handling stake:", error);
     } finally {
-      toast.dismiss(id);
       setIsStaking(false);
     }
   };
@@ -100,16 +114,12 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
         <>
           <div className="flex flex-col gap-6 mb-4">
             <h2 className="text-gray-700 text-lg">Merchant Stake</h2>
-            <p className="text-gray-500 text-sm">
-              Stake any currency up to 10 USDT to continue the process of becoming a merchant.
-            </p>
+            <p className="text-gray-500 text-sm">Stake 1500 CEDIH to continue the process of becoming a merchant.</p>
           </div>
           <InputWithSelect
             label="Stake Amount"
             initialCurrencyName="CEDIH"
-            currencies={
-              cryptoTokens as unknown as { symbol: string; name: string; icon: JSX.Element; id: `0x${string}` }[]
-            }
+            currencies={[{ id: "0x01", symbol: "GHS", name: "Ghanaian Cedi", icon: "₵" }]}
             onValueChange={value => console.log(value)}
             value="1500"
             readOnly

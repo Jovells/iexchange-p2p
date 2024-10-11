@@ -8,7 +8,7 @@ import { fetchAds } from "@/common/api/fetchAds";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { Currency, Offer, PaymentMethod, PreparedCurrency, Token } from "@/common/api/types";
 import { formatCurrency, getPaymentMethodColor, shortenAddress } from "@/lib/utils";
-import { offerTypes } from "@/common/constants";
+import { BOT_MERCHANT_ID, offerTypes } from "@/common/constants";
 
 const columns: any = [
   {
@@ -17,11 +17,14 @@ const columns: any = [
     render: (row: Offer) => (
       <div className="flex items-center">
         <div className="w-6 h-6 rounded-full bg-gray-800 dark:bg-white flex items-center justify-center mr-2">
-          <span className="text-white dark:text-gray-800 text-sm font-bold">
-            {row.merchant.name?.charAt(0).toUpperCase() || row.merchant.id.charAt(2)}
+          <span className="text-white dark:text-gray-800 text-[10px] font-bold">
+            {row.merchant.name?.charAt(0).toUpperCase() || row.merchant.id.substring(0, 3)}
           </span>
         </div>
-        <span className="">{(row.merchant.name || "") + " (" + shortenAddress(row.merchant.id, 2) + ")"}</span>
+        <span className="">
+          {(row.merchant.name || "") + " (" + shortenAddress(row.merchant.id, 2) + ")"}
+          {row.merchant.id === BOT_MERCHANT_ID ? ["BOT"] : ""}
+        </span>
       </div>
     ),
   },
@@ -78,7 +81,6 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
   const trade = searchParams.get("trade") || "Buy";
   // const crypto = searchParams.get("crypto") || "";
 
-
   const options = {
     page: currentPage,
     isActive,
@@ -95,6 +97,14 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
     //TODO: add retry logic
     retry: 0,
   });
+
+  function moveBotMerchantOffersToTop(offers: Offer[]) {
+    const botOffers = offers.filter(offer => offer.merchant.id === BOT_MERCHANT_ID);
+    const nonBotOffers = offers.filter(offer => offer.merchant.id !== BOT_MERCHANT_ID);
+    return [...botOffers, ...nonBotOffers];
+  }
+
+  const offers = data ? moveBotMerchantOffersToTop(data.offers) : [];
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -119,7 +129,7 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
           requiresAuthToOpen
           ref={tableRef}
           columns={columns}
-          data={data?.offers || []}
+          data={offers}
           actions={actions}
           isLoading={isPending}
           page={currentPage}

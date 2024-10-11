@@ -88,10 +88,10 @@ export const ixToast = {
       return toast.error("You rejected the request", options);
     }
     if (typeof message === "string" && message.includes("0xe450d38c")) {
-      return toast.error(
-        "Insufficient Balance For trade amount. Please top up your balance or reduce the amount",
-        options,
-      );
+      return toast.error("Insufficient Balance. Please top up your balance", options);
+    }
+    if (typeof message === "string" && message.includes("0xfb8f41b2")) {
+      return toast.error("Insufficient Allowance.", options);
     }
     toast.error(message, options);
   },
