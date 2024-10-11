@@ -3,8 +3,7 @@ import {
   morphHolesky,
   kakarotSepolia,
 } from "wagmi/chains";
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-
+import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit";
 
 // Get projectId from https://cloud.walletconnect.com
 export const projectId = process.env.WEB3_PROJECT_ID;
@@ -22,13 +21,22 @@ const mHolesky = {
 };
 const kSepolia = {
   ...kakarotSepolia,
+  id: 920637907288165,
   rpcUrls: {
     default: {
       http: ["https://sepolia-rpc.kakarot.org"],
     },
   },
-};
-export const chains = [mHolesky, kSepolia] as const;
+  blockExplorers: {
+    default: {
+      name: "BlockScout",
+      url: " https://blockscout-kkrt-sepolia.karnot.xyz/",
+    },
+  },
+} satisfies Chain;
+
+const isProd = process.env.NODE_ENV === "production";
+export const chains = isProd ? ([mHolesky] as const) : ([mHolesky, kSepolia] as const);
 export const config = getDefaultConfig({
   appName: "IExchange",
   chains,
