@@ -4,8 +4,10 @@ import { CachedConversation, useMessages, useStreamMessages } from "@xmtp/react-
 import { useEffect, useRef } from "react";
 import { ContentTypeId } from "@xmtp/content-type-primitives";
 import { ContentTypeText } from "@xmtp/content-type-text";
+import Loader from "../loader/Loader";
+import { CheckCheckIcon, CheckIcon } from "lucide-react";
 
-const Messages = ({ conversation }: { conversation: CachedConversation }) => {
+const Messages = ({ conversation, isLoading }: { conversation: CachedConversation; isLoading?: boolean }) => {
   const { messages, error } = useMessages(conversation);
   const { address, mixedCaseAddress } = useUser();
   const { error: streamError } = useStreamMessages(conversation);
@@ -38,7 +40,6 @@ const Messages = ({ conversation }: { conversation: CachedConversation }) => {
 
           return content ? (
             <div
-              ref={i === messages.length - 1 ? messagesEndRef : undefined}
               key={message.id}
               className={`mb-2 ${message.senderAddress.toLowerCase() === address ? "text-right" : "text-left"}`}
             >
@@ -49,15 +50,21 @@ const Messages = ({ conversation }: { conversation: CachedConversation }) => {
                     : "bg-gray-200 text-black dark:text-gray-100 dark:bg-gray-700 mr-auto"
                 } inline-block p-3 max-w-xs rounded-[8px] shadow-md ${
                   message.senderAddress === mixedCaseAddress ? "rounded-tr-none" : "rounded-tl-none"
-                }`}
+                } `}
               >
-                {content}
+                <div className="flex justify-center gap-1 break-all items-baseline">
+                  {content}
+                  {message.isSending && <Loader size="xs" />}
+                </div>
+                <div className="text-xs text-gray-200 dark:text-gray-300 mt-1">
+                  {new Date(message.sentAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </div>
               </span>
             </div>
           ) : null;
         })}
 
-        {/* <div ref={messagesEndRef} />  */}
+        <div ref={messagesEndRef}> {isLoading && <Loader size="xs" loaderType="text" />}</div>
       </div>
     </div>
   );

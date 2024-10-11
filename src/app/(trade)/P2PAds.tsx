@@ -68,7 +68,7 @@ interface Props {
   offerType: string;
   token?: Token;
   paymentMethod?: PaymentMethod;
-  currency?: PreparedCurrency;
+  currency?: Currency;
   amount?: string;
   isActive?: boolean;
 }

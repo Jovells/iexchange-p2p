@@ -25,7 +25,7 @@ import { useModal } from "@/common/contexts/ModalContext";
 interface P2PMarketProps {}
 
 const P2PMarket: React.FC<P2PMarketProps> = () => {
-  const { showModal, hideModal} = useModal()
+  const { showModal, hideModal } = useModal();
   const { session } = useUser();
   const router = useRouter();
   const pathname = usePathname();
@@ -57,10 +57,11 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     id: currency.id,
     icon: currency.currency === "GHS" ? <p>₵</p> : currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p>,
   }));
+  currencies?.unshift({ symbol: "All", name: "All", id: "0x0", icon: <></> });
 
-  const currencyFromUrl = acceptedCurrencies?.find(c => c.currency === searchParams.get("fiat") || "GHS");
+  const currencyFromUrl = acceptedCurrencies?.find(c => c.currency === searchParams.get("fiat"));
   const [currencyAmount, setCurrencyAmount] = useState({
-    currency: currencyFromUrl?.currency || "GHS",
+    currency: currencyFromUrl?.currency || "All",
     id: currencyFromUrl?.id,
     amount: "",
   });
@@ -76,7 +77,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   };
 
   useEffect(() => {
-    const fiat: string = currencyAmount.currency || "GHS";
+    const fiat: string = currencyAmount.currency || "All";
     const query = activeTab
       ? `trade=${activeTab}&crypto=${selectedCrypto?.symbol || ""}&fiat=${fiat}`
       : `crypto=${selectedCrypto?.symbol || ""}&fiat=${fiat}`;
@@ -89,14 +90,14 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     return null;
   }
 
-// const showModal1 = () =>{
-//   showModal(
-//     <div className="w-[500px] bg-white">
-//       <div>addd</div>
-//       <button onClick={hideModal}></button>
-//     </div>
-//   )
-// }
+  // const showModal1 = () =>{
+  //   showModal(
+  //     <div className="w-[500px] bg-white">
+  //       <div>addd</div>
+  //       <button onClick={hideModal}></button>
+  //     </div>
+  //   )
+  // }
 
   return (
     <>
@@ -126,7 +127,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
             isActive={true}
             paymentMethod={paymentMethods.find((method: { method: string }) => method.method === paymentMethod)}
             amount={currencyAmount.amount}
-            currency={currencies.find(c => c.id === currencyAmount.id)}
+            currency={acceptedCurrencies?.find(c => c.id === currencyAmount.id)}
             token={selectedCrypto}
           />
         </Suspense>

@@ -18,16 +18,24 @@ import { checksumAddress } from "viem";
 import useInitXmtpClient from "@/common/hooks/useInitXmtpClient";
 import ModalAlert from "../modals";
 
-const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; name?: string } }) => {
+const ChatWithMerchant = ({
+  otherParty,
+  conversation,
+  setConversation,
+}: {
+  otherParty: { id: `0x${string}`; name?: string };
+  conversation: CachedConversation | undefined;
+  setConversation: (conversation: CachedConversation | undefined) => void;
+}) => {
   const { client, status, reset, preInit, resolveEnable, resolveCreate } = useInitXmtpClient();
   const { getCachedByPeerAddress } = useConversation();
   const { startConversation, error: startConversationError } = useStartConversation();
   const { canMessage } = useCanMessage();
-  const { sendMessage: sendXMTPMessage, error: sendMessageError } = useSendMessage();
+  const { sendMessage: sendXMTPMessage, isLoading, error: sendMessageError } = useSendMessage();
   const { showModal, hideModal } = useModal();
   const [messageInputValue, setInputValue] = useState("");
   const [otherUserIsOnNetwork, setOtherUserIsOnNetwork] = useState(false);
-  const [conversation, setConversation] = useState<CachedConversation | undefined>();
+
   const signer = useEthersSigner();
 
   const mixedCaseOtherPartyAddress = checksumAddress(otherParty.id);
@@ -139,7 +147,7 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
       </div>
 
       {conversation ? (
-        <Messages conversation={conversation} />
+        <Messages isLoading={isLoading} conversation={conversation} />
       ) : client ? (
         otherUserIsOnNetwork ? (
           <div className="flex-1 flex items-center justify-center">
@@ -166,7 +174,6 @@ const ChatWithMerchant = ({ otherParty }: { otherParty: { id: `0x${string}`; nam
           <div className="relative flex-1 flex items-center">
             <input
               type="text"
-              disabled
               placeholder="Type a message..."
               className="w-full rounded-xl p-2 pr-10 focus:outline-none bg-gray-100 dark:bg-gray-800 dark:text-white transition-all duration-300 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-700"
               value={messageInputValue}

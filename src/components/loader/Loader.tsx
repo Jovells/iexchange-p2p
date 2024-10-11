@@ -8,11 +8,14 @@ interface Props {
   size?: "xs" | "sm" | "md" | "lg" | "xl";
 }
 
-const Loader: React.FC<Props> = ({ className, loaderType = "spinner", size }) => {
+const Loader: React.FC<Props> = ({ className, loaderType = "spinner", size = "md" }) => {
+  const sizeToPix = size === "xs" ? 4 : size === "sm" ? 10 : size === "md" ? 16 : size === "lg" ? 24 : 32;
   return (
     <div className={`flex items-center justify-center ${className}`}>
       {loaderType === "spinner" && (
-        <div className={`w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin`}></div>
+        <div
+          className={`w-${sizeToPix} h-${sizeToPix} border-4 border-blue-500 border-dashed rounded-full animate-spin`}
+        ></div>
       )}
       {loaderType === "text" && (
         <div className={`flex items-center text-${size} font-light text-black dark:text-white`}>

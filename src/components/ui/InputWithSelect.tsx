@@ -46,8 +46,8 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
   const handleSelect = (currency: Currency) => {
     const newValue = { ...selectedValue, currency: currency.symbol, id: currency.id };
     setSelectedValue(prevState => {
-      const newCurrencySymbol = prevState.currency === currency.symbol ? "" : currency.symbol;
-      const newCurrencyId = prevState.currency === currency.symbol ? null : currency.id;
+      const newCurrencySymbol = currency.symbol;
+      const newCurrencyId = currency.id;
       return { ...prevState, currency: newCurrencySymbol, id: newCurrencyId! };
     });
     if (onValueChange) {

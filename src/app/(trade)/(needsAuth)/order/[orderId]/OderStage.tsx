@@ -28,6 +28,7 @@ import { MessageCircle, ToggleLeft, ToggleRight, X } from "lucide-react";
 import { ORDER, ORDER_STATUS, TOKEN_BALANCE } from "@/common/constants/queryKeys";
 import InfoBlock from "../infoBlock";
 import DetailBlock from "./detailBlock";
+import { CachedConversation, useSendMessage } from "@xmtp/react-sdk";
 
 const ChatWithMerchant = lazy(() => import("@/components/merchant/ChatWithMerchant"));
 
@@ -38,10 +39,12 @@ const toastId = "order-status";
 
 function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: () => void }) {
   const { indexerUrl, p2p, tokens, currentChain } = useContracts();
+  const [conversation, setConversation] = useState<CachedConversation | undefined>();
   const queryClient = useQueryClient();
   const { address, isConnected } = useUser();
   const { writeContractAsync, isPending } = useWriteContractWithToast();
   const [pollToggle, setPollToggle] = React.useState(true);
+  const { sendMessage } = useSendMessage();
   const {
     writeContractAsync: writeToken,
     data: approveHash,
@@ -96,12 +99,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   });
 
   const getButtonConfig = () => {
-    if (!order) return { text: "", buttonText: "", onClick: () => { }, disabled: true, shouldPoll: false };
+    if (!order) return { text: "", buttonText: "", onClick: () => {}, disabled: true, shouldPoll: false };
 
     const getDisabledAction = (buttonText: string, text: string, shouldPoll = true) => ({
       buttonText,
       text,
-      onClick: () => { },
+      onClick: () => {},
       disabled: true,
       shouldPoll,
     });
@@ -120,39 +123,39 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         if (isBuyer) {
           return order.offer.offerType === offerTypes.buy
             ? getDisabledAction(
-              "Waiting for Merchant",
-              "Please wait for the merchant to accept your order and send the tokens to the escrow account",
-            )
+                "Waiting for Merchant",
+                "Please wait for the merchant to accept your order and send the tokens to the escrow account",
+              )
             : getEnabledAction(
-              "Done With Payment",
-              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-              handlePayOrder,
-            );
+                "Done With Payment",
+                "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+                handlePayOrder,
+              );
         } else {
           return order.offer.offerType === offerTypes.sell
             ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
             : getEnabledAction(
-              "Accept Order",
-              "Click “Accept Order” your order and send the tokens to the escrow account ",
-              handleAcceptOrder,
-            );
+                "Accept Order",
+                "Click “Accept Order” your order and send the tokens to the escrow account ",
+                handleAcceptOrder,
+              );
         }
       case OrderState.Accepted:
         return isBuyer
           ? getEnabledAction(
-            "Done With Payment",
-            "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-            handlePayOrder,
-          )
+              "Done With Payment",
+              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+              handlePayOrder,
+            )
           : getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment");
       case OrderState.Paid:
         return isBuyer
           ? getDisabledAction("Waiting for Seller to Release", "Please wait for the seller to release")
           : getEnabledAction(
-            "Release Funds",
-            "Click “Release Funds” to release the funds to the buyer",
-            handleReleaseFunds,
-          );
+              "Release Funds",
+              "Click “Release Funds” to release the funds to the buyer",
+              handleReleaseFunds,
+            );
       case OrderState.Released:
         return getDisabledAction("Completed", "Order has been completed", false);
       case OrderState.Cancelled:
@@ -177,6 +180,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           args: [BigInt(orderId)],
         },
       );
+      conversation && sendMessage(conversation, "Released. TxHash: " + writeResult.txHash);
       handleOptimisticUpdate(OrderState.Released, writeResult);
       return writeResult.txHash;
       // Optimistically update the order status
@@ -207,6 +211,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
       );
       // Optimistically update the order status
       handleOptimisticUpdate(OrderState.Paid, writeResult);
+      conversation && sendMessage(conversation, "Paid. TxHash: " + writeResult.txHash);
       return writeResult.txHash;
     }
   };
@@ -239,6 +244,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     );
     // Optimistically update the order status
     handleOptimisticUpdate(OrderState.Accepted, writeResult);
+    conversation && sendMessage(conversation, "Paid. TxHash: " + writeResult.txHash);
   };
 
   function handleOptimisticUpdate(status: OrderState, writeResult: WriteContractWithToastReturnType) {
@@ -326,7 +332,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
   if (!order && orderLoading) {
     console.log("Loading order", order, orderLoading);
-    return <Loader />;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader />
+      </div>
+    );
   }
 
   if (!order) {
@@ -369,7 +379,13 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
   const isBuyerAndNotYetAccepted = order?.status === OrderState.Pending && isBuyer && isTrader;
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-screen">
+          <Loader />
+        </div>
+      }
+    >
       <div className="w-full bg-[#CCE0F6] dark:bg-gray-800 px-6 lg:px-0">
         <div className="w-full lg:container lg:mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between py-10 lg:px-0">
           <div className="gap-3">
@@ -400,7 +416,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         <div className="w-full h-auto grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
           {/* Chat Section */}
           <div className="hidden lg:block">
-            <ChatWithMerchant otherParty={otherParty} />
+            <ChatWithMerchant conversation={conversation} setConversation={setConversation} otherParty={otherParty} />
           </div>
 
           {/* Order Information Section */}
@@ -527,7 +543,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               <div className="text-gray-400 dark:text-white">Chat</div>
               <X className="text-gray-400 dark:text-white" onClick={() => setIsChatModalOpen(false)} />
             </div>
-            <ChatWithMerchant otherParty={otherParty} />
+            <ChatWithMerchant setConversation={setConversation} conversation={conversation} otherParty={otherParty} />
           </div>
         </div>
       )}
