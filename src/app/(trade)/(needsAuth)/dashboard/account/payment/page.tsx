@@ -7,6 +7,7 @@ import AddPaymentMethod from './AddPaymentMethod';
 
 import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
 import Loader from "@/components/loader/Loader";
+import { getImage } from '@/lib/utils';
 
 type PaymentMethod = {
   id: number;
@@ -22,6 +23,8 @@ const Payment = () => {
     showModal(<AddPaymentMethod hideModal={hideModal} />);
   };
 
+  const payntIcon = getImage("add-circle.svg")
+
   return (
     <>
       <div className="py-12 pt-0 flex flex-col items-start gap-4">
@@ -34,7 +37,7 @@ const Payment = () => {
           </p>
           <Button
             text="Add Payment Method"
-            icon="/images/icons/add-circle.png"
+            icon={payntIcon}
             iconPosition="right"
             className="bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2"
             onClick={handleClick}

@@ -5,9 +5,11 @@ import Verify from '@/components/cards/Verify';
 import Button from '@/components/ui/Button';
 import { Clock, EyeOff, SquareAsterisk, Moon, Sun } from 'lucide-react';
 import DashboardLayout from './layout';
+import { getImage } from '@/lib/utils';
 
 const Dashboard = () => {
 
+  const circleImg = getImage("add-circle.svg")
   return (
     <>
       <div className='flex justify-between items-center mb-4'>
@@ -58,7 +60,7 @@ const Dashboard = () => {
             </div>
             <Button
               text="Add Wallet"
-              icon="/images/icons/add-circle.png"
+              icon={circleImg}
               iconPosition="right"
               className='bg-black text-white px-3 py-2 rounded-xl'
             />
