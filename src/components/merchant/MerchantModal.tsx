@@ -76,11 +76,6 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     }
   };
 
-  const show = () =>{
-    showModal(content);
-
-  }
-
   return (
     <div className="w-full lg:w-[500px] h-auto bg-white p-8 rounded-xl shadow-md border-2 border-gray-500">
       <div className="flex justify-end">
