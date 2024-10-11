@@ -13,51 +13,51 @@ const IExchangeGuide = () => {
     const guideData: { [key: string]: GuideItem[] } = {
         trade: [
             {
-                image: "/images/icons/place-order.png",
+                image: "/images/light/place-order.png",
                 title: "Place an Order or Receive an Order",
                 description: "Click on Buy or Sell to initiate a trade. Review the trade terms and conditions. Specify the amount of cryptocurrency you want to buy or sell."
             },
             {
-                image: "/images/icons/pay.png",
+                image: "/images/light/pay.png",
                 title: "Place an Order or Receive an Order",
                 description: "Click on Buy or Sell to initiate a trade. Review the trade terms and conditions. Specify the amount of cryptocurrency you want to buy or sell."
             },
             {
-                image: "/images/icons/receive-crypto.png",
+                image: "/images/light/receive-crypto.png",
                 title: "Place an Order or Receive an Order",
                 description: "Click on Buy or Sell to initiate a trade. Review the trade terms and conditions. Specify the amount of cryptocurrency you want to buy or sell."
             }
         ],
         settle: [
             {
-                image: "/images/icons/verify-kyc.png",
+                image: "/images/light/verify-kyc.png",
                 title: "Verify your Account with KYC",
                 description: "Click on become a Stake on Platform on the Appealed Orders Page. Proceed with KYC to access KYC Verification. This will direct you to a third-party web app for necessary information."
             },
             {
-                image: "/images/icons/pay.png",
+                image: "/images/light/pay.png",
                 title: "Stake on Platform",
                 description: "Once you are done with your KYC, return to iExchange to stake funds. Select and deposit funds by entering the amount and selecting currency. You’re now a Settler!"
             },
             {
-                image: "/images/icons/pick-case.png",
+                image: "/images/light/pick-case.png",
                 title: "Pick a Case to Settle",
                 description: "On the Appealed Order Page, there are several cases available. Click on a case to settle. Each case has 3 rounds, and you can participate in judgment in only one round per case."
             }
         ],
         merchandise: [
             {
-                image: "/images/icons/verify-kyc.png",
+                image: "/images/light/verify-kyc.png",
                 title: "Verify your Account with KYC",
                 description: "Click on become a Merchant. Proceed with KYC to access KYC Verification. This will direct you to a third-party web app for necessary information."
             },
             {
-                image: "/images/icons/pay.png",
+                image: "/images/light/pay.png",
                 title: "Stake on Platform",
                 description: "Once you are done with your KYC, return to iExchange to stake funds. Select and deposit funds by entering the amount and selecting currency. You’re now a Merchant!"
             },
             {
-                image: "/images/icons/post-ad.png",
+                image: "/images/light/post-ad.png",
                 title: "Create and Post an Ad",
                 description: "Click on Post Ad. This directs you to a form to fill in the right information about your advertisement. Enter the amount of cryptocurrency you wish to trade, and click Add Post."
             }

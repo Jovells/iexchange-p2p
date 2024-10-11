@@ -63,7 +63,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
           modalType="success"
           title="Successfully Staked"
           description="You have successfully secured a merchant placement."
-          icon="../../images/icons/success.png"
+          icon="../../images/icons/alert-success.png"
         />
       );
       showModal(content);
@@ -75,6 +75,11 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
       setIsStaking(false);
     }
   };
+
+  const show = () =>{
+    showModal(content);
+
+  }
 
   return (
     <div className="w-full lg:w-[500px] h-auto bg-white p-8 rounded-xl shadow-md border-2 border-gray-500">

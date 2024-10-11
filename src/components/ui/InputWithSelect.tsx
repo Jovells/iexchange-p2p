@@ -108,7 +108,7 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
           <div className="flex items-center space-x-1" onClick={toggleDropdown}>
             {currencies.find(c => c.symbol === valueToDisplay.currency)?.icon}
             <span className="text-black dark:text-white">
-              {valueToDisplay.currency || <span className="text-gray-500 dark:text-gray-400 mb-1">All</span>}
+              {valueToDisplay.currency || <span className="text-gray-500 dark:text-white mb-1">All</span>}
             </span>
             {currencies.length > 1 && <ChevronDown className="text-gray-500 dark:text-gray-400" />}
           </div>
