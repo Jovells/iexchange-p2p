@@ -5,6 +5,7 @@ import React, {
   forwardRef,
   ReactElement,
   useEffect,
+  useRef,
 } from 'react';
 import Loader from '../loader/Loader';
 import { X } from 'lucide-react';
@@ -142,9 +143,8 @@ const ExpandableTable = forwardRef(
                                   handleRowClick(index);
                                   action.onClick(row);
                                 }}
-                                className={`${
-                                  row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
-                                } text-white text-sm px-4 py-3 rounded-xl`}
+                                className={`${row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
+                                  } text-white text-sm px-4 py-3 rounded-xl`}
                               >
                                 {label}
                               </button>
@@ -178,9 +178,8 @@ const ExpandableTable = forwardRef(
                     <React.Fragment key={index}>
                       {expandedRowIndex !== index && (
                         <div
-                          className={`grid grid-cols-12 gap-4 p-4 ${
-                            index + 1 === data.length ? "border-b" : "border-b"
-                          } border-gray-200 dark:border-gray-600  cursor-pointer`}
+                          className={`grid grid-cols-12 gap-4 p-4 ${index + 1 === data.length ? "border-b" : "border-b"
+                            } border-gray-200 dark:border-gray-600  cursor-pointer`}
                           style={{ gridTemplateColumns: columnGridTemplate }}
                         >
                           {columns.map(column => (
@@ -200,11 +199,10 @@ const ExpandableTable = forwardRef(
                                       action.onClick(row);
                                       handleRowClick(index);
                                     }}
-                                    className={`${
-                                      row.offerType === offerTypes.buy
-                                        ? "bg-[#2ebd85] hover:bg-[#249d6e]"
-                                        : "bg-[#F14E4E] hover:bg-[#d13e3e]"
-                                    } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
+                                    className={`${row.offerType === offerTypes.buy
+                                      ? "bg-[#2ebd85] hover:bg-[#249d6e]"
+                                      : "bg-[#F14E4E] hover:bg-[#d13e3e]"
+                                      } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
                                   >
                                     {label}
                                   </button>
@@ -214,11 +212,14 @@ const ExpandableTable = forwardRef(
                           )}
                         </div>
                       )}
-                      {expandedRowIndex === index && (
+                      <ExpandableRow expanded={expandedRowIndex === index}>
+                        {children(row, closeExpandedRow)}
+                      </ExpandableRow>
+                      {/* {expandedRowIndex === index && (
                         <div className="col-span-full py-4 border-b border-[#C3D5F124] dark:border-gray-600">
                           {children(row, closeExpandedRow)}
                         </div>
-                      )}
+                      )} */}
                     </React.Fragment>
                   ))}
                 </div>
@@ -306,39 +307,86 @@ const ExpandableTable = forwardRef(
 
 export default ExpandableTable;
 
-
 interface ModalProps {
   closeExpandedRow: () => void;
   data: any[];
   expandedRowIndex: number;
-  children: (data: any, closeExpandedRow: () => void) => ReactNode;
+  children: (data: any, closeExpandedRow: () => void) => React.ReactNode;
 }
 
 const BottomUpModal: React.FC<ModalProps> = ({ closeExpandedRow, data, expandedRowIndex, children }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
     document.body.classList.add("overflow-hidden");
+    // Trigger the animation
+    setIsVisible(true);
 
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
   }, []);
 
+  const handleClose = () => {
+    // Set visibility to false to animate it out before closing
+    setIsVisible(false);
+    setTimeout(() => closeExpandedRow(), 300); // Wait for the animation to finish before closing
+  };
+
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50"
-      // onClick={closeExpandedRow}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50 transition-opacity duration-300"
+      style={{ opacity: isVisible ? 1 : 0 }}
     >
-      <div className="flex flex-col bg-white dark:bg-gray-800 w-full rounded-t-xl max-h-[500px]">
-        <div className='p-4 py-6 border-b border-gray-600 flex flex-row justify-between items-center'>
-          <h1 className='text-white'>Buy</h1>
-          <X className='text-black dark:text-white' onClick={closeExpandedRow} />
+      <div
+        className={`flex flex-col bg-white dark:bg-gray-800 w-full rounded-t-xl max-h-[500px] transition-transform duration-300 transform ${isVisible ? "translate-y-0" : "translate-y-full"
+          }`}
+      >
+        {/* Modal Header */}
+        <div className="p-4 py-6 border-b border-gray-600 flex flex-row justify-between items-center">
+          <h1 className="text-black dark:text-white">Buy</h1>
+          <X className="text-black dark:text-white cursor-pointer" onClick={handleClose} />
         </div>
-        <div
-          className="p-4  overflow-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {children(data[expandedRowIndex], closeExpandedRow)}
+
+        {/* Modal Content */}
+        <div className="p-4 overflow-auto" onClick={(e) => e.stopPropagation()}>
+          {children(data[expandedRowIndex], handleClose)}
         </div>
+      </div>
+    </div>
+  );
+};
+
+
+const ExpandableRow: React.FC<{ expanded: boolean; children: React.ReactNode }> = ({
+  expanded,
+  children,
+}) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState('0px');
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (expanded && contentRef.current) {
+      setIsAnimating(true);
+      setHeight(`${contentRef.current.scrollHeight}px`);
+    } else {
+      setIsAnimating(true);
+      setHeight('0px');
+    }
+  }, [expanded]);
+
+  const handleTransitionEnd = () => setIsAnimating(false);
+
+  return (
+    <div
+      className={`col-span-full overflow-hidden transition-all duration-500 ease-in-out border-b border-[#C3D5F124] dark:border-gray-600 ${expanded ? 'opacity-100' : 'opacity-0'
+        }`}
+      style={{ maxHeight: height }}
+      onTransitionEnd={handleTransitionEnd}
+    >
+      <div ref={contentRef} className="py-4">
+        {children}
       </div>
     </div>
   );

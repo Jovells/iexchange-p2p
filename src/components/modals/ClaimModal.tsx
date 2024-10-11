@@ -129,65 +129,62 @@ const ClaimModal = () => {
 
   return (
     <>
-      {/* Modal Overlay */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-end lg:items-center">
-        {/* Mobile Bottom-Up Modal */}
-        <div
-          className={`w-full min-h-[500px] bg-white rounded-t-xl p-8 flex flex-col items-center dark:bg-gray-800 lg:rounded-xl lg:w-[500px] lg:min-h-[auto] lg:h-auto`}
-        >
-          <div className="flex justify-end">
-            <button onClick={hideModal} aria-label="Close modal" className="text-gray-600 dark:text-gray-300">
-              <X />
-            </button>
+      <div
+        className={`w-full bg-white rounded-t-xl p-0 flex flex-col items-center dark:bg-gray-800 lg:rounded-xl`}
+      >
+        <div className="w-full flex flex-row justify-end">
+          <button onClick={hideModal} aria-label="Close modal" className="text-gray-600 dark:text-gray-300">
+            <X />
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-8 w-full">
+          <div className='w-full'>
+            <h1 className="text-center text-2xl font-medium text-gray-800 dark:text-gray-200">Available Tokens</h1>
+            <p className="text-center text-lg text-gray-500 dark:text-gray-400">
+              Claim the number of Tokens you have been allocated below.
+            </p>
           </div>
-          <div className="flex flex-col gap-8">
-            <div>
-              <h1 className="text-center text-2xl font-medium text-gray-800 dark:text-gray-200">Available Tokens</h1>
-              <p className="text-center text-lg text-gray-500 dark:text-gray-400">
-                Claim the number of Tokens you have been allocated below.
-              </p>
+          {!isClaimAvailable ? (
+            <div className="flex flex-col gap-6">
+              <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
+                <p className="text-center text-gray-500 dark:text-gray-300 text-xs">
+                  Currently there are no tokens available for claiming. Kindly visit after a period of 24 hours to
+                  claim.
+                </p>
+              </div>
+              <div className="w-full flex flex-row gap-4">
+                {timerComponents.length ? timerComponents : <span>Just now!</span>}
+              </div>
+              <div className="w-full border rounded-xl bg-yellow-100 dark:bg-yellow-600 p-6 py-4 flex flex-col border-red-400 shadow-md">
+                <h1 className="text-xl text-black dark:text-white font-medium">Notice on claiming Tokens</h1>
+                <p className="text-gray-500 dark:text-gray-300 text-xs">
+                  It is important to note that your allocated tokens can be claimed once daily after 24 hours of
+                  initial claim.
+                </p>
+              </div>
             </div>
-            {!isClaimAvailable ? (
-              <div className="flex flex-col gap-6">
-                <div className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center">
-                  <p className="text-center text-gray-500 dark:text-gray-300 text-xs">
-                    Currently there are no tokens available for claiming. Kindly visit after a period of 24 hours to
-                    claim.
-                  </p>
+          ) : (
+            <div className="w-full flex flex-row overflow-x-auto gap-6">
+              {acceptedTokens && acceptedTokens.map((token, i) => (
+                <div
+                  key={i} 
+                  className="min-w-[250px] min-h-[150px] border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center"
+                >
+                  <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of {token.symbol}</h2>
+                  <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 {token.symbol}</h2>
                 </div>
-                <div className="w-full flex flex-row gap-4">
-                  {timerComponents.length ? timerComponents : <span>Just now!</span>}
-                </div>
-                <div className="w-full border rounded-xl bg-yellow-100 dark:bg-yellow-600 p-6 py-4 flex flex-col border-red-400 shadow-md">
-                  <h1 className="text-xl text-black dark:text-white font-medium">Notice on claiming Tokens</h1>
-                  <p className="text-gray-500 dark:text-gray-300 text-xs">
-                    It is important to note that your allocated tokens can be claimed once daily after 24 hours of
-                    initial claim.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-6">
-                {acceptedTokens?.map((token, i) => (
-                  <div
-                    key={token.id}
-                    className="w-full border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center"
-                  >
-                    <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of {token.symbol}</h2>
-                    <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 {token.symbol}</h2>
-                  </div>
-                ))}
-              </div>
-            )}
-            <Button
-              text={isClaiming ? "Claiming..." : "Claim All"}
-              className="bg-black text-white px-4 py-4 rounded-xl dark:bg-gray-700 dark:text-gray-200"
-              icon={<ArrowRight />}
-              iconPosition="right"
-              disabled={!isClaimAvailable || isClaiming}
-              onClick={handleClaim}
-            />
-          </div>
+              ))}
+            </div>
+          )}
+          <Button
+            text={isClaiming ? "Claiming..." : "Claim All"}
+            className="bg-black text-white px-4 py-4 rounded-xl dark:bg-gray-700 dark:text-gray-200"
+            icon={<ArrowRight />}
+            iconPosition="right"
+            disabled={!isClaimAvailable || isClaiming}
+            onClick={handleClaim}
+          />
         </div>
       </div>
     </>

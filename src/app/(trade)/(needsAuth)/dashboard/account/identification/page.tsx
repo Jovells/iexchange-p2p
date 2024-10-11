@@ -27,7 +27,7 @@ const Identification = () => {
           <h1 className="font-medium text-black dark:text-white text-lg">Account Privileges</h1>
           <Button
             text="Connect Wallet"
-            icon="/images/icons/lock.png"
+            icon="/images/light/lock.png"
             iconPosition="left"
             className="font-light text-gray-500 dark:text-gray-400 text-sm"
           />
@@ -39,13 +39,13 @@ const Identification = () => {
           />
           <Button
             text="Post Ads"
-            icon="/images/icons/lock.png"
+            icon="/images/light/lock.png"
             iconPosition="left"
             className="font-light text-gray-500 dark:text-gray-400 text-sm"
           />
           <Button
             text="Settle Cases"
-            icon="/images/icons/lock.png"
+            icon="/images/light/lock.png"
             iconPosition="left"
             className="font-light text-gray-500 dark:text-gray-400 text-sm"
           />

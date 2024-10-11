@@ -16,38 +16,42 @@ const ModalManager: React.FC = () => {
   useEffect(() => {
     if (modalContent) {
       setIsVisible(true);
+      // Lock scroll when modal is visible
+      document.body.classList.add('overflow-hidden');
     } else {
       setIsVisible(false);
+      // Unlock scroll when modal is hidden
+      document.body.classList.remove('overflow-hidden');
     }
   }, [modalContent]);
+
+  useEffect(() => {
+    return () => {
+      // Clean up when component unmounts
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, []);
 
   if (!isMounted || modalContent === null) {
     return null;
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-50 flex justify-center items-end lg:items-center rounded-[8px]" role="dialog" aria-modal="true">
+
       <div
         className="absolute inset-0 bg-gray-700 opacity-75 dark:bg-gray-900 dark:opacity-80"
-        onClick={hideModal}
         aria-hidden="true"
       ></div>
+
       <div
         className={classnames(
-          "relative rounded-lg z-20 p-6 transition-opacity duration-1000 ease-in-out transform",
-          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95",
-          modalProps?.hasPadding
-            ? "bg-white border border-gray-300 text-black dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-            : ""
+          "relative z-20 p-6 transition-transform duration-500 ease-in-out transform",
+          isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0",
+          "w-full sm:w-auto lg:w-[500px] bg-white dark:bg-gray-800 rounded-t-lg lg:rounded-[8px]"
         )}
       >
-        {/* <button
-          className="absolute top-0 right-0 p-4 cursor-pointer"
-          onClick={hideModal}
-          aria-label="Close modal"
-        >
-          &times;
-        </button> */}
+
         {modalContent}
       </div>
     </div>
