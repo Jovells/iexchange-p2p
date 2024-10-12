@@ -73,9 +73,9 @@ export function getUserConfig({
 }
 
 export const useCopyToClipboard = () => {
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, message?: string) => {
     navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
+    toast.success(message || "Copied to clipboard");
   };
 
   return copyToClipboard;

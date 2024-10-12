@@ -31,6 +31,7 @@ const Select: React.FC<InputSelectProps> = ({
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleSelect = (value: Token) => {
+    console.log("qj handleSelect", value);
     setSelectedValue(prevValue => {
       const newValue = value.id === prevValue?.id ? undefined : value;
       if (onValueChange) {
