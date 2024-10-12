@@ -12,37 +12,41 @@ import { OfferType, Order, OrderOptions, OrderState } from "@/common/api/types";
 import { formatEther } from "ethers";
 import { useUser } from "@/common/contexts/UserContext";
 import { ORDERS } from "@/common/constants/queryKeys";
+import GridTable from "@/components/datatable";
+import { useRouter } from "next/navigation";
+import { ORDER_PAGE } from "@/common/page-links";
+import { formatCurrency } from "@/lib/utils";
 
 const columns: any = [
   {
     key: "orderNumber",
     label: "Order Number",
-    render: (row: Order) => <span className="font-bold">{row.id}</span>,
+    render: (row: Order) => <span className="">{row.id}</span>,
   },
   {
     key: "type",
     label: "Type",
-    render: (row: Order) => <span className="font-bold">{OfferType[row.orderType]}</span>,
+    render: (row: Order) => <span className="">{OfferType[row.orderType]}</span>,
   },
   {
     key: "price",
     label: "Price",
-    render: (row: Order) => <span className="font-bold">{row.offer.rate}</span>,
+    render: (row: Order) => <span className="">{row.offer.rate}</span>,
   },
   {
     key: "funds",
     label: "Quantity",
-    render: (row: Order) => <span className="italic">{formatEther(row.quantity)}</span>,
+    render: (row: Order) => <span className="">{formatCurrency(row.quantity, row.offer.token.symbol)}</span>,
   },
   {
     key: "paymentOption",
     label: "Payment Option",
-    render: (row: Order) => <span className="italic">{row.offer.paymentMethod.method}</span>,
+    render: (row: Order) => <span className="">{row.offer.paymentMethod.method}</span>,
   },
   {
     key: "status",
     label: "Status",
-    render: (row: Order) => <span className="italic">{OrderState[row.status]}</span>,
+    render: (row: Order) => <span className="">{OrderState[row.status]}</span>,
   },
 ];
 
@@ -53,6 +57,7 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { address } = useUser();
+  const router = useRouter();
 
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
@@ -77,7 +82,7 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
     console.log("Page changed to:", page);
   };
 
-  const actions = [{ label: "expand", onClick: (row: any) => console.log(row) }];
+  const actions = [{ label: "View Details", onClick: (row: any) => router.push(ORDER_PAGE(row.id)) }];
 
   if (error) {
     console.log("error:", error);
@@ -86,17 +91,13 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
   return (
     <Suspense>
       <div className="w-full">
-        <ExpandableTable
-          ref={tableRef}
+        <GridTable
           columns={columns}
           data={data || []}
           actions={actions}
           isLoading={isPending}
-          pageSize={50}
-          onPageChange={handlePageChange}
-        >
-          {(row, toggleExpand) => <OrderStage orderId={row.id} toggleExpand={toggleExpand} />}
-        </ExpandableTable>
+          itemsPerPage={50}
+        ></GridTable>
       </div>
     </Suspense>
   );

@@ -41,11 +41,11 @@ const GridTable: React.FC<GridTableProps> = ({ columns, data, itemsPerPage = 5, 
 
     return (
       <div className="flex flex-col">
-        <div className="overflow-x-auto border border-gray-200 dark:border-gray-600 rounded-[8px]">
+        <div className="overflow-x-auto border-b border-b-gray-200 dark:border-b-gray-600 rounded-[8px]">
           <div className="min-w-full">
-            <div className="hidden md:grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(150px,1fr))] bg-black dark:bg-gray-900 rounded-xl p-4">
+            <div className="hidden border-b border-b-gray-200 dark:border-b-gray-600 md:grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]  dark:bg-gray-900 rounded-xl p-4">
               {columns.map((column, idx) => (
-                <div key={idx} className="col-span-1 text-white font-semibold">
+                <div key={idx} className="col-span-1 text-gray-600 dark:text-gray-400 font-light">
                   {column.label}
                 </div>
               ))}

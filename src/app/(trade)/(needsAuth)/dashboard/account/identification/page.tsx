@@ -1,10 +1,11 @@
-import React from 'react';
-import DashboardLayout from '../../layout';
-import Verify from '@/components/cards/Verify';
-import Button from '@/components/ui/Button';
+import React from "react";
+import Verify from "@/components/cards/Verify";
+import Button from "@/components/ui/Button";
 import { shortenAddress } from "@/lib/utils";
+import InProgress from "@/components/datatable/inProgress";
 
 const Identification = () => {
+  return <InProgress />;
   return (
     <>
       <div className="flex flex-col items-start">

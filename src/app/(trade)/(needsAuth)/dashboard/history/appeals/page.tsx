@@ -6,6 +6,7 @@ import GridTable from '@/components/datatable'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import DashboardLayout from '../../layout'
+import InProgress from "@/components/datatable/inProgress";
 
 const AppealedOrderHistory = () => {
   const route = useRouter()
@@ -27,6 +28,8 @@ const AppealedOrderHistory = () => {
   const actions = [
     { label: "action", onClick: (row: any) => route.push('/appeal/order'), classNames: "bg-green-700 text-white" }
   ]
+
+  return <InProgress />;
 
   return (
     <>

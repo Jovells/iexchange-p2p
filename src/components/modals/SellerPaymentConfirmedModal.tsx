@@ -17,17 +17,11 @@ const SellerPaymentConfirmedModal: React.FC<Props> = ({ txHash, fiatAmount }) =>
 
   return (
     <div className="w-[400px] bg-white p-14 rounded-[8px] flex flex-col justify-center items-center">
-      <Image
-        src="/images/icons/alert-info.svg"
-        alt="info"
-        className="w-auto h-auto mb-8"
-        width={84}
-        height={84}
-      />
+      <Image src="/images/icons/alert-info.svg" alt="info" className="w-auto h-auto mb-8" width={84} height={84} />
       <h2 className="font-medium text-center text-[16px] mb-6">Seller Marked Paid</h2>
       <p className="text-center text-gray-500 text-[14px] font-normal mb-6">
-        Seller has marked the order as paid. Please confirm that you received {fiatAmount} in your account before releasing
-        the crypto to the buyer.
+        Seller has marked the order as paid. Please confirm that you received {fiatAmount} in your account before
+        releasing the crypto to the buyer.
       </p>
       <div className="text-gray-500">TxHash:</div>
       <a
@@ -38,11 +32,7 @@ const SellerPaymentConfirmedModal: React.FC<Props> = ({ txHash, fiatAmount }) =>
       >
         {shortenAddress(txHash, 8)}
       </a>
-      <Button
-        text="OK"
-        className="w-full text-black bg-transparent border border-gray-200"
-        onClick={hideModal}
-      />
+      <Button text="OK" className="w-full mt-5 text-black bg-transparent border border-gray-200" onClick={hideModal} />
     </div>
   );
 };

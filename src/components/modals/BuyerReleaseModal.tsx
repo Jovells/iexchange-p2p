@@ -18,14 +18,8 @@ const BuyerReleaseModal: React.FC<Props> = ({ txHash, cryptoAmount, fiatAmount }
 
   return (
     <div className="w-[400px] bg-white dark:bg-gray-800 p-14 rounded-[8px] flex flex-col justify-center items-center">
-      <Image
-        src="/images/icons/alert-success.svg"
-        alt="info"
-        className="w-auto h-auto mb-8"
-        width={84}
-        height={84}
-      />
-      <h2 className="font-medium text-center text-[16px] mb-6 text-black dark:text-white">Buy Successful</h2>
+      <Image src="/images/icons/alert-success.svg" alt="info" className="w-auto h-auto mb-8" width={84} height={84} />
+      <h2 className="font-medium text-center text-[16px] mb-6 text-black dark:text-white">Seller Released</h2>
       <p className="text-center text-gray-500 dark:text-gray-300 text-[14px] font-normal mb-6">
         You have successfully bought {cryptoAmount} for {fiatAmount}!
       </p>
@@ -40,7 +34,7 @@ const BuyerReleaseModal: React.FC<Props> = ({ txHash, cryptoAmount, fiatAmount }
       </a>
       <Button
         text="OK"
-        className="w-full text-black dark:text-white bg-transparent border border-gray-200 dark:border-gray-600"
+        className="w-full mt-5 text-black dark:text-white bg-transparent border border-gray-200 dark:border-gray-600"
         onClick={hideModal}
       />
     </div>

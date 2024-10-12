@@ -31,7 +31,11 @@ export function OrdersDropdown() {
   console.log("myOrders", myOrders);
 
   if (!myOrders && isLoading) {
-    return <Loader />;
+    return (
+      <div className="my-5">
+        <Loader />
+      </div>
+    );
   }
 
   if (!myOrders) {

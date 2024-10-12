@@ -1,18 +1,18 @@
 "use client";
 import { useUser } from "@/common/contexts/UserContext";
-import { CachedConversation, useMessages, useStreamMessages } from "@xmtp/react-sdk";
-import { useEffect, useRef } from "react";
+import { CachedConversation, CachedMessage, useMessages, useStreamMessages } from "@xmtp/react-sdk";
+import { useEffect, useMemo, useRef } from "react";
 import { ContentTypeId } from "@xmtp/content-type-primitives";
 import { ContentTypeText } from "@xmtp/content-type-text";
 import Loader from "../loader/Loader";
 import { CheckCheckIcon, CheckIcon } from "lucide-react";
+import { BOT_MERCHANT_ID } from "@/common/constants";
 
 const Messages = ({ conversation, isLoading }: { conversation: CachedConversation; isLoading?: boolean }) => {
   const { messages, error } = useMessages(conversation);
   const { address, mixedCaseAddress } = useUser();
   const { error: streamError } = useStreamMessages(conversation);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
   if (streamError || error) {
     console.log("streamerror", streamError, error);
   }
@@ -27,10 +27,27 @@ const Messages = ({ conversation, isLoading }: { conversation: CachedConversatio
     scrollToBottom();
   }, [messages]);
 
+  const messagesWithBot = useMemo(() => {
+    // add a bot message if the otherParty is the BotMerchant
+    if (conversation.peerAddress.toLocaleLowerCase() === BOT_MERCHANT_ID) {
+      // add a bot message
+      const botMessage: CachedMessage = {
+        ...messages[0],
+        id: messages.length.toString(),
+        contentType: ContentTypeText.toString(),
+        content: "Hello! I am the Bot Merchant. I will respond to your order within 3 minutes. Please Wait .",
+        senderAddress: BOT_MERCHANT_ID,
+        sentAt: new Date(),
+        hasLoadError: false,
+      };
+      return [...messages, botMessage];
+    }
+  }, [messages]);
+
   return (
     <div className="flex flex-col h-full max-h-[80vh] p-3 overflow-hidden">
       <div className="flex-1 overflow-y-auto px-3">
-        {messages.map((message, i) => {
+        {messagesWithBot?.map((message, i) => {
           const contentType = ContentTypeId.fromString(message.contentType);
           let content: any;
 

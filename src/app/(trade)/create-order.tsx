@@ -183,7 +183,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     try {
       if (!alreadyApproved) {
         const approveHash = await writeToken(
-          {},
+          { waitForReceipt: true },
           {
             abi: tokens[0].abi,
             address: data.token.id,

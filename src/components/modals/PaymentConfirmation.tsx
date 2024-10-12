@@ -88,7 +88,7 @@ const PaymentConfirmation: React.FC<Props> = ({ onClick, amount, accountName, ac
         <Button
           loading={isLoading}
           text="Confirm Payment"
-          className="w-full text-white bg-black dark:bg-gray-700"
+          className="w-full  text-white bg-black dark:bg-gray-700"
           onClick={handleClick}
         />
       </div>

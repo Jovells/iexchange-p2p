@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import Stake from './stake';
+import InProgress from "@/components/datatable/inProgress";
 
 const columns: any = [
   {
@@ -59,6 +60,7 @@ const Appeals = () => {
     showModal(<Stake hideModal={hideModal} />);
   };
 
+  return <InProgress />;
   return (
     <div className="container mx-auto p-0 py-4 pt-0">
       {!hasStake && (
