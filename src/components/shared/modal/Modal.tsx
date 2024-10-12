@@ -37,8 +37,11 @@ const ModalManager: React.FC = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-end lg:items-center rounded-[8px]" role="dialog" aria-modal="true">
-
+    <div
+      className="fixed inset-0 z-50 flex justify-center items-end lg:items-center rounded-[8px]"
+      role="dialog"
+      aria-modal="true"
+    >
       <div
         className="absolute inset-0 bg-gray-700 opacity-75 dark:bg-gray-900 dark:opacity-80"
         aria-hidden="true"
@@ -46,12 +49,11 @@ const ModalManager: React.FC = () => {
 
       <div
         className={classnames(
-          "relative z-20 p-6 transition-transform duration-500 ease-in-out transform",
+          "relative z-20 p-6 transition-transform duration-300 ease-out transform",
           isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0",
-          "w-full sm:w-auto lg:w-[500px] bg-white dark:bg-gray-800 rounded-t-lg lg:rounded-[8px]"
+          "w-full sm:w-auto lg:w-[500px] bg-white dark:bg-gray-800 rounded-t-lg lg:rounded-[8px]",
         )}
       >
-
         {modalContent}
       </div>
     </div>

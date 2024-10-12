@@ -37,6 +37,7 @@ const ClaimModal = () => {
 
   const [isClaimAvailable, setIsClaimAvailable] = useState(false);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [ready, setReady] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState({
     days: "0",
     hours: "00",
@@ -99,6 +100,7 @@ const ClaimModal = () => {
     }
 
     setTimeElapsed(newTimeElapsed);
+    setReady(true);
   }, [endDate]);
 
   useEffect(() => {
@@ -123,7 +125,7 @@ const ClaimModal = () => {
     );
   });
 
-  if (isAcceptedTokensPending || isClaimLoading) {
+  if (!ready) {
     return <Loader />;
   }
 
