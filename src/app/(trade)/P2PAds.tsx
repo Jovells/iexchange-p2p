@@ -9,6 +9,7 @@ import { useContracts } from "@/common/contexts/ContractContext";
 import { Currency, Offer, PaymentMethod, PreparedCurrency, Token } from "@/common/api/types";
 import { formatCurrency, getPaymentMethodColor, shortenAddress } from "@/lib/utils";
 import { BOT_MERCHANT_ID, offerTypes } from "@/common/constants";
+import { fetchTotalAds } from "@/common/api/fetchTotalAds";
 
 const columns: any = [
   {
@@ -17,14 +18,15 @@ const columns: any = [
     render: (row: Offer) => (
       <div className="flex items-center">
         <div className="w-6 h-6 rounded-full bg-gray-800 dark:bg-white flex items-center justify-center mr-2">
-          <span className="text-white dark:text-gray-800 text-[10px] font-bold">
-            {row.merchant.name?.charAt(0).toUpperCase() || row.merchant.id.substring(0, 3)}
-          </span>
+          {row.merchant.id === BOT_MERCHANT_ID ? (
+            <span className="text-xs rounded bg-gray-200 p-1 font-semibold text-blue-500 mr-1">BOT</span>
+          ) : (
+            <span className="text-white dark:text-gray-800 text-[10px] font-bold">
+              {row.merchant.name?.charAt(0).toUpperCase() || row.merchant.id.substring(0, 3)}
+            </span>
+          )}
         </div>
-        <span className="">
-          {(row.merchant.name || "") + " (" + shortenAddress(row.merchant.id, 2) + ")"}
-          {row.merchant.id === BOT_MERCHANT_ID ? ["BOT"] : ""}
-        </span>
+        <span className="">{(row.merchant.name || "") + " (" + shortenAddress(row.merchant.id, 2) + ")"}</span>
       </div>
     ),
   },
@@ -89,11 +91,22 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
     currency: currency?.id,
     amount,
     paymentMethod: paymentMethod?.id,
+    quantity: 10,
   };
 
   const { isPending, error, data } = useQuery({
     queryKey: ["ads", indexerUrl, options],
     queryFn: () => fetchAds(indexerUrl, options),
+    //TODO: add retry logic
+    retry: 0,
+  });
+  const {
+    isPending: totalAdsPendning,
+    error: totalAdsError,
+    data: totalRecords,
+  } = useQuery({
+    queryKey: ["totalAds", indexerUrl, options],
+    queryFn: () => fetchTotalAds(indexerUrl, options),
     //TODO: add retry logic
     retry: 0,
   });
@@ -133,7 +146,8 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
           actions={actions}
           isLoading={isPending}
           page={currentPage}
-          pageSize={10}
+          pageSize={options.quantity}
+          totalRecords={totalRecords}
           onPageChange={handlePageChange}
         >
           {(row, toggleExpand) => <CreateOrder data={row} toggleExpand={toggleExpand} orderType={trade} />}
