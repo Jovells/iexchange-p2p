@@ -41,7 +41,7 @@ const Messages = ({ conversation, isLoading }: { conversation: CachedConversatio
         hasLoadError: false,
       };
       return [...messages, botMessage];
-    }
+    } else return messages;
   }, [messages]);
 
   return (
@@ -69,12 +69,19 @@ const Messages = ({ conversation, isLoading }: { conversation: CachedConversatio
                   message.senderAddress === mixedCaseAddress ? "rounded-tr-none" : "rounded-tl-none"
                 } `}
               >
-                <div className="flex justify-center gap-1 break-all items-baseline">
+                <div className="flex justify-center gap-1 break-all items-end">
                   {content}
                   {message.isSending && <Loader size="xs" />}
                 </div>
-                <div className="text-xs text-gray-200 dark:text-gray-300 mt-1">
-                  {new Date(message.sentAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                <div
+                  className={`text-xs flex  ${
+                    message.senderAddress === mixedCaseAddress ? "text-gray-300" : "text-gray-400"
+                  }  dark:text-gray-300 mt-1`}
+                >
+                  {new Date(message.sentAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}{" "}
+                  {message.senderAddress === mixedCaseAddress && !message.isSending ? (
+                    <CheckCheckIcon size={16} />
+                  ) : null}
                 </div>
               </span>
             </div>
