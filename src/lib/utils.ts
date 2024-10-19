@@ -90,6 +90,9 @@ export const ixToast = {
     if (typeof message === "string" && message.includes("0xe450d38c")) {
       return toast.error("Insufficient Balance. Please top up your balance", options);
     }
+    if (typeof message === "string" && message.includes("ERC20InsufficientBalance")) {
+      return toast.error("Insufficient Token Balance. Please top up your balance", options);
+    }
     if (typeof message === "string" && message.includes("0xfb8f41b2")) {
       return toast.error("Insufficient Allowance.", options);
     }

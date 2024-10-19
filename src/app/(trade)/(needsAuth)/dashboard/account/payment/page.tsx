@@ -52,6 +52,7 @@ const Payment = () => {
           )}
 
           {paymentMethods?.map((method, i) => {
+            //TODO @mbawon modify to match figma
             return (
               <div key={i} className="p-2 border-b">
                 <strong>{method.method}</strong>

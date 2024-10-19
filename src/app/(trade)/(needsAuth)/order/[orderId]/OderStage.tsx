@@ -379,6 +379,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
   const isBuyerAndNotYetAccepted = order?.status === OrderState.Pending && isBuyer && isTrader;
   return (
+    // TODO@mbawon modify ui to match figma
     <Suspense
       fallback={
         <div className="flex items-center justify-center h-screen">
