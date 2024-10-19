@@ -23,6 +23,9 @@ import { AccountDetails, PaymentMethod } from "@/common/api/types";
 import { MY_ADS } from "@/common/constants/queryKeys";
 import { MY_ADS_PAGE } from "@/common/page-links";
 
+//TODO: @mbawon check dark mode inconsistencies
+
+
 const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 const formSchema = z
   .object({
@@ -226,6 +229,7 @@ const CreateAd = () => {
           <h1 className="text-[#01a2e4] font-bold">Type and Price</h1>
           <div className="flex flex-row items-start   justify-start gap-6">
             <div className="flex flex-col">
+              {/* TODO: @mbawon check styling */}
               <InputSelect
                 name="token"
                 options={
@@ -312,7 +316,11 @@ const CreateAd = () => {
             </div>
             <div className="flex flex-col gap-4 my-4">
               <span className="text-sm text-gray-500 dark:text-white">Terms (Optional)</span>
-              <textarea name="terms" rows={10} className="resize-none w-full  p-5 border border-gray-300 dark:border-gray-600 rounded-[8px] bg-transparent text-gray-800 dark:text-white" />
+              <textarea
+                name="terms"
+                rows={10}
+                className="resize-none w-full  p-5 border border-gray-300 dark:border-gray-600 rounded-[8px] bg-transparent text-gray-800 dark:text-white"
+              />
               {errors.terms && <span className="text-red-500 text-sm">{errors.terms}</span>}
             </div>
           </div>

@@ -26,7 +26,7 @@ const columns: any = [
             </span>
           )}
         </div>
-        <span className=" text-gray-700 text-sm">
+        <span className=" text-gray-700  dark:text-gray-200 text-sm">
           {(row.merchant.name ? row.merchant.name + " | " : "") + shortenAddress(row.merchant.id, 2)}
         </span>
       </div>

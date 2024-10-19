@@ -235,6 +235,7 @@ const useInitXmtpClient = () => {
     resolveEnable,
     disconnect,
     status,
+    signing,
     reset,
     setStatus,
   };

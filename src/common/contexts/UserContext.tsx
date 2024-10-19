@@ -116,7 +116,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   useLayoutEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
-      if (user && isWagmiConnected) {
+      if (user) {
         console.log("qk User is signed in.", user);
         setSession({ status: "authenticated" });
       }
@@ -154,7 +154,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   console.log("session 45", session, auth.currentUser);
 
-  const isConnected = session.status === "authenticated";
+  const isConnected = session.status === "authenticated" && isWagmiConnected;
 
   return (
     <UserContext.Provider value={{ address, session, mixedCaseAddress, isConnected, signUserOut, signUserIn }}>

@@ -2,7 +2,7 @@
 
 import { shortenAddress } from "@/lib/utils";
 import { Send } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useEthersSigner } from "@/common/hooks/useEthersSigner";
 import {
   useCanMessage,
@@ -27,7 +27,7 @@ const ChatWithMerchant = ({
   conversation: CachedConversation | undefined;
   setConversation: (conversation: CachedConversation | undefined) => void;
 }) => {
-  const { client, status, reset, preInit, resolveEnable, resolveCreate } = useInitXmtpClient();
+  const { client, status, signing, reset, preInit, resolveEnable, resolveCreate } = useInitXmtpClient();
   const { getCachedByPeerAddress } = useConversation();
   const { startConversation, error: startConversationError } = useStartConversation();
   const { canMessage } = useCanMessage();
@@ -35,6 +35,7 @@ const ChatWithMerchant = ({
   const { showModal, hideModal } = useModal();
   const [messageInputValue, setInputValue] = useState("");
   const [otherUserIsOnNetwork, setOtherUserIsOnNetwork] = useState(false);
+  const alreadyShownRef = useRef({ new: false, enabled: false });
 
   const signer = useEthersSigner();
 
@@ -42,7 +43,8 @@ const ChatWithMerchant = ({
 
   useEffect(() => {
     console.log("qg useClient", client?.address, client, status);
-    if (!client && !preInit) {
+    if (!client && !preInit && !alreadyShownRef.current.enabled) {
+      alreadyShownRef.current.enabled = true;
       console.log("qg client not initialized");
       showModal(
         <>
@@ -57,6 +59,7 @@ const ChatWithMerchant = ({
       );
     }
     if (status === "new") {
+      alreadyShownRef.current.new = true;
       console.log("qg status new");
       showModal(
         <>
@@ -161,9 +164,14 @@ const ChatWithMerchant = ({
           </div>
         )
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center">
+        <div className="flex-1 flex flex-col gap-2 items-center justify-center">
           <div className="text-center text-gray-800 dark:text-white">Messaging not enabled</div>
-          <Button onClick={resolveEnable} className="text-gray-800 dark:text-white">
+          <Button
+            loading={signing}
+            loadingText="Please Sign in Wallet"
+            onClick={resolveEnable}
+            className="text-gray-800 border dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
             Enable Messaging
           </Button>
         </div>

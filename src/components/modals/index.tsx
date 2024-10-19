@@ -4,6 +4,7 @@ import React from 'react';
 import Button from '../ui/Button';
 import { useModal } from '@/common/contexts/ModalContext';
 import Image from "next/image";
+import { X } from "lucide-react";
 
 interface Props {
   title?: string;
@@ -43,6 +44,15 @@ const ModalAlert: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col justify-center items-center">
+      <div className="w-full flex flex-row justify-end">
+        <button
+          onClick={hideModal}
+          aria-label="Close modal"
+          className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
+        >
+          <X />
+        </button>
+      </div>
       <div className="flex p-10 flex-col justify-center items-center gap-8 bg-white dark:bg-gray-800 shadow-xl rounded-xl py-10 w-[500px] min-h-[250px]">
         {icon ? (
           typeof icon === "string" ? (
@@ -70,12 +80,14 @@ const ModalAlert: React.FC<Props> = ({
         )}
         <h1 className="text-center text-lg text-black dark:text-white">{title}</h1>
         <p className="text-md text-gray-400 dark:text-gray-300 text-center">{description}</p>
-        <Button
-          loading={loading}
-          text={buttonText}
-          onClick={handleClick}
-          className="bg-transparent border rounded-xl border-gray-200 dark:border-gray-600 px-10 py-1 text-black dark:text-white"
-        />
+        <div className="flex gap-2">
+          <Button
+            loading={loading}
+            text={buttonText}
+            onClick={handleClick}
+            className="bg-transparent border rounded-xl border-gray-200 dark:border-gray-600 px-10 py-1 text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+          />
+        </div>
       </div>
     </div>
   );
