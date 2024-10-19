@@ -19,7 +19,7 @@ const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect
 import Loader from "@/components/loader/Loader";
 import CryptoSelector from "./cryptoSelector";
 import { useUser } from "@/common/contexts/UserContext";
-import { ACCEPTED_TOKENS } from "@/common/constants/queryKeys";
+import { ACCEPTED_CURRENCIES, ACCEPTED_TOKENS, PAYMENT_METHODS } from "@/common/constants/queryKeys";
 import { useModal } from "@/common/contexts/ModalContext";
 
 interface P2PMarketProps {}
@@ -46,7 +46,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   );
 
   const { data: acceptedCurrencies } = useQuery({
-    queryKey: ["acceptedCurrencies"],
+    queryKey: ACCEPTED_CURRENCIES(indexerUrl),
     queryFn: () => fetchCurrencies(indexerUrl),
     enabled: !!indexerUrl,
   });
@@ -67,7 +67,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   });
 
   const { data: paymentMethods } = useQuery({
-    queryKey: ["paymentOptions"],
+    queryKey: PAYMENT_METHODS(indexerUrl),
     queryFn: () => fetchContractPaymentMethods(indexerUrl),
     enabled: !!indexerUrl,
   });
@@ -87,7 +87,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const isAvailable = !!(tokens && currencies && paymentMethods);
 
   if (!isAvailable) {
-    return null;
+    return <WalletConnectSection />;
   }
 
   // const showModal1 = () =>{

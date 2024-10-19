@@ -29,18 +29,17 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
         };
     }, []);
 
-    const renderLinks = (links: { href: string; label: string }[]) => (
-        links.map(link => (
-            <Link
-                key={link.href}
-                href={link.href}
-                className="block px-2 py-2 text-[14px font-[500] transition duration-300
+    const renderLinks = (links: { href: string; label: string }[]) =>
+      links.map((link, i) => (
+        <Link
+          key={i}
+          href={link.href}
+          className="block px-2 py-2 text-[14px font-[500] transition duration-300
                     text-[#111315] hover:text-[#01A2E4] dark:text-white dark:hover:text-[#01A2E4]"
-            >
-                {link.label}
-            </Link>
-        ))
-    );
+        >
+          {link.label}
+        </Link>
+      ));
     
 
     const navLinks = [

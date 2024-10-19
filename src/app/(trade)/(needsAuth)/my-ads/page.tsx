@@ -95,10 +95,17 @@ const MyAds = () => {
   //   return null;
   // }
 
+  //TODO: @mbawon doesnt match figma design
   return (
     <div className="container mx-auto p-0 py-4">
       <div className="py-12 flex flex-col gap-10">
-        <GridTable columns={columns} data={data?.offers || []} actions={actions} itemsPerPage={50} isLoading={isFetching} />
+        <GridTable
+          columns={columns}
+          data={data?.offers || []}
+          actions={actions}
+          itemsPerPage={50}
+          isLoading={isFetching}
+        />
       </div>
     </div>
   );

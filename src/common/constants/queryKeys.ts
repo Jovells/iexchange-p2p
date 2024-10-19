@@ -34,3 +34,5 @@ export const TOKEN_BALANCE = ({ address }: { address: string }) => [
   { functionName: "balanceOf", args: [address] },
 ];
 export const ACCEPTED_TOKENS = (indexerUrl: string) => ["acceptedTokens", indexerUrl];
+export const ACCEPTED_CURRENCIES = (indexerUrl: string) => ["acceptedCurrencies", indexerUrl];
+export const PAYMENT_METHODS = (indexerUrl: string) => ["paymentMethods", indexerUrl];

@@ -58,34 +58,46 @@ export default {
       },
     ],
   },
-  1802203764: {
+  920637907288165: {
     indexerUrl: "https://query.kakarot.protofire.io/subgraphs/name/kakarot/iexchange",
     name: "Kakarot Sepolia",
     explorerUrl: "https://sepolia.kakarotscan.org",
     rpcUrl: "https://sepolia-rpc.kakarot.org",
     p2p: {
-      address: "0x06E33C181394c4910D078F71855fF6c5ccA0f375",
+      address: "0xEd64A15A6223588794A976d344990001a065F3f1",
       abi: OptimisticP2P,
     },
     faucet: {
-      address: "0x1AE45424C98301e1D05e25fB4dbc748156aB3092",
+      address: "0x5FBDb7C37E3338130F925ec5355B29A6d6Da5309",
       abi: faucet,
     },
     tokens: [
       {
-        address: "0x3d63fEc287aD7963B614eD873690A745E635D5Fa",
+        address: "0xB2002EaFC86DD21eaDAed4b1a7857357a6C3f41f",
         abi: CediH,
         name: "CediH",
         symbol: "CEDIH",
       },
       {
-        address: "0x670a1c39227C2475de0459fAB245111F0f78A4Bf",
+        address: "0x53637cE365d796FA32eE3FB1A0cB8408Df0fB554",
         abi: CediH,
         name: "TRK",
         symbol: "TRK",
       },
       {
-        address: "0x39a7f0a342a0509C1aC248F379ba283e99c36Ae5",
+        address: "0xF5Bd8F96A9cb7e27a838aFA4AF55df5594bc9041",
+        abi: CediH,
+        name: "IX USDC",
+        symbol: "USDC",
+      },
+      {
+        address: "0x7281b4cCA308aF757D8BE75e62241e5e0c88CAA3",
+        abi: CediH,
+        name: "IX USDT",
+        symbol: "USDt",
+      },
+      {
+        address: "0x08FD9b19435dD5bdbaF183EE3fe68dCD6fD709EF",
         abi: CediH,
         name: "RAMP",
         symbol: "RMP",
