@@ -36,7 +36,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const auth = getAuth(app);
   const { isDarkMode } = useTheme();
   const [session, setSession] = useState<Session>({ status: auth.currentUser ? "authenticated" : "unauthenticated" });
-  const { address: wagmiAddress } = useAccount();
+  const { address: wagmiAddress, isConnected: isWagmiConnected } = useAccount();
   const { isSuccess, disconnect } = useDisconnect();
 
   const address =
@@ -116,7 +116,8 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   useLayoutEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
-      if (user) {
+      if (user && isWagmiConnected) {
+        console.log("qk User is signed in.", user);
         setSession({ status: "authenticated" });
       }
     });

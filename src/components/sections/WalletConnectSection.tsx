@@ -5,14 +5,14 @@ import NetworkSwitcher from '../networkSwitcher';
 import Claim from '@/app/(trade)/claim';
 
 const WalletConnectSection: React.FC = () => {
-    const { session } = useUser();
+    const { isConnected } = useUser();
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
-        setIsMounted(true);
+      setIsMounted(true);
     }, []);
     if (!isMounted) {
-        return null;
+      return null;
     }
 
     // if (!isMounted || session?.status === "authenticated") {
@@ -29,7 +29,7 @@ const WalletConnectSection: React.FC = () => {
             Convert Crypto to Fiat | Fiat to Crypto in your decentralized wallet with iExchange.
           </p>
           <div className="flex flex-row item-center gap-4">
-            {session.status === "authenticated" && (
+            {isConnected && (
               <>
                 <Claim className="w-[150px] hidden lg:block" />
                 <div className="">
