@@ -13,6 +13,11 @@ import { Offer } from '@/common/api/types';
 import { offerTypes } from "@/common/constants";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useUser } from "@/common/contexts/UserContext";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
 
 type Column = {
   key: string;
@@ -29,6 +34,7 @@ type ExpandableTableProps = {
   requiresAuthToOpen?: boolean;
   columns: Column[];
   data: any[];
+  carouselData?: any[];
   actions?: Action[];
   styles?: React.CSSProperties;
   isLoading: boolean;
@@ -44,6 +50,7 @@ const ExpandableTable = forwardRef(
     {
       columns,
       data,
+      carouselData,
       actions = [],
       requiresAuthToOpen,
       styles,
@@ -119,110 +126,67 @@ const ExpandableTable = forwardRef(
               {isMobile ? (
                 <div>
                   {data.map((row: Offer, index) => (
-                    <div
+                    <MobileRow
                       key={index}
-                      className="bg-white dark:bg-gray-700 mb-4 p-4 rounded-lg border-b border-[#C3D5F173] dark:border-gray-600"
-                    >
-                      {columns.map(column => (
-                        <div key={column.key} className="mb-2 text-black dark:text-white">
-                          <span>
-                            {column.render ? column.render(row) : (row[column.key as keyof Offer] as ReactNode)}
-                          </span>
-                        </div>
-                      ))}
-                      {actions.length > 0 && (
-                        <div className="mt-4 flex justify-end">
-                          {actions.map((action, actionIndex) => {
-                            let label = typeof action.label === "function" ? action.label(row) : action.label;
-
-                            return (
-                              <button
-                                key={actionIndex}
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  handleRowClick(index);
-                                  action.onClick(row);
-                                }}
-                                className={`${
-                                  row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
-                                } text-white text-sm px-4 py-3 rounded-xl`}
-                              >
-                                {label}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  {expandedRowIndex !== null && (
-                    <BottomUpModal
-                      closeExpandedRow={closeExpandedRow}
-                      data={data}
+                      row={row}
+                      index={index}
+                      columns={columns}
+                      actions={actions}
+                      handleRowClick={handleRowClick}
                       expandedRowIndex={expandedRowIndex}
                       children={children}
+                      closeExpandedRow={closeExpandedRow}
                     />
-                    // <div
-                    //   className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50"
-                    //   onClick={closeExpandedRow}>
-                    //   <div
-                    //     className="bg-white dark:bg-gray-800 w-full p-4 rounded-t-xl max-h-[500px] overflow-auto"
-                    //     onClick={(e) => e.stopPropagation()}>
-                    //     {children(data[expandedRowIndex], closeExpandedRow)}
-                    //   </div>
-                    // </div>
-                  )}
+                  ))}
                 </div>
               ) : (
                 <div>
+                  {carouselData && carouselData.length > 0 && (
+                    <Swiper
+                      spaceBetween={10}
+                      slidesPerView={1}
+                      centeredSlides={true}
+                      loop={true}
+                      autoplay={{
+                        delay: 10000,
+                        disableOnInteraction: false,
+                        pauseOnMouseEnter: false,
+                      }}
+                      pagination={{
+                        clickable: true,
+                      }}
+                      modules={[Autoplay, Pagination, Navigation]}
+                    >
+                      {carouselData.map((row, index) => (
+                        <SwiperSlide key={index}>
+                          <BotRow
+                            row={row}
+                            index={index}
+                            columns={columns}
+                            actions={actions}
+                            handleRowClick={handleRowClick}
+                            expandedRowIndex={expandedRowIndex}
+                            children={children}
+                            closeExpandedRow={closeExpandedRow}
+                            columnGridTemplate={columnGridTemplate}
+                          />
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
+                  )}
                   {data.map((row, index) => (
                     <React.Fragment key={index}>
-                      {expandedRowIndex !== index && (
-                        <div
-                          className={`grid grid-cols-12 gap-4 p-4 ${
-                            index + 1 === data.length ? "border-b" : "border-b"
-                          } border-gray-200 dark:border-gray-600  cursor-pointer`}
-                          style={{ gridTemplateColumns: columnGridTemplate }}
-                        >
-                          {columns.map(column => (
-                            <div key={column.key} className="col-span-1 text-black dark:text-white">
-                              {column.render ? column.render(row) : (row[column.key] as ReactNode)}
-                            </div>
-                          ))}
-                          {actions.length > 0 && (
-                            <div className="col-span-1 w-full flex justify-end">
-                              {actions.map((action, actionIndex) => {
-                                const label = typeof action.label === "function" ? action.label(row) : action.label;
-                                return (
-                                  <button
-                                    key={actionIndex}
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      action.onClick(row);
-                                      handleRowClick(index);
-                                    }}
-                                    className={`${
-                                      row.offerType === offerTypes.buy
-                                        ? "bg-[#2ebd85] hover:bg-[#249d6e]"
-                                        : "bg-[#F14E4E] hover:bg-[#d13e3e]"
-                                    } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
-                                  >
-                                    {label}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      <ExpandableRow expanded={expandedRowIndex === index}>
-                        {children(row, closeExpandedRow)}
-                      </ExpandableRow>
-                      {/* {expandedRowIndex === index && (
-                        <div className="col-span-full py-4 border-b border-[#C3D5F124] dark:border-gray-600">
-                          {children(row, closeExpandedRow)}
-                        </div>
-                      )} */}
+                      <DesktopRow
+                        row={row}
+                        index={index}
+                        columns={columns}
+                        actions={actions}
+                        handleRowClick={handleRowClick}
+                        expandedRowIndex={expandedRowIndex}
+                        children={children}
+                        closeExpandedRow={closeExpandedRow}
+                        columnGridTemplate={columnGridTemplate}
+                      />
                     </React.Fragment>
                   ))}
                 </div>
@@ -342,8 +306,9 @@ const BottomUpModal: React.FC<ModalProps> = ({ closeExpandedRow, data, expandedR
       style={{ opacity: isVisible ? 1 : 0 }}
     >
       <div
-        className={`flex flex-col bg-white dark:bg-gray-800 w-full rounded-t-xl max-h-[500px] transition-transform duration-300 transform ${isVisible ? "translate-y-0" : "translate-y-full"
-          }`}
+        className={`flex flex-col bg-white dark:bg-gray-800 w-full rounded-t-xl max-h-[500px] transition-transform duration-300 transform ${
+          isVisible ? "translate-y-0" : "translate-y-full"
+        }`}
       >
         {/* Modal Header */}
         <div className="p-4 py-6 border-b border-gray-600 flex flex-row justify-between items-center">
@@ -352,7 +317,7 @@ const BottomUpModal: React.FC<ModalProps> = ({ closeExpandedRow, data, expandedR
         </div>
 
         {/* Modal Content */}
-        <div className="p-4 overflow-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-4 overflow-auto" onClick={e => e.stopPropagation()}>
           {children(data[expandedRowIndex], handleClose)}
         </div>
       </div>
@@ -360,13 +325,9 @@ const BottomUpModal: React.FC<ModalProps> = ({ closeExpandedRow, data, expandedR
   );
 };
 
-
-const ExpandableRow: React.FC<{ expanded: boolean; children: React.ReactNode }> = ({
-  expanded,
-  children,
-}) => {
+const ExpandableRow: React.FC<{ expanded: boolean; children: React.ReactNode }> = ({ expanded, children }) => {
   const contentRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState('0px');
+  const [height, setHeight] = useState("0px");
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
@@ -375,7 +336,7 @@ const ExpandableRow: React.FC<{ expanded: boolean; children: React.ReactNode }> 
       setHeight(`${contentRef.current.scrollHeight}px`);
     } else {
       setIsAnimating(true);
-      setHeight('0px');
+      setHeight("0px");
     }
   }, [expanded]);
 
@@ -383,8 +344,9 @@ const ExpandableRow: React.FC<{ expanded: boolean; children: React.ReactNode }> 
 
   return (
     <div
-      className={`col-span-full overflow-hidden transition-all duration-500 ease-in-out border-b border-[#C3D5F124] dark:border-gray-600 ${expanded ? 'opacity-100' : 'opacity-0'
-        }`}
+      className={`col-span-full overflow-hidden transition-all duration-500 ease-in-out border-b border-[#C3D5F124] dark:border-gray-600 ${
+        expanded ? "opacity-100" : "opacity-0"
+      }`}
       style={{ maxHeight: height }}
       onTransitionEnd={handleTransitionEnd}
     >
@@ -394,3 +356,167 @@ const ExpandableRow: React.FC<{ expanded: boolean; children: React.ReactNode }> 
     </div>
   );
 };
+
+interface RowProps {
+  row: Offer;
+  index: number;
+  columns: Column[];
+  actions: Action[];
+  handleRowClick: (index: number) => void;
+  expandedRowIndex: number | null;
+  children: (row: any, toggleExpand: () => void) => ReactElement;
+  closeExpandedRow: () => void;
+  columnGridTemplate?: string;
+}
+
+const MobileRow: React.FC<RowProps> = ({
+  row,
+  index,
+  columns,
+  actions,
+  handleRowClick,
+  expandedRowIndex,
+  children,
+  closeExpandedRow,
+}) => (
+  <div
+    key={index}
+    className="bg-white dark:bg-gray-700 mb-4 p-4 rounded-lg border-b border-[#C3D5F173] dark:border-gray-600"
+  >
+    {columns.map(column => (
+      <div key={column.key} className="mb-2 text-black dark:text-white">
+        <span>{column.render ? column.render(row) : (row[column.key as keyof Offer] as ReactNode)}</span>
+      </div>
+    ))}
+    {actions.length > 0 && (
+      <div className="mt-4 flex justify-end">
+        {actions.map((action, actionIndex) => {
+          let label = typeof action.label === "function" ? action.label(row) : action.label;
+
+          return (
+            <button
+              key={actionIndex}
+              onClick={e => {
+                e.stopPropagation();
+                handleRowClick(index);
+                action.onClick(row);
+              }}
+              className={`${
+                row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
+              } text-white text-sm px-4 py-3 rounded-xl`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    )}
+    {expandedRowIndex === index && (
+      <BottomUpModal closeExpandedRow={closeExpandedRow} data={[row]} expandedRowIndex={0} children={children} />
+    )}
+  </div>
+);
+
+const DesktopRow: React.FC<RowProps> = ({
+  row,
+  index,
+  columns,
+  actions,
+  handleRowClick,
+  expandedRowIndex,
+  children,
+  columnGridTemplate,
+  closeExpandedRow,
+}) => (
+  <>
+    {expandedRowIndex !== index && (
+      <div
+        className={`grid grid-cols-12 gap-4 p-4 border-b border-gray-200 dark:border-gray-600 cursor-pointer`}
+        style={{ gridTemplateColumns: columnGridTemplate }}
+      >
+        {columns.map(column => (
+          <div key={column.key} className="col-span-1 text-black dark:text-white">
+            {column.render ? column.render(row) : (row[column.key as keyof typeof row] as ReactNode)}
+          </div>
+        ))}
+        {actions.length > 0 && (
+          <div className="col-span-1 w-full flex justify-end">
+            {actions.map((action, actionIndex) => {
+              const label = typeof action.label === "function" ? action.label(row) : action.label;
+              return (
+                <button
+                  key={actionIndex}
+                  onClick={e => {
+                    e.stopPropagation();
+                    action.onClick(row);
+                    handleRowClick(index);
+                  }}
+                  className={`${
+                    row.offerType === offerTypes.buy
+                      ? "bg-[#2ebd85] hover:bg-[#249d6e]"
+                      : "bg-[#F14E4E] hover:bg-[#d13e3e]"
+                  } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    )}
+    <ExpandableRow expanded={expandedRowIndex === index}>{children(row, closeExpandedRow)}</ExpandableRow>
+  </>
+);
+
+const BotRow: React.FC<RowProps> = ({
+  row,
+  index,
+  columns,
+  actions,
+  handleRowClick,
+  expandedRowIndex,
+  children,
+  columnGridTemplate,
+  closeExpandedRow,
+}) => (
+  <>
+    {expandedRowIndex !== index && (
+      <div
+        className={`grid grid-cols-12 gap-4 p-4 mt-2 rounded-xl border border-primary  cursor-pointer `}
+        style={{ gridTemplateColumns: columnGridTemplate }}
+      >
+        {columns.map(column => (
+          <div key={column.key} className="col-span-1 text-black dark:text-white">
+            {column.render ? column.render(row) : (row[column.key as keyof typeof row] as ReactNode)}
+          </div>
+        ))}
+        {actions.length > 0 && (
+          <div className="col-span-1 w-full flex justify-end">
+            {actions.map((action, actionIndex) => {
+              const label = typeof action.label === "function" ? action.label(row) : action.label;
+              return (
+                <button
+                  key={actionIndex}
+                  onClick={e => {
+                    e.stopPropagation();
+                    action.onClick(row);
+                    handleRowClick(index);
+                  }}
+                  className={`${
+                    row.offerType === offerTypes.buy
+                      ? "bg-[#2ebd85] hover:bg-[#249d6e]"
+                      : "bg-[#F14E4E] hover:bg-[#d13e3e]"
+                  } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    )}
+    <ExpandableRow expanded={expandedRowIndex === index}>{children(row, closeExpandedRow)}</ExpandableRow>
+  </>
+);

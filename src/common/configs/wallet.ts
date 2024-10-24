@@ -7,7 +7,7 @@ import { HOME_PAGE } from "../page-links";
 import { createClient, http } from "viem";
 
 // Get projectId from https://cloud.walletconnect.com
-export const projectId = process.env.WEB3_PROJECT_ID;
+export const projectId = "3a04d38134c46085917b81c1494b1716";
 
 if (!projectId) throw new Error("Project ID is not defined");
 
@@ -67,7 +67,7 @@ const kSepolia = {
 } satisfies Chain;
 
 const isProd = process.env.NODE_ENV === "production";
-export const chains = isProd ? ([mHolesky] as const) : ([mHolesky, kSepolia] as const);
+export const chains = isProd ? ([mHolesky] as const) : ([mHolesky] as const);
 export const dconfig = getDefaultConfig({
   appName: "IExchange",
   chains,
@@ -79,15 +79,14 @@ export const dconfig = getDefaultConfig({
 });
 
 export const cconfig = createConfig({
-  ssr: true,
-
   chains,
   connectors,
-  client({ chain }) {
-    return createClient({ chain, transport: http() });
+  transports: {
+    [mHolesky.id]: http(),
+    [kSepolia.id]: http(),
   },
 });
 
-export const config: Config = dconfig;
+export const config: Config = cconfig;
 
 console.log("qk config", config);

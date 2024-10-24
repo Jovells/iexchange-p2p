@@ -30,7 +30,7 @@ const claim: React.FC<Props> = ({ className }) => {
       iconPosition="left"
       text="Faucet"
       onClick={showClaimModal}
-      className={`bg-gradient-to-r transition duration-300 bg-[#01A2E4] hover:bg-[#0191C8] text-white rounded-xl px-4 py-2 font-bold  border-blue-300 dark:border-[#01a2e4] ${className}`}
+      className={`bg-gradient-to-r transition duration-300 bg-[#01A2E4] hover:bg-[#0191C8] text-white rounded px-4 py-2 font-bold  border-blue-300 dark:border-[#01a2e4] ${className}`}
       // className={`bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-xl px-4 py-2 font-bold shadow-lg hover:from-yellow-500 hover:to-yellow-700 border border-yellow-300 dark:border-yellow-600 ${className}`}
     />
   );

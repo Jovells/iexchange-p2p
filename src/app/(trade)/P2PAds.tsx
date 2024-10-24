@@ -94,14 +94,37 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
     amount,
     paymentMethod: paymentMethod?.id,
     quantity: 10,
+    withoutBots: true,
   };
 
-  const { isPending, error, data } = useQuery({
+  const botOptions = {
+    ...options,
+    withoutBots: false,
+    merchant: BOT_MERCHANT_ID,
+  };
+
+  const {
+    isPending,
+    error,
+    data: nonBotOffers,
+  } = useQuery({
     queryKey: ["ads", indexerUrl, options],
     queryFn: () => fetchAds(indexerUrl, options),
     //TODO: add retry logic
     retry: 0,
   });
+
+  const {
+    isPending: botOffersIsPending,
+    error: botOffersError,
+    data: botOffers,
+  } = useQuery({
+    queryKey: ["ads", indexerUrl, botOptions],
+    queryFn: () => fetchAds(indexerUrl, botOptions),
+    //TODO: add retry logic
+    retry: 0,
+  });
+
   const {
     isPending: totalAdsPendning,
     error: totalAdsError,
@@ -112,14 +135,6 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
     //TODO: add retry logic
     retry: 0,
   });
-
-  function moveBotMerchantOffersToTop(offers: Offer[]) {
-    const botOffers = offers.filter(offer => offer.merchant.id === BOT_MERCHANT_ID);
-    const nonBotOffers = offers.filter(offer => offer.merchant.id !== BOT_MERCHANT_ID);
-    return [...botOffers, ...nonBotOffers];
-  }
-
-  const offers = data ? moveBotMerchantOffersToTop(data.offers) : [];
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -133,8 +148,8 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
     },
   ];
 
-  if (error) {
-    console.log("error:", error);
+  if (error || botOffersError) {
+    console.log("error:", error, "botOffersError", botOffersError);
   }
 
   return (
@@ -144,7 +159,8 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
           requiresAuthToOpen
           ref={tableRef}
           columns={columns}
-          data={offers}
+          data={nonBotOffers?.offers || []}
+          carouselData={botOffers?.offers || []}
           actions={actions}
           isLoading={isPending}
           page={currentPage}
