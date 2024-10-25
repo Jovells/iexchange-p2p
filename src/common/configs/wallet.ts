@@ -3,7 +3,7 @@ import { connectorsForWallets, Wallet } from "@rainbow-me/rainbowkit";
 import { morphHolesky, kakarotSepolia } from "wagmi/chains";
 import { injectedWallet, metaMaskWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets";
 import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { HOME_PAGE } from "../page-links";
+import { HOME_PAGE, HOME_PAGE_ALT } from "../page-links";
 import { createClient, http } from "viem";
 
 // Get projectId from https://cloud.walletconnect.com
@@ -21,7 +21,7 @@ const newMobileGetUri = (uri: string) => {
   /**
    * if the user is in the metamask browser, return a custom uri
    */
-  return "https://metamask.app.link/dapp/" + location.origin + HOME_PAGE;
+  return "https://metamask.app.link/dapp/" + HOME_PAGE_ALT;
 };
 
 customMetamaskWallet.mobile!.getUri = newMobileGetUri;

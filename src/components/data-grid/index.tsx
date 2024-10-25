@@ -42,6 +42,7 @@ type ExpandableTableProps = {
   page?: number;
   pageSize?: number;
   totalRecords?: number;
+  hasNextPage?: boolean;
   onPageChange: (page: number) => void;
 };
 
@@ -60,6 +61,7 @@ const ExpandableTable = forwardRef(
       pageSize = 50,
       totalRecords = data.length,
       onPageChange,
+      hasNextPage,
     }: ExpandableTableProps,
     ref,
   ) => {
@@ -125,6 +127,42 @@ const ExpandableTable = forwardRef(
             <>
               {isMobile ? (
                 <div>
+                  {carouselData && carouselData.length > 0 && (
+                    <Swiper
+                      spaceBetween={10}
+                      slidesPerView={1}
+                      centeredSlides={false}
+                      loop={true}
+                      autoplay={{
+                        delay: 10000,
+                        disableOnInteraction: false,
+                        pauseOnMouseEnter: true,
+                      }}
+                      pagination={{
+                        bulletActiveClass: "bg-green-500",
+                        clickable: true,
+                      }}
+                      modules={[Autoplay, Pagination, Navigation]}
+                    >
+                      {carouselData.map((row, index) => (
+                        <SwiperSlide key={index}>
+                          <div className="pb-5 rounded-xl">
+                            <MobileBotRow
+                              row={row}
+                              index={index}
+                              columns={columns}
+                              actions={actions}
+                              handleRowClick={handleRowClick}
+                              expandedRowIndex={expandedRowIndex}
+                              children={children}
+                              closeExpandedRow={closeExpandedRow}
+                              columnGridTemplate={columnGridTemplate}
+                            />
+                          </div>
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
+                  )}
                   {data.map((row: Offer, index) => (
                     <MobileRow
                       key={index}
@@ -257,7 +295,7 @@ const ExpandableTable = forwardRef(
                   </button>
                 )}
                 <button
-                  disabled={page + 1 === totalPages}
+                  disabled={!hasNextPage}
                   onClick={() => onPageChange(page + 1)}
                   className="px-4 py-2 bg-transparent cursor-pointer rounded disabled:opacity-50 text-black dark:text-white"
                 >
@@ -381,8 +419,52 @@ const MobileRow: React.FC<RowProps> = ({
 }) => (
   <div
     key={index}
-    className="bg-white dark:bg-gray-700 mb-4 p-4 rounded-lg border-b border-[#C3D5F173] dark:border-gray-600"
+    className="bg-white dark:bg-gray-700 mb-4 p-4 rounded-xl border-b border-[#C3D5F173] dark:border-gray-600"
   >
+    {columns.map(column => (
+      <div key={column.key} className="mb-2 text-black dark:text-white">
+        <span>{column.render ? column.render(row) : (row[column.key as keyof Offer] as ReactNode)}</span>
+      </div>
+    ))}
+    {actions.length > 0 && (
+      <div className="mt-4 flex justify-end">
+        {actions.map((action, actionIndex) => {
+          let label = typeof action.label === "function" ? action.label(row) : action.label;
+
+          return (
+            <button
+              key={actionIndex}
+              onClick={e => {
+                e.stopPropagation();
+                handleRowClick(index);
+                action.onClick(row);
+              }}
+              className={`${
+                row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
+              } text-white text-sm px-4 py-3 rounded-xl`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    )}
+    {expandedRowIndex === index && (
+      <BottomUpModal closeExpandedRow={closeExpandedRow} data={[row]} expandedRowIndex={0} children={children} />
+    )}
+  </div>
+);
+const MobileBotRow: React.FC<RowProps> = ({
+  row,
+  index,
+  columns,
+  actions,
+  handleRowClick,
+  expandedRowIndex,
+  children,
+  closeExpandedRow,
+}) => (
+  <div key={index} className="bg-white dark:bg-gray-700 mb-4 p-4 rounded-xl border border-primary">
     {columns.map(column => (
       <div key={column.key} className="mb-2 text-black dark:text-white">
         <span>{column.render ? column.render(row) : (row[column.key as keyof Offer] as ReactNode)}</span>

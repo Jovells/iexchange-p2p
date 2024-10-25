@@ -125,16 +125,6 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
     retry: 0,
   });
 
-  const {
-    isPending: totalAdsPendning,
-    error: totalAdsError,
-    data: totalRecords,
-  } = useQuery({
-    queryKey: ["totalAds", indexerUrl, options],
-    queryFn: () => fetchTotalAds(indexerUrl, options),
-    //TODO: add retry logic
-    retry: 0,
-  });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -165,7 +155,7 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
           isLoading={isPending}
           page={currentPage}
           pageSize={options.quantity}
-          totalRecords={totalRecords}
+          hasNextPage={nonBotOffers?.hasNext}
           onPageChange={handlePageChange}
         >
           {(row, toggleExpand) => <CreateOrder data={row} toggleExpand={toggleExpand} orderType={trade} />}

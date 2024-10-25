@@ -62,7 +62,6 @@ import {
     });
     const graphdata = (await fetchGraphQL(indexerUrl, operation.query, "ads", operation.variables)) as {
       offers: Offer[];
-      hasNext: boolean;
     };
 
     const mechantIds = graphdata.offers.map(offer => offer.merchant.id);
@@ -80,9 +79,6 @@ import {
         };
       }
     });
-    const hasNext = graphdata.offers.length > quantity;
-    graphdata.offers = graphdata.offers.slice(0, quantity);
-    graphdata.hasNext = hasNext;
     return graphdata;
   }
 
@@ -95,12 +91,7 @@ import {
   }) {
     const { first, skip, orderBy, orderDirection, options } = params;
 
-    const variables: { [key: string]: any } = {
-      first: first + 1,
-      skip,
-      orderBy: orderBy,
-      orderDirection: orderDirection,
-    };
+    const variables: { [key: string]: any } = { first, skip, orderBy: orderBy, orderDirection: orderDirection };
 
     const whereClauses = options
       .map(option => {

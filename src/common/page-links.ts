@@ -2,6 +2,7 @@ import {HiOutlineHome, HiOutlineUser, HiOutlineUsers, HiOutlineCalendarDays, HiO
 
 export const ORDER_PAGE = (orderId:string) => `/order/${orderId}`
 export const HOME_PAGE = "/";
+export const HOME_PAGE_ALT = "https://iexchange.tech";
 export const DASHBOARD_PAGE = '/dashboard'
 export const POST_AD_PAGE = "/my-ads/create"
 export const ORDER_HISTORY_PAGE = "/dashboard/history/orders"
