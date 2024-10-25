@@ -139,7 +139,6 @@ const ExpandableTable = forwardRef(
                         pauseOnMouseEnter: true,
                       }}
                       pagination={{
-                        bulletActiveClass: "bg-green-500",
                         clickable: true,
                       }}
                       modules={[Autoplay, Pagination, Navigation]}
