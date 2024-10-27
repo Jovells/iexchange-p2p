@@ -6,32 +6,32 @@ import React, { useRef, useState } from 'react'
 import { useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import { useContracts } from "@/common/contexts/ContractContext";
-import { Offer, Token } from "@/common/api/types";
+import { FetchAdsOptions, Offer, Token } from "@/common/api/types";
 import { offerTypes } from "@/common/constants";
 import { useUser } from "@/common/contexts/UserContext";
 import { formatCurrency, getPaymentMethodColor } from "@/lib/utils";
 import { ACCEPTED_CURRENCIES, ACCEPTED_TOKENS, MY_ADS, PAYMENT_METHODS } from "@/common/constants/queryKeys";
-import InputSelect from '@/components/ui/InputSelect';
-import InputWithSelect from '@/components/ui/InputWithSelect';
-import CryptoSelector from '../../cryptoSelector';
+import InputSelect from "@/components/ui/InputSelect";
+import InputWithSelect from "@/components/ui/InputWithSelect";
+import CryptoSelector from "../../cryptoSelector";
 import { fetchTokens } from "@/common/api/fetchTokens";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
-import fetchContractPaymentMethods from '@/common/api/fetchContractPaymentMethods';
+import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
 
 const BuySellOptions = [
   {
-    label:"All Ads",
-    value:"all"
+    label: "All Ads",
+    value: "all",
   },
   {
-    label:"Buy",
-    value:"buy"
+    label: "Buy",
+    value: "buy",
   },
   {
-    label:"Sell",
-    value:"sell"
+    label: "Sell",
+    value: "sell",
   },
-]
+];
 
 const columns: any = [
   {
@@ -48,7 +48,7 @@ const columns: any = [
           <span className="font-bold text-2xl">{row.rate}</span>
           <span className="ml-2 text-sm">{row.currency.currency}</span>
         </div>
-      )
+      );
     },
   },
   {
@@ -75,7 +75,7 @@ const columns: any = [
         >
           {row.paymentMethod.method}
         </span>
-      )
+      );
     },
   },
   {
@@ -96,20 +96,18 @@ const MyAds = () => {
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<string>();
+  const [offerType, setOfferType] = useState<string>();
+  const [currencyAmount, setCurrencyAmount] = useState<{
+    currency: string;
+    id: string | null;
+    amount: string;
+  }>();
 
   const router = useRouter();
   const { address } = useUser();
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
-
-  const options = { page: currentPage, merchant: address?.toLowerCase() };
-
-  const { isPending, isError, error, data, isFetching, isPlaceholderData } = useQuery({
-    queryKey: MY_ADS({ indexerUrl, options }),
-    queryFn: () => fetchAds(indexerUrl, options),
-    // placeholderData: keepPreviousData,
-  });
 
   const { data: tokens } = useQuery({
     queryKey: ACCEPTED_TOKENS(indexerUrl),
@@ -133,6 +131,23 @@ const MyAds = () => {
     enabled: !!indexerUrl,
   });
 
+  const options: FetchAdsOptions = {
+    page: currentPage,
+    offerType,
+    tokenId: selectedCrypto?.id,
+    currency: currencyAmount?.id !== "0x0" ? currencyAmount?.id || undefined : undefined,
+    amount: currencyAmount?.amount,
+    paymentMethod: paymentMethods?.find((method: { method: string }) => method.method === paymentMethod)?.id,
+    quantity: 10,
+    merchant: address,
+  };
+
+  const { isPending, isError, error, data, isFetching, isPlaceholderData } = useQuery({
+    queryKey: MY_ADS({ indexerUrl, options }),
+    queryFn: () => fetchAds(indexerUrl, options),
+    // placeholderData: keepPreviousData,
+  });
+
   const currencies = acceptedCurrencies?.map(currency => ({
     symbol: currency.currency,
     name: currency.currency,
@@ -150,8 +165,16 @@ const MyAds = () => {
   }
 
   const actions = [
-    { onClick: (row: any) => router.push("/order/order"), classNames: "bg-transparent text-black dark:text-white", icon: <Pencil className='w-4 h-4' /> },
-    { onClick: (row: any) => router.push("/appeal/order"), classNames: "bg-transparent text-black dark:text-white", icon: <CircleX className='w-4 h-4' /> },
+    {
+      onClick: (row: any) => router.push("/order/order"),
+      classNames: "bg-transparent text-black dark:text-white",
+      icon: <Pencil className="w-4 h-4" />,
+    },
+    {
+      onClick: (row: any) => router.push("/appeal/order"),
+      classNames: "bg-transparent text-black dark:text-white",
+      icon: <CircleX className="w-4 h-4" />,
+    },
   ];
 
   const isAvailable = !!(tokens && currencies && paymentMethods);
@@ -163,12 +186,28 @@ const MyAds = () => {
   return (
     <div className="container mx-auto p-0 py-4">
       <div className="py-12 flex flex-col gap-10">
-        <div className='flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4'>
-          <InputSelect initialValue='all' options={BuySellOptions} selectType='normal' style={{ paddingTop: "14px", padding: "14px" }} />
+        <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
+          <InputSelect
+            initialValue="all"
+            onValueChange={setOfferType}
+            options={BuySellOptions}
+            selectType="normal"
+            style={{ paddingTop: "14px", padding: "14px" }}
+          />
           <div className="w-full">
-            <CryptoSelector tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={setSelectedCrypto} showFaucet={false} />
+            <CryptoSelector
+              tokens={tokens}
+              selectedCrypto={selectedCrypto}
+              setSelectedCrypto={setSelectedCrypto}
+              showFaucet={false}
+            />
           </div>
-          <InputWithSelect currencies={currencies} placeholder='Enter amount' readOnly={false}  />
+          <InputWithSelect
+            onValueChange={setCurrencyAmount}
+            currencies={currencies}
+            placeholder="Enter amount"
+            readOnly={false}
+          />
           <InputSelect
             showLabel={false}
             initialValue="usd"
@@ -177,7 +216,7 @@ const MyAds = () => {
               value: method.method,
               label: method.method,
             }))}
-            onValueChange={value => setPaymentMethod(value)}
+            onValueChange={setPaymentMethod}
             className="bg-white dark:bg-gray-800 text-black dark:text-white"
             style={{ paddingTop: "14px", padding: "14px" }}
           />

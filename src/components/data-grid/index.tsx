@@ -103,6 +103,7 @@ const ExpandableTable = forwardRef(
 
     const totalPages = Math.ceil(totalRecords / pageSize);
 
+    console.log("expandedRowIndex", expandedRowIndex);
     return (
       <div className="w-full overflow-x-auto  rounded-[8px]">
         <div className={`min-w-full `} style={styles}>
@@ -128,39 +129,42 @@ const ExpandableTable = forwardRef(
               {isMobile ? (
                 <div>
                   {carouselData && carouselData.length > 0 && (
-                    <Swiper
-                      spaceBetween={10}
-                      slidesPerView={1}
-                      centeredSlides={false}
-                      loop={true}
-                      autoplay={{
-                        delay: 10000,
-                        disableOnInteraction: false,
-                        pauseOnMouseEnter: true,
-                      }}
-                      pagination={{
-                        clickable: true,
-                      }}
-                      modules={[Autoplay, Pagination, Navigation]}
-                    >
-                      {carouselData.map((row, index) => (
-                        <SwiperSlide key={index}>
-                          <div className="pb-5 rounded-xl">
-                            <MobileBotRow
-                              row={row}
-                              index={index}
-                              columns={columns}
-                              actions={actions}
-                              handleRowClick={handleRowClick}
-                              expandedRowIndex={expandedRowIndex}
-                              children={children}
-                              closeExpandedRow={closeExpandedRow}
-                              columnGridTemplate={columnGridTemplate}
-                            />
-                          </div>
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
+                    <div className="mt-2 mb-2 rounded-xl border border-primary  cursor-pointer">
+                      <div className="text-center leading-none m-0 p-0 w-full">
+                        <span className="bg-gray-200 dark:bg-gray-600 p-1 px-5   text-primary text-xs font-bold rounded-b-[5px]">
+                          BOT ADS
+                        </span>
+                      </div>
+                      <Swiper
+                        spaceBetween={10}
+                        slidesPerView={1}
+                        centeredSlides={false}
+                        loop={true}
+                        pagination={{
+                          clickable: true,
+                          enabled: expandedRowIndex !== 0,
+                        }}
+                        modules={[Pagination, Navigation]}
+                      >
+                        {carouselData.map((row, index) => (
+                          <SwiperSlide key={index}>
+                            <div className="pb-5 m rounded-xl">
+                              <MobileBotRow
+                                row={row}
+                                index={0}
+                                columns={columns}
+                                actions={actions}
+                                handleRowClick={handleRowClick}
+                                expandedRowIndex={expandedRowIndex}
+                                children={children}
+                                closeExpandedRow={closeExpandedRow}
+                                columnGridTemplate={columnGridTemplate}
+                              />
+                            </div>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    </div>
                   )}
                   {data.map((row: Offer, index) => (
                     <MobileRow
@@ -179,43 +183,53 @@ const ExpandableTable = forwardRef(
               ) : (
                 <div>
                   {carouselData && carouselData.length > 0 && (
-                    <Swiper
-                      spaceBetween={10}
-                      slidesPerView={1}
-                      centeredSlides={true}
-                      loop={true}
-                      autoplay={{
-                        delay: 10000,
-                        disableOnInteraction: false,
-                        pauseOnMouseEnter: false,
-                      }}
-                      pagination={{
-                        clickable: true,
-                      }}
-                      modules={[Autoplay, Pagination, Navigation]}
-                    >
-                      {carouselData.map((row, index) => (
-                        <SwiperSlide key={index}>
-                          <BotRow
-                            row={row}
-                            index={index}
-                            columns={columns}
-                            actions={actions}
-                            handleRowClick={handleRowClick}
-                            expandedRowIndex={expandedRowIndex}
-                            children={children}
-                            closeExpandedRow={closeExpandedRow}
-                            columnGridTemplate={columnGridTemplate}
-                          />
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
+                    <div className="mt-2 rounded-xl p-0 m-0  border border-primary  cursor-pointer">
+                      <div className="text-center leading-none m-0 p-0 w-full">
+                        <span className="bg-gray-200 dark:bg-gray-600 p-1 px-5   text-primary text-xs font-bold rounded-b-[5px]">
+                          BOT ADS
+                        </span>
+                      </div>
+                      <Swiper
+                        spaceBetween={10}
+                        slidesPerView={1}
+                        centeredSlides={false}
+                        loop={true}
+                        onSlideNextTransitionStart={
+                          expandedRowIndex === 0
+                            ? (console.log("expandedRowIndex", expandedRowIndex), closeExpandedRow)
+                            : undefined
+                        }
+                        pagination={{
+                          enabled: expandedRowIndex !== 0,
+                          clickable: true,
+                        }}
+                        modules={[Autoplay, Pagination, Navigation]}
+                      >
+                        {carouselData.map((row, index) => (
+                          <SwiperSlide key={index}>
+                            <div className=" rounded-xl">
+                              <BotRow
+                                row={row}
+                                index={0}
+                                columns={columns}
+                                actions={actions}
+                                handleRowClick={handleRowClick}
+                                expandedRowIndex={expandedRowIndex}
+                                children={children}
+                                closeExpandedRow={closeExpandedRow}
+                                columnGridTemplate={columnGridTemplate}
+                              />
+                            </div>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    </div>
                   )}
                   {data.map((row, index) => (
                     <React.Fragment key={index}>
                       <DesktopRow
                         row={row}
-                        index={index}
+                        index={index + 1}
                         columns={columns}
                         actions={actions}
                         handleRowClick={handleRowClick}
@@ -245,41 +259,15 @@ const ExpandableTable = forwardRef(
                 >
                   Prev
                 </button>
-                {totalPages >= 1 && (
-                  <>
-                    <button
-                      onClick={() => onPageChange(0)}
-                      className={`px-4 py-2 rounded-[8px] border ${
-                        page === 0 ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]" : "bg-transparent text-[#01a2e4]"
-                      } hover:bg-blue-200 transition-colors duration-200`}
-                    >
-                      1
-                    </button>
-                    {totalPages > 3 && page > 2 && <span className="px-2">...</span>}
-                  </>
-                )}
-
-                {Array.from({ length: Math.min(2, totalPages) }, (_, index) => {
-                  const pageNum = Math.max(2, page - 2) + index;
-
-                  if (pageNum <= totalPages && pageNum > 1) {
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => onPageChange(pageNum - 1)}
-                        className={`px-4 py-2 rounded-[8px] border ${
-                          page === pageNum - 1
-                            ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]"
-                            : "bg-transparent text-[#01a2e4]"
-                        } hover:bg-blue-200 transition-colors duration-200`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  }
-                  return null;
-                })}
-
+                <button
+                  key={page}
+                  onClick={() => onPageChange(page - 1)}
+                  className={`px-4 py-2 rounded-[8px] border ${
+                    page === page - 1 ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]" : "bg-transparent text-[#01a2e4]"
+                  } hover:bg-blue-200 transition-colors duration-200`}
+                >
+                  {page}
+                </button>
                 {totalPages > 3 && page < totalPages - 1 && <span className="px-2">...</span>}
                 {totalPages > 1 && (
                   <button
@@ -290,7 +278,7 @@ const ExpandableTable = forwardRef(
                         : "bg-transparent text-[#01a2e4]"
                     } hover:bg-blue-200 transition-colors duration-200`}
                   >
-                    {totalPages}
+                    {page}
                   </button>
                 )}
                 <button
@@ -416,10 +404,7 @@ const MobileRow: React.FC<RowProps> = ({
   children,
   closeExpandedRow,
 }) => (
-  <div
-    key={index}
-    className="bg-white dark:bg-gray-700 mb-4 p-4 rounded-xl border-b border-[#C3D5F173] dark:border-gray-600"
-  >
+  <div key={index} className=" mb-4 p-4 rounded-xl border-b border-[#C3D5F173] dark:border-gray-600">
     {columns.map(column => (
       <div key={column.key} className="mb-2 text-black dark:text-white">
         <span>{column.render ? column.render(row) : (row[column.key as keyof Offer] as ReactNode)}</span>
@@ -463,7 +448,7 @@ const MobileBotRow: React.FC<RowProps> = ({
   children,
   closeExpandedRow,
 }) => (
-  <div key={index} className="bg-white dark:bg-gray-700 mb-4 p-4 rounded-xl border border-primary">
+  <div key={index} className=" mb-1 p-4 rounded-xl ">
     {columns.map(column => (
       <div key={column.key} className="mb-2 text-black dark:text-white">
         <span>{column.render ? column.render(row) : (row[column.key as keyof Offer] as ReactNode)}</span>
@@ -563,10 +548,7 @@ const BotRow: React.FC<RowProps> = ({
 }) => (
   <>
     {expandedRowIndex !== index && (
-      <div
-        className={`grid grid-cols-12 gap-4 p-4 mt-2 rounded-xl border border-primary  cursor-pointer `}
-        style={{ gridTemplateColumns: columnGridTemplate }}
-      >
+      <div className={`grid grid-cols-12 gap-4 p-4 `} style={{ gridTemplateColumns: columnGridTemplate }}>
         {columns.map(column => (
           <div key={column.key} className="col-span-1 text-black dark:text-white">
             {column.render ? column.render(row) : (row[column.key as keyof typeof row] as ReactNode)}

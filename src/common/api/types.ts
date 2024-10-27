@@ -8,6 +8,21 @@ export type Token = {
   isTraded?: boolean;
 };
 
+export interface FetchAdsOptions {
+  quantity?: number;
+  page?: number;
+  offerType?: string;
+  tokenId?: string;
+  merchant?: string;
+  paymentMethod?: string;
+  currency?: string;
+  amount?: string;
+  orderBy?: string;
+  orderDirection?: string;
+  isActive?: boolean;
+  withoutBots?: boolean;
+}
+
 export enum OrderState {
   Pending,
   Accepted,

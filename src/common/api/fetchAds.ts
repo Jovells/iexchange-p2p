@@ -8,22 +8,9 @@ import {
   import { db } from "../configs/firebase";
   import { writeContract } from "viem/actions";
   import { BOT_MERCHANT_ID, offerTypes as OFFER_TYPES } from "../constants";
-  import { Offer } from "./types";
+  import { FetchAdsOptions, Offer } from "./types";
 
-  interface FetchAdsOptions {
-    quantity?: number;
-    page?: number;
-    offerType?: string;
-    tokenId?: string;
-    merchant?: string;
-    paymentMethod?: string;
-    currency?: string;
-    amount?: string;
-    orderBy?: string;
-    orderDirection?: string;
-    isActive?: boolean;
-    withoutBots?: boolean;
-  }
+
 
   export async function fetchAds(indexerUrl: string, options?: FetchAdsOptions) {
     const {

@@ -1,7 +1,9 @@
 "use client";
 import { useParams } from "next/navigation";
-import React from "react";
-import OrderStage from "./OderStage";
+import React, { lazy } from "react";
+
+const OrderStage = lazy(() => import("./OderStage"));
+
 
 const OrderCreated = () => {
   const { orderId } = useParams<{ orderId: string }>();

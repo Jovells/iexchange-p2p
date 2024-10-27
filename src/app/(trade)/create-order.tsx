@@ -63,7 +63,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
 
   const isMerchant = userAddress === data.merchant.id;
 
-  const { data: allowance } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
     abi: CediH,
     address: data.token.id,
     functionName: "allowance",
@@ -147,6 +147,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
 
   const tokensAmount = toReceive ? BigInt(Math.floor(Number(toReceive) * 10 ** 18)) : BigInt(0);
   console.log("qptokensAmount", formatEther(tokensAmount), "toReceive", toReceive);
+  console.log("qpallowance", allowance, "tokensAmount", tokensAmount);
   const alreadyApproved = allowance! >= tokensAmount || orderType === "buy";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -191,6 +192,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
             args: [p2p.address, tokensAmount],
           },
         );
+        refetchAllowance();
       }
       newOrder.current = {
         accountHash: accountHash as `0x${string}`,
@@ -202,13 +204,26 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
         status: OrderState.Pending,
       } satisfies Partial<Order>;
 
-      await writeP2p(
+      const toastId = "createOrder";
+
+      const writeRes = await writeP2p(
         {
+          waitForReceipt: true,
+          toastId,
           loadingMessage: "Creating Order",
           successMessage: "Order Created Successfully",
-          afterAction: new Promise(async resolve => {
-            afterRef.current = resolve;
-          }),
+          onTxSent: async () => toast.loading("Order Sent. Waiting for finalisation", { id: toastId }),
+          onReceipt: async ({ receipt, decodedLogs }) => {
+            console.log("qwreceiptdeclogs", receipt, decodedLogs);
+            const orderId = decodedLogs[0].args.orderId.toString();
+            const block = await getBlock(config, { blockNumber: receipt.blockNumber });
+            console.log("qwblock", block);
+            const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder.current } as Order;
+            console.log("qworder", order);
+            navigate.push("/order/" + orderId);
+            queryClient.setQueryData(ORDER({ indexerUrl, orderId }), order);
+            afterRef.current?.("done");
+          },
         },
         {
           abi: p2p.abi,
@@ -217,7 +232,9 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           args: [BigInt(data.id), tokensAmount, depositAddress, accountHash],
         },
       );
-    } catch (e) {
+      console.log("qwwriteRes", writeRes);
+    } catch (e: any) {
+      toast.error("An error occurred. Please try again" + e.message);
       console.log("error", e);
     }
   };
@@ -230,25 +247,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
         let orderId: string;
         for (const log of receipt.logs) {
           try {
-            const decoded = decodeEventLog({
-              abi: p2p.abi,
-              data: log.data,
-              topics: log.topics,
-              eventName: "NewOrder",
-            });
-            const args = decoded?.args;
-            console.log("qwargs", args);
-            console.log("qwlog1", log);
-            orderId = args.orderId.toString();
-
             //TODO: @Jovells MOVE BLOCKTIMESTAMP ELSEWHERE
-            const block = await getBlock(config, { blockNumber: receipt.blockNumber });
-            console.log("qwblock", block);
-            const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder.current } as Order;
-            console.log("qworder", order);
-            navigate.push("/order/" + orderId);
-            queryClient.setQueryData(ORDER({ indexerUrl, orderId }), order);
-            afterRef.current?.("done");
 
             break;
           } catch (e) {

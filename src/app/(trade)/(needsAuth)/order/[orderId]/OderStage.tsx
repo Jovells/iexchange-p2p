@@ -43,7 +43,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   const [conversation, setConversation] = useState<CachedConversation | undefined>();
   const queryClient = useQueryClient();
   const { address, isConnected } = useUser();
-  const { writeContractAsync, isPending } = useWriteContractWithToast();
+  const { writeContractAsync, isPending: isWriteContractPending } = useWriteContractWithToast();
   const [pollToggle, setPollToggle] = React.useState(true);
   const { sendMessage } = useSendMessage();
   const {
@@ -100,12 +100,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   });
 
   const getButtonConfig = () => {
-    if (!order) return { text: "", buttonText: "", onClick: () => { }, disabled: true, shouldPoll: false };
+    if (!order) return { text: "", buttonText: "", onClick: () => {}, disabled: true, shouldPoll: false };
 
     const getDisabledAction = (buttonText: string, text: string, shouldPoll = true) => ({
       buttonText,
       text,
-      onClick: () => { },
+      onClick: () => {},
       disabled: true,
       shouldPoll,
     });
@@ -125,39 +125,39 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         if (isBuyer) {
           return order.offer.offerType === offerTypes.buy
             ? getDisabledAction(
-              "Waiting for Merchant",
-              "Please wait for the merchant to accept your order and send the tokens to the escrow account",
-            )
+                "Waiting for Merchant",
+                "Please wait for the merchant to accept your order and send the tokens to the escrow account",
+              )
             : getEnabledAction(
-              "Done With Payment",
-              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-              handlePayOrder,
-            );
+                "Done With Payment",
+                "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+                handlePayOrder,
+              );
         } else {
           return order.offer.offerType === offerTypes.sell
             ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
             : getEnabledAction(
-              "Accept Order",
-              "Click “Accept Order” your order and send the tokens to the escrow account ",
-              handleAcceptOrder,
-            );
+                "Accept Order",
+                "Click “Accept Order” your order and send the tokens to the escrow account ",
+                handleAcceptOrder,
+              );
         }
       case OrderState.Accepted:
         return isBuyer
           ? getEnabledAction(
-            "Done With Payment",
-            "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-            handlePayOrder,
-          )
+              "Done With Payment",
+              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+              handlePayOrder,
+            )
           : getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment");
       case OrderState.Paid:
         return isBuyer
           ? getDisabledAction("Waiting for Seller to Release", "Please wait for the seller to release")
           : getEnabledAction(
-            "Release Funds",
-            "Click “Release Funds” to release the funds to the buyer",
-            handleReleaseFunds,
-          );
+              "Release Funds",
+              "Click “Release Funds” to release the funds to the buyer",
+              handleReleaseFunds,
+            );
       case OrderState.Released:
         return getDisabledAction("Completed", "Order has been completed", false);
       case OrderState.Cancelled:
@@ -379,6 +379,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     (order.status === OrderState.Pending && isMerchant) || (order.status === OrderState.Accepted && isTrader);
 
   const isBuyerAndNotYetAccepted = order?.status === OrderState.Pending && isBuyer && isTrader;
+  const isPending = order?.status === OrderState.Pending;
+  const isPaid = order?.status === OrderState.Paid;
+  const isCompleted = order?.status === OrderState.Released || order?.status === OrderState.Cancelled;
   return (
     <Suspense
       fallback={
@@ -387,7 +390,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         </div>
       }
     >
-      <div className="w-full bg-[#CCE0F6] dark:bg-gray-800 px-6 lg:px-0">
+      <div className="w-full bg-[#CCE0F6] dark:bg-gray-800 px-6">
         <div className="w-full lg:container lg:mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between py-10 lg:px-0">
           <div className="gap-3">
             <span className="font-bold text-gray-600 dark:text-gray-300">Order Created</span>
@@ -421,32 +424,45 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           </div>
 
           {/* Order Information Section */}
-          {order.status !== OrderState.Released && (
+          {!isCompleted ? (
             <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl">
               {/* Header */}
               <div className="flex justify-between mb-6">
                 <h2 className="text-lg text-gray-500 dark:text-gray-400">{buttonText}</h2>
-                {order.status !== OrderState.Cancelled && <div
+
+                <div
                   className={`px-2 py-1 text-sm text-gray-100 rounded-xl ${isBuyer ? " bg-[#4ade80]" : "bg-[#f6465d]"}`}
                 >
                   {isBuyer ? "Buy" : "Sell"}
-                </div>}
-                {order.status === OrderState.Cancelled && <Image src="/images/icons/cancelled.svg" alt="success" width={35} height={35} />}
+                </div>
               </div>
 
               {/* Order Details */}
               <div className="flex flex-col items-start gap-8">
                 <div className="flex w-full">
                   <div className="flex flex-col items-center">
-                    <div className="bg-[#0051A6] text-white rounded-full w-10 h-14 flex items-center justify-center font-bold">
+                    <div
+                      className={` ${
+                        isPending ? "bg-primary" : "bg-lightGray dark:bg-lightGray-dark"
+                      } text-white rounded-full w-10 h-12 flex items-center justify-center font-bold`}
+                    >
                       1
                     </div>
-                    <div className="h-full border-l-2 border-gray-600"></div>
+                    <div
+                      className={`h-full border-l-2   ${
+                        isPending ? "border-primary" : "border-lightGray dark:border-lightGray-dark"
+                      }`}
+                    ></div>
                   </div>
                   <div className="ml-4 flex-grow">
-                    <span className="text-black dark:text-white font-semibold">Order Information</span>
-                    <div className="flex flex-col justify-start items-start gap-1 w-full">
-                      <InfoBlock isAmount label="Fiat Amount" value={isBuyer ? fiatAmount : cryptoAmount} isBuyer={isBuyer} />
+                    <span className="text-darkGray dark:text-darkGray-dark font-semibold">Order Information</span>
+                    <div className="flex border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4 mt-2 flex-col justify-start items-start gap-1 w-full">
+                      <InfoBlock
+                        isAmount
+                        label="Fiat Amount"
+                        value={isBuyer ? fiatAmount : cryptoAmount}
+                        isBuyer={isBuyer}
+                      />
                       <InfoBlock label="Price" value={order?.offer.rate} />
                       <InfoBlock label="Receive Quantity" value={isBuyer ? cryptoAmount : fiatAmount} />
                     </div>
@@ -458,15 +474,31 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               <div className="flex flex-col items-start gap-8">
                 <div className="flex flex-row w-full">
                   <div className="flex flex-col items-center">
-                    <div className="bg-[#0051A6] text-white rounded-full w-10 h-12 flex items-center justify-center font-bold">
+                    <div
+                      className={` ${
+                        isPaid ? "bg-lightGray dark:bg-lightGray-dark" : "bg-primary"
+                      } text-white rounded-full w-10 h-12 flex items-center justify-center font-bold`}
+                    >
                       2
                     </div>
-                    <div className="h-full border-l-2 border-gray-600"></div>
+                    <div
+                      className={`h-full border-l-2   ${
+                        isPaid ? "border-lightGray dark:border-lightGray-dark" : "border-primary"
+                      }`}
+                    ></div>
                   </div>
                   <div className="ml-4 flex-grow">
-                    <span className="text-black dark:text-white font-semibold">Make Payment</span>
-                    <div className="w-full flex rounded-xl p-4 pl-0 h-auto border-gray-300 dark:border-gray-700">
-                      <div className="w-full flex flex-col gap-4">
+                    <span className="text-darkGray dark:text-darkGray-dark font-semibold">
+                      {isSell
+                        ? isPaid
+                          ? "Confirm Payment"
+                          : "Wait For Payment"
+                        : isPaid
+                        ? "Payment Made"
+                        : "Make Payment"}
+                    </span>
+                    <div className="w-full border  mb-4 mt-2 flex rounded-xl p-4 h-auto border-gray-200 dark:border-gray-700">
+                      <div className="w-full  flex flex-col gap-4">
                         <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
                         <DetailBlock
                           label="Account Name"
@@ -495,18 +527,16 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               <div className="flex flex-col items-start gap-8 mb-12">
                 <div className="flex flex-row w-full">
                   <div className="flex flex-col items-center">
-                    <div className="bg-[#0051A6] text-white rounded-full w-10 h-20 flex items-center justify-center font-bold">
+                    <div className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">
                       3
                     </div>
-                    <div className="h-full border-l-2 border-gray-600"></div>
                   </div>
                   <div className="ml-4 flex-grow">
-                    <span className="text-black dark:text-white font-semibold">Proceed</span>
+                    <span className="text-darkGray dark:text-darkGray-dark font-semibold">Proceed</span>
                     <p className="text-gray-500 dark:text-gray-400">{text}</p>
                   </div>
                 </div>
               </div>
-
 
               {/* Transactions */}
               {transactionHashes && (
@@ -530,12 +560,13 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               {/* Action Buttons */}
               <div className="flex flex-col lg:flex-row gap-6 my-6">
                 <Button
-                  loading={isPending}
+                  loading={isWriteContractPending}
                   text={buttonText}
-                  className={`${disabled
-                    ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
-                    : "bg-black dark:bg-slate-100 dark:text-gray-900 text-white hover:bg-gray-400 dark:hover:bg-gray-400 transition duration-300 ease-in-out"
-                    } rounded-xl px-4 py-2`}
+                  className={`${
+                    disabled
+                      ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
+                      : "bg-black dark:bg-slate-100 dark:text-gray-900 text-white hover:bg-gray-400 dark:hover:bg-gray-400 transition duration-300 ease-in-out"
+                  } rounded-xl px-4 py-2`}
                   onClick={onClick}
                   disabled={disabled}
                 />
@@ -554,47 +585,31 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                 />
               </div>
             </div>
-          )}
-
-          {/* Order completed sections */}
-          {
-            order.status === OrderState.Released && (
-              <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl flex flex-col">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg text-gray-500 dark:text-gray-400">{buttonText}</h2>
-                  <Image src="/images/icons/success.svg" alt="success" width={35} height={35} />
-                </div>
-                <div className=" flex-grow">
-                  <span className="text-black dark:text-white font-semibold">{isBuyer ? "Buy" + " " + order.offer.token.symbol : "Sell" + " " + order.offer.currency.currency}</span>
-                  <div className="flex flex-col justify-start items-start gap-1 w-full mt-6">
-                    <InfoBlock isAmount label="Fiat Amount" value={isBuyer ? fiatAmount : cryptoAmount} isBuyer={isBuyer} />
-                    <InfoBlock label="Price" value={order?.offer.rate} />
-                    <InfoBlock label="Total Quantity" value={isBuyer ? cryptoAmount : fiatAmount} />
-                    <InfoBlock label="Fee" value={isBuyer ? cryptoAmount : fiatAmount} />
-                    <InfoBlock label="Time created" value={isBuyer ? cryptoAmount : fiatAmount} />
-                    <InfoBlock label="Payment method" value={isBuyer ? cryptoAmount : fiatAmount} />
-                  </div>
-                </div>
-
-                <div className="flex flex-col lg:flex-row gap-3 items-end">
-                  <Button
-                    text="Reorder"
-                    icon="/images/light/export.svg"
-                    iconPosition="right"
-                    className="bg-black text-white"
-                  />
-                  <Button
-                    text="Have a Problem"
-                    className="text-white dark:text-white"
-                  />
-                  <Button
-                    text="View my balance"
-                    className="text-white dark:text-white"
-                  />
+          ) : (
+            /* Order completed sections */
+            <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl flex flex-col">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl text-gray-500 font-bold dark:text-gray-400">Order {buttonText}</h2>
+                {order.status === OrderState.Cancelled ? (
+                  <Image src="/images/icons/cancelled.svg" alt="success" width={60} height={60} />
+                ) : (
+                  <Image src="/images/icons/success.svg" alt="success" width={60} height={60} />
+                )}
+              </div>
+              <div className=" flex-grow">
+                <span className="text-black dark:text-white ">
+                  {isBuyer ? "Buy" + " " + order.offer.token.symbol : "Sell" + " " + order.offer.token.symbol}
+                </span>
+                <div className="flex border border-lightGray dark:border-lightGray-dark rounded-xl p-4 flex-col justify-start items-start gap-1 w-full mt-6">
+                  <InfoBlock isAmount label="Fiat Amount" value={fiatAmount} isBuyer={isBuyer} />
+                  <InfoBlock label="Price" value={order?.offer.rate} />
+                  <InfoBlock label="Total Quantity" value={formatCurrency(order.quantity, order.offer.token.symbol)} />
+                  {/* <InfoBlock label="Time created" value={isBuyer ? cryptoAmount : fiatAmount} /> */}
+                  <InfoBlock label="Payment method" value={order.offer.paymentMethod.method} />
                 </div>
               </div>
-            )
-          }
+            </div>
+          )}
         </div>
       </div>
 
