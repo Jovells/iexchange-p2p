@@ -90,15 +90,6 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     return <WalletConnectSection />;
   }
 
-  // const showModal1 = () =>{
-  //   showModal(
-  //     <div className="w-[500px] bg-white">
-  //       <div>addd</div>
-  //       <button onClick={hideModal}></button>
-  //     </div>
-  //   )
-  // }
-
   return (
     <>
       <WalletConnectSection />

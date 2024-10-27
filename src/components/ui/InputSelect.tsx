@@ -17,7 +17,8 @@ interface InputSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
   options: SelectOption[];
   onValueChange?: (value: string) => void;
   placeholder?: string;
-  selectType?: string;
+  selectType?: 'payment method' | 'normal';
+  style?:any;
 }
 
 const InputSelect: React.FC<InputSelectProps> = ({
@@ -28,6 +29,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
   onValueChange,
   placeholder = "Select",
   selectType = "payment method",
+  style,
   ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -72,7 +74,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
       ref={dropdownRef}
       className="relative border border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer w-full transition-all duration-300 ease-in-out hover:border-[#01a2e4] hover:dark:border-[#01a2e4]"
     >
-      <div className={`w-full flex flex-col p-3 ${showLabel ? 'py-1' : 'py-[14px]'}`}>
+      <div className={`w-full flex flex-col p-3 ${showLabel ? 'py-1' : 'py-[14px]'}`} style={style}>
         {label && selectedValue && <span className="text-sm text-gray-500 bg-transparent">{label}</span>}
         <div
           className="flex items-center w-full  transition-all duration-300 ease-in-out"
@@ -113,7 +115,7 @@ const InputSelect: React.FC<InputSelectProps> = ({
                   </span>
                 )}
                 {selectType !== "payment method" && (
-                  <span className="text-black dark:text-white border-l-2 border-red-600 pl-1">{option.label}</span>
+                  <span className="text-black dark:text-white pl-1">{option.label}</span>
                 )}
               </div>
             </div>

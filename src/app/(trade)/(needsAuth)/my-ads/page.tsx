@@ -1,51 +1,92 @@
 'use client'
 import GridTable from '@/components/datatable';
-import { CircleCheck, Eye, Trash2 } from 'lucide-react';
+import { CircleX, Pencil } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useRef, useState } from 'react'
 import { useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import { useContracts } from "@/common/contexts/ContractContext";
-import { Offer } from "@/common/api/types";
+import { Offer, Token } from "@/common/api/types";
 import { offerTypes } from "@/common/constants";
 import { useUser } from "@/common/contexts/UserContext";
-import { formatCurrency } from "@/lib/utils";
-import { MY_ADS } from "@/common/constants/queryKeys";
+import { formatCurrency, getPaymentMethodColor } from "@/lib/utils";
+import { ACCEPTED_CURRENCIES, ACCEPTED_TOKENS, MY_ADS, PAYMENT_METHODS } from "@/common/constants/queryKeys";
+import InputSelect from '@/components/ui/InputSelect';
+import InputWithSelect from '@/components/ui/InputWithSelect';
+import CryptoSelector from '../../cryptoSelector';
+import { fetchTokens } from "@/common/api/fetchTokens";
+import { fetchCurrencies } from "@/common/api/fetchCurrencies";
+import fetchContractPaymentMethods from '@/common/api/fetchContractPaymentMethods';
+
+const BuySellOptions = [
+  {
+    label:"All Ads",
+    value:"all"
+  },
+  {
+    label:"Buy",
+    value:"buy"
+  },
+  {
+    label:"Sell",
+    value:"sell"
+  },
+]
 
 const columns: any = [
   {
     key: "id",
     label: "Id",
-    render: (row: Offer) => <span className="font-bold">{row.id}</span>,
+    render: (row: Offer) => <span className="">{row.id}</span>,
   },
   {
     key: "rate",
     label: "Rate",
-    render: (row: Offer) => <span className="font-bold">{row.rate}</span>,
+    render: (row: Offer) => {
+      return (
+        <div className="">
+          <span className="font-bold text-2xl">{row.rate}</span>
+          <span className="ml-2 text-sm">{row.currency.currency}</span>
+        </div>
+      )
+    },
   },
   {
     key: "amounts",
     label: "Amounts",
     render: (row: Offer) => (
-      <span className="font-bold">
-        {formatCurrency(row.minOrder, row.token.symbol)} - {formatCurrency(row.maxOrder, row.token.symbol)}
+      <span className=" text-sm text-gray-700 dark:text-gray-300">
+        {formatCurrency(row.minOrder, "")} - {formatCurrency(row.maxOrder, row.token.symbol)}
       </span>
+      // <span className="">
+      //   {formatCurrency(row.minOrder, row.token.symbol)} - {formatCurrency(row.maxOrder, row.token.symbol)}
+      // </span>
     ),
   },
   {
     key: "paymentMethod",
     label: "Payment Method",
-    render: (row: Offer) => <span className="italic">{row.paymentMethod.method}</span>,
+    render: (row: Offer) => {
+      return (
+        <span
+          className={`text-sm dark:text-gray-300 text-gray-700 border-l-4 pl-1 ${getPaymentMethodColor(
+            row.paymentMethod.method.toLowerCase(),
+          )}`}
+        >
+          {row.paymentMethod.method}
+        </span>
+      )
+    },
   },
   {
     key: "status",
     label: "Status",
-    render: (row: Offer) => <span className="italic">{row.active ? "Active" : "Deactivated"}</span>,
+    render: (row: Offer) => <span className="">{row.active ? "Active" : "Deactivated"}</span>,
   },
   {
     key: "offerType",
-    label: "offerType",
-    render: (row: Offer) => <span className="italic">{row.offerType === offerTypes.buy ? "buy" : "sell"}</span>,
+    label: "Offer Type",
+    render: (row: Offer) => <span className="">{row.offerType === offerTypes.buy ? "buy" : "sell"}</span>,
   },
 ];
 
@@ -55,6 +96,8 @@ const MyAds = () => {
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [paymentMethod, setPaymentMethod] = useState("");
+
   const router = useRouter();
   const { address } = useUser();
   const trade = searchParams.get("trade") || "Buy";
@@ -68,9 +111,38 @@ const MyAds = () => {
     // placeholderData: keepPreviousData,
   });
 
+  const { data: tokens } = useQuery({
+    queryKey: ACCEPTED_TOKENS(indexerUrl),
+    queryFn: () => fetchTokens(indexerUrl),
+    enabled: !!indexerUrl,
+  });
+
+  const [selectedCrypto, setSelectedCrypto] = useState(
+    tokens?.find(t => t.symbol === searchParams.get("crypto") || ""),
+  );
+
+  const { data: paymentMethods } = useQuery({
+    queryKey: PAYMENT_METHODS(indexerUrl),
+    queryFn: () => fetchContractPaymentMethods(indexerUrl),
+    enabled: !!indexerUrl,
+  });
+
+  const { data: acceptedCurrencies } = useQuery({
+    queryKey: ACCEPTED_CURRENCIES(indexerUrl),
+    queryFn: () => fetchCurrencies(indexerUrl),
+    enabled: !!indexerUrl,
+  });
+
+  const currencies = acceptedCurrencies?.map(currency => ({
+    symbol: currency.currency,
+    name: currency.currency,
+    id: currency.id,
+    icon: currency.currency === "GHS" ? <p>₵</p> : currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p>,
+  }));
+  currencies?.unshift({ symbol: "All", name: "All", id: "0x0", icon: <></> });
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    console.log("Page changed to:", page);
   };
 
   if (error) {
@@ -78,19 +150,38 @@ const MyAds = () => {
   }
 
   const actions = [
-    { onClick: (row: any) => router.push("/order/order"), classNames: "bg-transparent text-black", icon: <Eye /> },
-    { onClick: (row: any) => router.push("/appeal/order"), classNames: "bg-transparent text-black", icon: <Trash2 /> },
-    {
-      onClick: (row: any) => router.push("/appeal/order"),
-      classNames: "bg-transparent text-black",
-      icon: <CircleCheck />,
-    },
+    { onClick: (row: any) => router.push("/order/order"), classNames: "bg-transparent text-black dark:text-white", icon: <Pencil className='w-4 h-4' /> },
+    { onClick: (row: any) => router.push("/appeal/order"), classNames: "bg-transparent text-black dark:text-white", icon: <CircleX className='w-4 h-4' /> },
   ];
 
-  //TODO: @mbawon doesnt match figma design
+  const isAvailable = !!(tokens && currencies && paymentMethods);
+
+  if (!isAvailable) {
+    return <div>dkkkkk</div>;
+  }
+
   return (
     <div className="container mx-auto p-0 py-4">
       <div className="py-12 flex flex-col gap-10">
+        <div className='flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4'>
+          <InputSelect initialValue='all' options={BuySellOptions} selectType='normal' style={{ paddingTop: "14px", padding: "14px" }} />
+          <div className="w-full">
+            <CryptoSelector tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={setSelectedCrypto} showFaucet={false} />
+          </div>
+          <InputWithSelect currencies={currencies} placeholder='Enter amount' readOnly={false}  />
+          <InputSelect
+            showLabel={false}
+            initialValue="usd"
+            placeholder="All Payment Methods"
+            options={paymentMethods.map((method: any) => ({
+              value: method.method,
+              label: method.method,
+            }))}
+            onValueChange={value => setPaymentMethod(value)}
+            className="bg-white dark:bg-gray-800 text-black dark:text-white"
+            style={{ paddingTop: "14px", padding: "14px" }}
+          />
+        </div>
         <GridTable
           columns={columns}
           data={data?.offers || []}

@@ -19,9 +19,10 @@ interface CryptoSelectorProps {
   tokens: Token[];
   selectedCrypto?: Token;
   setSelectedCrypto: Dispatch<SetStateAction<Token | undefined>>;
+  showFaucet?:boolean
 }
 
-const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto, setSelectedCrypto }) => {
+const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto, setSelectedCrypto, showFaucet=true }) => {
   return (
     <>
       <div className="hidden sm:flex justify-start items-center space-x-4">
