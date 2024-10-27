@@ -50,7 +50,7 @@ export default function DashboardLayout({
                     <SubNav />
                 </div>
                 <div className="pt-[10px]">
-                    <div className="lg:hidden px-4 py-2 bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-200 flex flex-row justify-between items-center">
+                    <div className="lg:hidden px-4 py-2 bg-white text-gray-600 dark:transparent dark:text-gray-200 flex flex-row justify-between items-center">
                         <button onClick={toggleDrawer} className="text-gray-600 dark:text-gray-200 flex items-center">
                             <Menu className="mr-2 h-10 w-10" />
                         </button>

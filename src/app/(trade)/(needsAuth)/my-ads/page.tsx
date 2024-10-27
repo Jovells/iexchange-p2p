@@ -1,15 +1,11 @@
 'use client'
 import GridTable from '@/components/datatable';
-import FaqsSection from '@/components/sections/Faqs';
 import { CircleCheck, Eye, Trash2 } from 'lucide-react';
-import ExpandableTable from '@/components/data-grid'
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { FC, Suspense, useRef, useState } from 'react'
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import React, { useRef, useState } from 'react'
+import { useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
-import Button from "@/components/ui/Button";
 import { useContracts } from "@/common/contexts/ContractContext";
-import TradeLayout from "../layout";
 import { Offer } from "@/common/api/types";
 import { offerTypes } from "@/common/constants";
 import { useUser } from "@/common/contexts/UserContext";
@@ -90,10 +86,6 @@ const MyAds = () => {
       icon: <CircleCheck />,
     },
   ];
-
-  // if (isPending) {
-  //   return null;
-  // }
 
   //TODO: @mbawon doesnt match figma design
   return (
