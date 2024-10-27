@@ -441,7 +441,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                   <div className="h-full border-l-2 border-gray-600"></div>
                 </div>
                 <div className="ml-4 flex-grow">
-                  <span className="text-black dark:text-white font-semibold">Make Payment</span>
+                  <span className="text-black dark:text-white font-semibold">Order Information</span>
                   <div className="flex flex-col justify-start items-start gap-1 w-full">
                     <InfoBlock isAmount label="Fiat Amount" value={isBuyer ? fiatAmount : cryptoAmount} isBuyer={isBuyer} />
                     <InfoBlock label="Price" value={order?.offer.rate} />
@@ -463,7 +463,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                   <div className="h-full border-l-2 border-gray-600"></div>
                 </div>
                 <div className="ml-4 flex-grow">
-                  <span className="text-black dark:text-white font-semibold">Order Information</span>
+                  <span className="text-black dark:text-white font-semibold">Make Payment</span>
                   <div className="w-full flex rounded-xl p-4 pl-0 h-auto border-gray-300 dark:border-gray-700">
                     <div className="w-full flex flex-col gap-4">
                       <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
