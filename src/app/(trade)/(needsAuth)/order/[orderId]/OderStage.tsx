@@ -378,7 +378,6 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
   const isBuyerAndNotYetAccepted = order?.status === OrderState.Pending && isBuyer && isTrader;
   return (
-    // TODO@mbawon modify ui to match figma
     <Suspense
       fallback={
         <div className="flex items-center justify-center h-screen">
@@ -420,10 +419,10 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           </div>
 
           {/* Order Information Section */}
-          <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl space-y-6">
+          <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl">
             {/* Header */}
-            <div className="flex justify-between">
-              <h2 className="text-lg text-gray-500 dark:text-gray-400">Order Info</h2>
+            <div className="flex justify-between mb-6">
+              <h2 className="text-lg text-gray-500 dark:text-gray-400">Order Confirmation</h2>
               <div
                 className={`px-2 py-1 text-sm text-gray-100 rounded-xl ${isBuyer ? " bg-[#4ade80]" : "bg-[#f6465d]"}`}
               >
@@ -432,44 +431,82 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
             </div>
 
             {/* Order Details */}
-            <div className="flex flex-col justify-start items-start lg:flex-row lg:justify-between gap-3 lg:gap-10 mt-6">
-              <InfoBlock isAmount label="Amount" value={isBuyer ? fiatAmount : cryptoAmount} isBuyer={isBuyer} />
-              <InfoBlock label="Price" value={order?.offer.rate} />
-              <InfoBlock label="Receive Quantity" value={isBuyer ? cryptoAmount : fiatAmount} />
-            </div>
 
-            {/* Payment Details */}
-            <div>
-              <h2 className="text-gray-500 dark:text-gray-400 mb-1">Payment Details</h2>
-              <div className="w-full flex gap-10 border rounded-xl p-4 h-auto border-gray-300 dark:border-gray-700">
-                <div className="w-full space-y-4">
-                  <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
-                  <DetailBlock
-                    label="Account Name"
-                    value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.name}
-                  />
-                  <DetailBlock
-                    label="Account Number"
-                    value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.number}
-                  />
-                </div>
-
-                {accountDetails?.details && (
-                  <div className="w-full">
-                    <DetailBlock
-                      label="Extra Details"
-                      value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.details}
-                    />
+            <div className="flex flex-col items-start gap-8">
+              <div className="flex w-full">
+                <div className="flex flex-col items-center">
+                  <div className="bg-[#0051A6] text-white rounded-full w-10 h-14 flex items-center justify-center font-bold">
+                    1
                   </div>
-                )}
+                  <div className="h-full border-l-2 border-gray-600"></div>
+                </div>
+                <div className="ml-4 flex-grow">
+                  <span className="text-black dark:text-white font-semibold">Make Payment</span>
+                  <div className="flex flex-col justify-start items-start gap-1 w-full">
+                    <InfoBlock isAmount label="Fiat Amount" value={isBuyer ? fiatAmount : cryptoAmount} isBuyer={isBuyer} />
+                    <InfoBlock label="Price" value={order?.offer.rate} />
+                    <InfoBlock label="Receive Quantity" value={isBuyer ? cryptoAmount : fiatAmount} />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Proceed Information */}
-            <div>
-              <h2 className="text-gray-700 dark:text-gray-300">Proceed:</h2>
-              <p className="text-gray-500 dark:text-gray-400">{text}</p>
+
+
+            {/* Payment Details */}
+            <div className="flex flex-col items-start gap-8">
+              <div className="flex flex-row w-full">
+                <div className="flex flex-col items-center">
+                  <div className="bg-[#0051A6] text-white rounded-full w-10 h-12 flex items-center justify-center font-bold">
+                    2
+                  </div>
+                  <div className="h-full border-l-2 border-gray-600"></div>
+                </div>
+                <div className="ml-4 flex-grow">
+                  <span className="text-black dark:text-white font-semibold">Order Information</span>
+                  <div className="w-full flex rounded-xl p-4 pl-0 h-auto border-gray-300 dark:border-gray-700">
+                    <div className="w-full flex flex-col gap-4">
+                      <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
+                      <DetailBlock
+                        label="Account Name"
+                        value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.name}
+                      />
+                      <DetailBlock
+                        label="Account Number"
+                        value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.number}
+                      />
+                    </div>
+
+                    {accountDetails?.details && (
+                      <div className="w-full">
+                        <DetailBlock
+                          label="Extra Details"
+                          value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.details}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
+
+
+            {/* Proceed Information */}
+            <div className="flex flex-col items-start gap-8 mb-12">
+              <div className="flex flex-row w-full">
+                <div className="flex flex-col items-center">
+                  <div className="bg-[#0051A6] text-white rounded-full w-10 h-20 flex items-center justify-center font-bold">
+                    3
+                  </div>
+                  <div className="h-full border-l-2 border-gray-600"></div>
+                </div>
+                <div className="ml-4 flex-grow">
+                  <span className="text-black dark:text-white font-semibold">Proceed</span>
+                  <p className="text-gray-500 dark:text-gray-400">{text}</p>
+                </div>
+              </div>
+            </div>
+
 
             {/* Transactions */}
             {transactionHashes && (
@@ -491,13 +528,13 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
             )}
 
             {/* Action Buttons */}
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex flex-col lg:flex-row gap-6 my-6">
               <Button
                 loading={isPending}
                 text={buttonText}
                 className={`${disabled
-                    ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
-                    : "bg-black dark:bg-slate-100 dark:text-gray-900 text-white hover:bg-gray-400 dark:hover:bg-gray-400 transition duration-300 ease-in-out"
+                  ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
+                  : "bg-black dark:bg-slate-100 dark:text-gray-900 text-white hover:bg-gray-400 dark:hover:bg-gray-400 transition duration-300 ease-in-out"
                   } rounded-xl px-4 py-2`}
                 onClick={onClick}
                 disabled={disabled}

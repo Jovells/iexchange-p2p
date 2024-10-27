@@ -18,7 +18,7 @@ const OrderCancellationWarning: React.FC<Props> = ({ onClick, cancellationsRemai
 
   const showConfirmation = (txHash: string) => {
     showModal(
-      <div className="w-[400px] bg-white dark:bg-gray-800 p-14 rounded-[8px] flex flex-col justify-center items-center">
+      <div className="w-full bg-white dark:bg-gray-800 p-14 rounded-[8px] flex flex-col justify-center items-center">
         <Image src="/images/icons/alert-info.svg" alt="info" className="w-auto h-auto mb-8" width={84} height={84} />
         <h2 className="font-[500px] text-center text-[16px] mb-6 dark:text-white">Note, You have Cancelled Your Order</h2>
         <p className="text-center text-gray-500 dark:text-gray-400 text-[14px] font-[400px] mb-6">

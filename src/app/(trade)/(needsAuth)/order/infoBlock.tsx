@@ -7,7 +7,7 @@ interface Props {
   isAmount?: boolean;
 }
 const InfoBlock: React.FC<Props> = ({ label, value, isBuyer, isAmount }) => (
-  <div className="flex flex-row lg:flex-col gap-4 lg:gap-0">
+  <div className="flex flex-row items-center justify-between w-full">
     <div className="text-sm text-gray-600 dark:text-gray-400 font-light">{label}</div>
     <div
       className={`text-lg font-light ${

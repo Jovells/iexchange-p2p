@@ -19,7 +19,7 @@ const ReleaseConfirmation: React.FC<Props> = ({ onClick, cryptoAmount, fiatAmoun
 
   const showConfirmation = (txHash: string) => {
     showModal(
-      <div className="w-[400px] bg-white p-14 rounded-[8px] flex flex-col justify-center items-center">
+      <div className="w-full bg-white p-14 rounded-[8px] flex flex-col justify-center items-center">
         <Image
           src="/images/icons/alert-success.svg"
           alt="info"
