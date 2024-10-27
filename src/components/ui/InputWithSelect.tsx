@@ -92,14 +92,14 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
       ref={dropdownRef}
       className="w-full hover:dark:border-[#01a2e4] relative border transition-all duration-300 ease-in-out hover:border-[#01a2e4] border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer"
     >
-      <div className="w-full flex flex-col px-3 py-1">
+      <div className="w-full flex flex-col p-3 py-[14px]">
         {selectedValue.amount && label && (
           <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</span>
         )}
         <div className="flex items-center w-full">
           <input
             type="text"
-            className="flex-1 p-2 px-0 border-none outline-none bg-transparent text-black dark:text-white"
+            className="flex-1 px-0 border-none outline-none bg-transparent text-black dark:text-white"
             value={valueToDisplay.amount}
             readOnly={readOnly}
             placeholder={!selectedValue.amount ? placeholder : ""}

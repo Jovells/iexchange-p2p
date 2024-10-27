@@ -3,11 +3,11 @@
 import AddPaymentMethod from "@/app/(trade)/(needsAuth)/dashboard/account/payment/AddPaymentMethod";
 import { PaymentMethod } from "@/common/api/types";
 import { useModal } from "@/common/contexts/ModalContext";
-import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Square } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import Button from "./Button";
+import { getImage } from "@/lib/utils";
 
 interface PaymentMethodSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -80,6 +80,8 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
     };
   }, [isOpen]);
 
+  const getIc = getImage("add-circle.svg")
+
   return (
     <div
       ref={dropdownRef}
@@ -138,8 +140,7 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
           {addButton && (
             <Button
               type="button"
-              //TODO: @mbawon fix icon
-              icon="/images/icons/add-circle.png"
+              icon={getIc}
               className="bg-black mt-2 w-full text-white hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-[5px] px-4 py-2"
               text={addButtonText}
               onClick={handleAddPaymentMethodClick}

@@ -23,8 +23,6 @@ import { AccountDetails, PaymentMethod } from "@/common/api/types";
 import { MY_ADS } from "@/common/constants/queryKeys";
 import { MY_ADS_PAGE } from "@/common/page-links";
 
-//TODO: @mbawon check dark mode inconsistencies
-
 
 const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 const formSchema = z
@@ -217,19 +215,18 @@ const CreateAd = () => {
       <div className="my-4 flex flex-col gap-4">
         <Tabs onTabChange={setActiveTab as any} />
         <div className="flex flex-col gap-2">
-          <h1>Create Advert</h1>
+          <h1 className='text-black dark:text-white'>Create Advert</h1>
           <p className="text-gray-400">Please fill in the information to proceed to post an Ad.</p>
         </div>
       </div>
       <form
         onSubmit={handleSubmit}
-        className="shadow-lg border border-gray-200 dark:border-gray-800 p-10 py-10 bg-white dark:bg-gray-800 rounded-xl flex flex-col gap-10"
+        className="shadow-lg border border-gray-200 dark:border-gray-800 p-6 py-10 bg-white dark:bg-gray-800 rounded-xl flex flex-col gap-10"
       >
         <div className="flex flex-col gap-8">
           <h1 className="text-[#01a2e4] font-bold">Type and Price</h1>
-          <div className="flex flex-row items-start   justify-start gap-6">
-            <div className="flex flex-col">
-              {/* TODO: @mbawon check styling */}
+          <div className="flex flex-col w-full gap-6 sm:flex-row">
+            <div className="flex flex-col w-full sm:w-1/3">
               <InputSelect
                 name="token"
                 options={
@@ -240,28 +237,41 @@ const CreateAd = () => {
                 }
                 label="Asset"
               />
-              {errors.token && <span className="text-red-500 text-sm">{errors.token}</span>}
+              {errors.token && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.token}
+                </span>
+              )}
             </div>
-            <div className="flex flex-col">
+
+            <div className="flex flex-col w-full sm:w-1/3">
               <InputSelect
                 name="currency"
                 options={
                   currencies?.map(currency => ({
                     label: currency.currency,
-                    symbol: currency.currency,
-                    name: currency.currency,
                     value: currency.currency,
                   })) || []
                 }
                 label="Fiat"
               />
-              {errors.currency && <span className="text-red-500 text-sm">{errors.currency}</span>}
+              {errors.currency && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.currency}
+                </span>
+              )}
             </div>
-            <div className="flex flex-col">
+
+            <div className="flex flex-col w-full sm:w-1/3">
               <Input name="rate" label="Rate" />
-              {errors.rate && <span className="text-red-500 text-sm">{errors.rate}</span>}
+              {errors.rate && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.rate}
+                </span>
+              )}
             </div>
           </div>
+
         </div>
         <div className="flex flex-col gap-8">
           <h1 className="text-[#01a2e4] font-bold">Amount and Method</h1>

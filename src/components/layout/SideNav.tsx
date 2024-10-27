@@ -79,7 +79,7 @@ const SideNav: React.FC<SideNavProps> = ({ isDrawerOpen, toggleDrawer }) => {
 
     return (
         <div>
-            <nav className={`lg:block ${isDrawerOpen ? 'block' : 'hidden'} pt-6 lg:pt-[130px] lg:fixed absolute top-0 left-0 w-64 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 h-full z-50 lg:z-auto flex flex-col justify-between`}>
+            <nav className={`lg:block ${isDrawerOpen ? 'block' : 'hidden'} pt-6 lg:pt-[130px] lg:fixed absolute top-0 left-0 w-64 bg-white dark:bg-transparent text-gray-600 dark:text-gray-300 h-full z-50 lg:z-auto flex flex-col justify-between`}>
                 {session.status === "authenticated" && (
                     <div className="px-4 hidden lg:block mb-6">
                         <NetworkSwitcher />

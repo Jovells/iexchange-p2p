@@ -24,7 +24,7 @@ interface CryptoSelectorProps {
 const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto, setSelectedCrypto }) => {
   return (
     <>
-      <div className="hidden sm:flex justify-start items-center space-x-4 p-2 px-3">
+      <div className="hidden sm:flex justify-start items-center space-x-4">
         <Select options={tokens} onValueChange={value => setSelectedCrypto(value)} />
       </div>
       <CryptoSelectorInput

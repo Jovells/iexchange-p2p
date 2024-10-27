@@ -71,14 +71,13 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess }) => {
     }
   };
 
-  console.log("paymentMetho", paymentMetho);
 
   return (
-    <div className="w-full lg:w-[800px] h-auto bg-white rounded-xl shadow-md border-2 border-gray-500 flex flex-col gap-4">
-      <div className="flex flex-row items-center justify-between border-b px-8 py-6">
-        <h1 className="font-bold">Payment Method</h1>
+    <div className="w-full h-auto bg-transparent rounded-xl shadow-md border-2 border-gray-300 dark:border-gray-700 flex flex-col gap-4">
+      <div className="flex flex-row items-center justify-between border-b border-gray-300 dark:border-gray-700 px-8 py-6">
+        <h1 className="font-bold text-black dark:text-white">Payment Method</h1>
         <div className="flex justify-end">
-          <X onClick={hideModal} className="cursor-pointer" />
+          <X onClick={hideModal} className="cursor-pointer text-black dark:text-white" />
         </div>
       </div>
       {paymentMetho && paymentMetho?.length > 0 ? (
@@ -93,7 +92,7 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess }) => {
                     .map(method => (
                       <li
                         key={method?.method}
-                        className="flex justify-between items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100"
+                        className="flex justify-between items-center p-3 text-black dark:text-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:text-black"
                         onClick={() => setSelectedMethod(method?.method)}
                       >
                         <span>{method.method}</span>
@@ -108,7 +107,7 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess }) => {
               <div className="flex flex-row items-center gap-4 p-4 px-0">
                 <Button
                   text="Cancel"
-                  className="flex-1 bg-transparent text-black border border-gray-500 hover:bg-gray-100rounded-xl px-4 py-2"
+                  className="flex-1 bg-transparent text-black dark:text-white border border-gray-500 hover:bg-gray-100rounded-xl px-4 py-2"
                   onClick={() => {
                     hideModal();
                     setSelectedMethod(null);
@@ -118,6 +117,7 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess }) => {
                   text="Next"
                   className="flex-1 bg-black text-white hover:bg-gray-600 rounded-xl px-4 py-2"
                   onClick={() => setSteps(steps + 1)}
+                  disabled={!selectedMethod}
                 />
               </div>
             </Fragment>
@@ -125,23 +125,22 @@ const AddPaymentMethod: FC<Props> = ({ hideModal, method, onSuccess }) => {
           {steps === 2 && (
             <Fragment>
               <div className="space-y-3">
-                <p>
-                  Provide your <span className="font-bold">{selectedMethod}</span> details.{" "}
+                <p className='text-black dark:text-white'>
+                  Provide your <span className="font-bold underline text-lg">{selectedMethod}</span> details.{" "}
                 </p>
                 <Input value={name} required onChange={e => setName(e.target.value)} label="Name" />
                 <Input value={number} required onChange={e => setNumber(e.target.value)} label="Number" />
-                {/* TODO@mbawon make this text are look like the input */}
                 <textarea
                   placeholder="Extra details?"
                   onChange={e => setDetails(e.target.value)}
                   rows={10}
-                  className="w-full p-4 border border-gray-300 rounded-xl outline-none resize-none "
+                  className="w-full p-4 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl outline-none resize-none bg-transparent "
                 />
               </div>
               <div className="flex flex-row items-center gap-4 p-4 px-0">
                 <Button
                   text="Back"
-                  className="flex-1 bg-transparent text-black border border-gray-500 hover:bg-gray-100rounded-xl px-4 py-2"
+                  className="flex-1 bg-transparent text-black dark:text-white border border-gray-500 hover:bg-gray-100rounded-xl px-4 py-2"
                   onClick={() => {
                     setSteps(steps - 1);
                   }}

@@ -7,9 +7,11 @@ import SubNav from "@/components/layout/navbar/SubNav";
 import Footer from "@/components/layout/footer";
 import Loader from "@/components/loader/Loader";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const TradeLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [isLoading, setIsLoading] = useState(true);
+    const path = usePathname()
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -25,19 +27,15 @@ const TradeLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
                 <Loader loaderType="spinner" className="h-screen" />
             ) : (
                 <>
-                    {/* Navbar Section */}
                     <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#14161B] border-b border-gray-300 dark:border-gray-800">
                         <MainNav />
                         <SubNav />
                     </div>
-                    
-                    {/* Main Content Section */}
+                
                     <div className="flex-grow pt-[100px] px-4">
                         {children}
                     </div>
-                    
-                    {/* Footer Section */}
-                    <Footer />
+                    {!path.includes("dashboard") && <Footer />}
                 </>
             )}
         </div>

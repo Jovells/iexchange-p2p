@@ -217,7 +217,8 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
         </div>
         <div className="w-full lg:w-1/2">
           <SelectPaymentMethod
-            label=""
+            // label="Payment method"
+            showLabel={false}
             initialValue="usd"
             placeholder="All Payment Methods"
             options={paymentMethods.map((method: any) => ({

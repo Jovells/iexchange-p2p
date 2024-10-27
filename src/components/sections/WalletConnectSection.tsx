@@ -15,9 +15,6 @@ const WalletConnectSection: React.FC = () => {
       return null;
     }
 
-    // if (!isMounted || session?.status === "authenticated") {
-    //     return null;
-    // }
 
     return (
       <div className="min-h-[300px] flex justify-center items-center">
@@ -31,7 +28,7 @@ const WalletConnectSection: React.FC = () => {
           <div className="flex flex-row item-center gap-4">
             {isConnected && (
               <>
-                <Claim className="w-[150px] hidden lg:block" />
+                <Claim className="w-[150px] hidden lg:flex" />
                 <div className="">
                   <NetworkSwitcher />
                 </div>

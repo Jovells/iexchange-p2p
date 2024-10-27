@@ -99,12 +99,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   });
 
   const getButtonConfig = () => {
-    if (!order) return { text: "", buttonText: "", onClick: () => {}, disabled: true, shouldPoll: false };
+    if (!order) return { text: "", buttonText: "", onClick: () => { }, disabled: true, shouldPoll: false };
 
     const getDisabledAction = (buttonText: string, text: string, shouldPoll = true) => ({
       buttonText,
       text,
-      onClick: () => {},
+      onClick: () => { },
       disabled: true,
       shouldPoll,
     });
@@ -123,39 +123,39 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         if (isBuyer) {
           return order.offer.offerType === offerTypes.buy
             ? getDisabledAction(
-                "Waiting for Merchant",
-                "Please wait for the merchant to accept your order and send the tokens to the escrow account",
-              )
+              "Waiting for Merchant",
+              "Please wait for the merchant to accept your order and send the tokens to the escrow account",
+            )
             : getEnabledAction(
-                "Done With Payment",
-                "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-                handlePayOrder,
-              );
+              "Done With Payment",
+              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+              handlePayOrder,
+            );
         } else {
           return order.offer.offerType === offerTypes.sell
             ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
             : getEnabledAction(
-                "Accept Order",
-                "Click “Accept Order” your order and send the tokens to the escrow account ",
-                handleAcceptOrder,
-              );
+              "Accept Order",
+              "Click “Accept Order” your order and send the tokens to the escrow account ",
+              handleAcceptOrder,
+            );
         }
       case OrderState.Accepted:
         return isBuyer
           ? getEnabledAction(
-              "Done With Payment",
-              "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
-              handlePayOrder,
-            )
+            "Done With Payment",
+            "Click “Done with Payment” to notify the Seller or click “Cancel” to stop the Order",
+            handlePayOrder,
+          )
           : getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment");
       case OrderState.Paid:
         return isBuyer
           ? getDisabledAction("Waiting for Seller to Release", "Please wait for the seller to release")
           : getEnabledAction(
-              "Release Funds",
-              "Click “Release Funds” to release the funds to the buyer",
-              handleReleaseFunds,
-            );
+            "Release Funds",
+            "Click “Release Funds” to release the funds to the buyer",
+            handleReleaseFunds,
+          );
       case OrderState.Released:
         return getDisabledAction("Completed", "Order has been completed", false);
       case OrderState.Cancelled:
@@ -340,7 +340,6 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   }
 
   if (!order) {
-    //TODO@mbawon Add a 404 page
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <h2 className="text-2xl font-semibold text-gray-700">Order Not Found</h2>
@@ -359,8 +358,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   if (accountDetailsError) {
     console.log("Error fetching account details", accountDetailsError);
   }
-  console.log("OrderData", order);
-  console.log("qyaccountDetails", accountDetails);
+  // console.log("OrderData", order);
+  // console.log("qyaccountDetails", accountDetails);
 
   if (isConnected && !(isTrader || isMerchant)) {
     return (
@@ -496,11 +495,10 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               <Button
                 loading={isPending}
                 text={buttonText}
-                className={`${
-                  disabled
+                className={`${disabled
                     ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
                     : "bg-black dark:bg-slate-100 dark:text-gray-900 text-white hover:bg-gray-400 dark:hover:bg-gray-400 transition duration-300 ease-in-out"
-                } rounded-xl px-4 py-2`}
+                  } rounded-xl px-4 py-2`}
                 onClick={onClick}
                 disabled={disabled}
               />
