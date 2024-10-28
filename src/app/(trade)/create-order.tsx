@@ -302,7 +302,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           )}
           {
             <PaymentMethodSelect
-              addButton
+              addButton={!isBuy}
               skipStep1
               addButtonText={"Add " + data.paymentMethod.method + " details"}
               label=""
