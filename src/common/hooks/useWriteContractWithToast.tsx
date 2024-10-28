@@ -123,7 +123,6 @@ function useWriteContractWithToast(numConfirmations = 1) {
         await options?.onReceipt?.({ receipt, decodedLogs: logs });
         promiseResolveReject?.resolve({ receipt, decodedLogs: logs, txHash: receipt.transactionHash });
         if (options?.waitForReceipt) {
-          promiseResolveReject?.resolve({ receipt, decodedLogs: logs, txHash: receipt.transactionHash });
           options?.shouldShowModal
             ? showModal(
                 <ModalAlert

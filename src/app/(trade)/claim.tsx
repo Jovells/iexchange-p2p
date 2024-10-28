@@ -24,7 +24,7 @@ const claim: React.FC<Props> = ({ className }) => {
   };
   return (
     <Button
-      icon={<FaFaucet />}
+      // icon={<FaFaucet />}
       iconPosition="left"
       text="Faucet"
       onClick={showClaimModal}

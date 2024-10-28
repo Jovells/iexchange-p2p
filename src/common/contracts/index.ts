@@ -36,6 +36,7 @@ export default {
     faucet: {
       address: "0x8C49Fd0b3E42DbAE0b13Fde81E3023c626E6f198",
       abi: faucet,
+      nativeUrl: "https//morphfaucet.com/",
     },
     tokens: [
       {

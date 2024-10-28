@@ -35,13 +35,12 @@ export const ContractsProvider: FC<{ children: ReactNode }> = ({
 }) => {
   const chainId = useChainId();
   const [currentChainId, setCurrentChainId] = useState(chainId);
-  const currentChain = chains.find((chain) => chain.id === currentChainId) || null;
+  const currentChain = chains.find(chain => chain.id === currentChainId) || null;
   const p2p = contracts[currentChain?.id || chains[0].id].p2p;
   const tokens = contracts[currentChain?.id || chains[0].id].tokens;
   const indexerUrl = contracts[currentChain?.id || chains[0].id].indexerUrl;
   const faucet = contracts[currentChain?.id || chains[0].id].faucet;
   const isCorrectChain = !!currentChain;
-
 
   useEffect(() => {
     window.ethereum?.on("chainChanged", (newChainId: string) => {
@@ -49,17 +48,14 @@ export const ContractsProvider: FC<{ children: ReactNode }> = ({
       console.log("chainChanged", newChainId, Number(newChainId));
       setCurrentChainId(Number(newChainId));
     });
-    return () =>{}
-   }, [])
+    return () => {};
+  }, []);
 
-   useEffect(() => {
-    setCurrentChainId(chainId)
-   }, [chainId])
- 
+  useEffect(() => {
+    setCurrentChainId(chainId);
+  }, [chainId]);
 
-  console.log('chainIdwagmi', indexerUrl)
-
-
+  console.log("chainIdwagmi", indexerUrl);
 
   return (
     <ContractsContext.Provider value={{ p2p, faucet, tokens, indexerUrl, currentChain, isCorrectChain }}>

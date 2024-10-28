@@ -2,21 +2,22 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Button from '../ui/Button';
-import { ArrowRight, X } from 'lucide-react';
-import { useContracts } from '@/common/contexts/ContractContext';
+import { ArrowRight, ExternalLink, Icon, X } from "lucide-react";
+import { useContracts } from "@/common/contexts/ContractContext";
 import { useReadContract } from "wagmi";
-import Loader from '../loader/Loader';
-import useWriteContractWithToast from '@/common/hooks/useWriteContractWithToast';
-import { useModal } from '@/common/contexts/ModalContext';
+import Loader from "../loader/Loader";
+import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
+import { useModal } from "@/common/contexts/ModalContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/common/contexts/UserContext";
 import { ACCEPTED_TOKENS, TOKEN_BALANCES } from "@/common/constants/queryKeys";
 import { fetchTokens } from "@/common/api/fetchTokens";
+import Link from "next/link";
 
 const ClaimModal = () => {
   const queryClient = useQueryClient();
   const { hideModal } = useModal();
-  const { faucet, indexerUrl } = useContracts();
+  const { faucet, indexerUrl, currentChain } = useContracts();
   const { address } = useUser();
 
   const { data: acceptedTokens, isPending: isAcceptedTokensPending } = useQuery({
@@ -131,17 +132,15 @@ const ClaimModal = () => {
 
   return (
     <>
-      <div
-        className={`w-full bg-white rounded-t-xl p-0 flex flex-col items-center dark:bg-gray-800 lg:rounded-xl`}
-      >
+      <div className={`w-full bg-white rounded-t-xl p-0 flex flex-col items-center dark:bg-gray-800 lg:rounded-xl`}>
         <div className="w-full flex flex-row justify-end">
           <button onClick={hideModal} aria-label="Close modal" className="text-gray-600 dark:text-gray-300">
             <X />
           </button>
         </div>
 
-        <div className="flex flex-col gap-8 w-full">
-          <div className='w-full'>
+        <div className="flex flex-col gap-4 w-full">
+          <div className="w-full">
             <h1 className="text-center text-2xl font-medium text-gray-800 dark:text-gray-200">Available Tokens</h1>
             <p className="text-center text-lg text-gray-500 dark:text-gray-400">
               Claim the number of Tokens you have been allocated below.
@@ -161,22 +160,23 @@ const ClaimModal = () => {
               <div className="w-full border rounded-xl bg-yellow-100 dark:bg-yellow-600 p-6 py-4 flex flex-col border-red-400 shadow-md">
                 <h1 className="text-xl text-black dark:text-white font-medium">Notice on claiming Tokens</h1>
                 <p className="text-gray-500 dark:text-gray-300 text-xs">
-                  It is important to note that your allocated tokens can be claimed once daily after 24 hours of
-                  initial claim.
+                  It is important to note that your allocated tokens can be claimed once daily after 24 hours of initial
+                  claim.
                 </p>
               </div>
             </div>
           ) : (
             <div className="w-full flex flex-row overflow-x-auto gap-6">
-              {acceptedTokens && acceptedTokens.map((token, i) => (
-                <div
-                  key={i} 
-                  className="min-w-[250px] min-h-[150px] border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center"
-                >
-                  <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of {token.symbol}</h2>
-                  <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 {token.symbol}</h2>
-                </div>
-              ))}
+              {acceptedTokens &&
+                acceptedTokens.map((token, i) => (
+                  <div
+                    key={i}
+                    className="min-w-[250px] min-h-[150px] border rounded-xl bg-gray-100 dark:bg-gray-700 p-6 py-4 flex flex-col justify-center"
+                  >
+                    <h2 className="text-sm text-gray-500 dark:text-gray-300 text-center">Amount of {token.symbol}</h2>
+                    <h2 className="text-xl text-gray-600 dark:text-gray-100 text-center">5000 {token.symbol}</h2>
+                  </div>
+                ))}
             </div>
           )}
           <Button
@@ -187,6 +187,20 @@ const ClaimModal = () => {
             disabled={!isClaimAvailable || isClaiming}
             onClick={handleClaim}
           />
+          <div className="flex items-center w-full ">
+            <div className="flex-grow border-t border-gray-300"></div>
+            <span className="mx-4 text-gray-500 dark:text-gray-300">OR</span>
+            <div className="flex-grow border-t border-gray-300"></div>
+          </div>
+          <Link
+            target="_blank"
+            rel="noopener noreferrer"
+            className="border border-darkGray font-bold text-darkGray flex items-center justify-center gap-2 px-4 py-4 rounded-xl dark:bg-gray-700 dark:text-darkGray-dark hover:bg-gray-200 dark:hover:bg-gray-600"
+            href={"https://morphfaucet.com"}
+          >
+            Go to {currentChain?.name} faucet
+            <ExternalLink />
+          </Link>
         </div>
       </div>
     </>

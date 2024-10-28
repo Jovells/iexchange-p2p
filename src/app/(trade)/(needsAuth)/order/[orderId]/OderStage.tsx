@@ -129,7 +129,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           return order.offer.offerType === offerTypes.buy
             ? getDisabledAction(
                 "Waiting for Merchant",
-                "Please wait for the merchant to accept your order and send the tokens to the escrow account",
+                "Please wait for the merchant to accept your order and put the funds in escrow",
               )
             : getEnabledAction(
                 "Done With Payment",
@@ -141,7 +141,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
             ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
             : getEnabledAction(
                 "Accept Order",
-                "Click “Accept Order” to send the tokens to the escrow account ",
+                "Click “Accept Order” accept the order and put the funds in escrow",
                 handleAcceptOrder,
               );
         }
