@@ -67,9 +67,10 @@ export function getUserConfig({
   const isBuy = orderType === offerTypes.buy;
   const isSell = orderType === offerTypes.sell;
   const isBuyer = (isTrader && isBuy) || (isMerchant && isSell);
+  const isSeller = (isTrader && isSell) || (isMerchant && isBuy);
 
   const otherParty = isTrader ? merchant : trader;
-  return { isTrader, isMerchant, isBuy, isSell, isBuyer, otherParty };
+  return { isTrader, isSeller, isMerchant, isBuy, isSell, isBuyer, otherParty };
 }
 
 export const useCopyToClipboard = () => {

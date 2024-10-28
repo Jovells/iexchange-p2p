@@ -147,7 +147,7 @@ const ExpandableTable = forwardRef(
                         modules={[Pagination, Navigation]}
                       >
                         {carouselData.map((row, index) => (
-                          <SwiperSlide key={index}>
+                          <SwiperSlide key={0}>
                             <div className="pb-5 m rounded-xl">
                               <MobileBotRow
                                 row={row}
@@ -168,9 +168,9 @@ const ExpandableTable = forwardRef(
                   )}
                   {data.map((row: Offer, index) => (
                     <MobileRow
-                      key={index}
+                      key={index + 1}
                       row={row}
-                      index={index}
+                      index={index + 1}
                       columns={columns}
                       actions={actions}
                       handleRowClick={handleRowClick}
@@ -206,7 +206,7 @@ const ExpandableTable = forwardRef(
                         modules={[Autoplay, Pagination, Navigation]}
                       >
                         {carouselData.map((row, index) => (
-                          <SwiperSlide key={index}>
+                          <SwiperSlide key={0}>
                             <div className=" rounded-xl">
                               <BotRow
                                 row={row}
@@ -226,7 +226,7 @@ const ExpandableTable = forwardRef(
                     </div>
                   )}
                   {data.map((row, index) => (
-                    <React.Fragment key={index}>
+                    <React.Fragment key={index + 1}>
                       <DesktopRow
                         row={row}
                         index={index + 1}

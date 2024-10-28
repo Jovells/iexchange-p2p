@@ -71,6 +71,7 @@ function useWriteContractWithToast(numConfirmations = 1) {
           toast.success(successMessage || "Transaction Successful", { id: toastId });
         }
       });
+      console.log("vb before finalResult promise", p);
       const finalResult = await p;
       console.log("vb after promise", p, "vb finalResult", finalResult);
       return p as Promise<WriteContractWithToastReturnType>;
@@ -97,46 +98,51 @@ function useWriteContractWithToast(numConfirmations = 1) {
 
   useEffect(() => {
     //TODO:@Jovells refactor to prevent running if user is not waiting for receipt
-    if (receipt && promiseResolveReject) {
-      let logs = [];
-      console.log("qs receipt", receipt.logs);
-      for (const log of receipt.logs) {
-        try {
-          console.log("qs log", log.data, log.topics, options?.args[0].abi);
-          const decoded = decodeEventLog({
-            abi: options?.args[0].abi,
-            data: log.data,
-            topics: log.topics,
-          });
-          logs.push(decoded || log);
-        } catch (e) {
-          console.log("qs error", e);
-          continue;
+    const handleReceipt = async () => {
+      console.log("qsvb receipt", receipt, promiseResolveReject);
+      if (receipt && promiseResolveReject) {
+        let logs = [];
+        console.log("qs receipt", receipt.logs);
+        for (const log of receipt.logs) {
+          try {
+            console.log("qs log", log.data, log.topics, options?.args[0].abi);
+            const decoded = decodeEventLog({
+              abi: options?.args[0].abi,
+              data: log.data,
+              topics: log.topics,
+            });
+            logs.push(decoded || log);
+          } catch (e) {
+            console.log("qs error", e);
+            continue;
+          }
+        }
+
+        setDecodedLogs(logs);
+        console.log("qs decoded", logs, promiseResolveReject);
+        await options?.onReceipt?.({ receipt, decodedLogs: logs });
+        promiseResolveReject?.resolve({ receipt, decodedLogs: logs, txHash: receipt.transactionHash });
+        if (options?.waitForReceipt) {
+          promiseResolveReject?.resolve({ receipt, decodedLogs: logs, txHash: receipt.transactionHash });
+          options?.shouldShowModal
+            ? showModal(
+                <ModalAlert
+                  buttonText="Done"
+                  buttonClick={options.modalAction}
+                  modalType="success"
+                  title="Successful"
+                  description={options.successMessage || options.args[0].functionName + " successful"}
+                  icon="../../images/icons/success.png"
+                />,
+              )
+            : toast.success(options?.successMessage || options?.args[0].functionName + " successful", {
+                id: options?.toastId,
+              });
         }
       }
+    };
 
-      setDecodedLogs(logs);
-      console.log("qs decoded", logs, promiseResolveReject);
-      options?.onReceipt?.({ receipt, decodedLogs: logs }).then(() => {
-        promiseResolveReject?.resolve({ receipt, decodedLogs: logs, txHash: receipt.transactionHash });
-      });
-      if (options?.waitForReceipt) {
-        options?.shouldShowModal
-          ? showModal(
-              <ModalAlert
-                buttonText="Done"
-                buttonClick={options.modalAction}
-                modalType="success"
-                title="Successful"
-                description={options.successMessage || options.args[0].functionName + " successful"}
-                icon="../../images/icons/success.png"
-              />,
-            )
-          : toast.success(options?.successMessage || options?.args[0].functionName + " successful", {
-              id: options?.toastId,
-            });
-      }
-    }
+    handleReceipt();
   }, [receipt, options?.toastId, promiseResolveReject]);
 
   return {

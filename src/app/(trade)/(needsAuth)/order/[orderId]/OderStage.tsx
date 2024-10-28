@@ -30,6 +30,7 @@ import InfoBlock from "../infoBlock";
 import DetailBlock from "./detailBlock";
 import { CachedConversation, useSendMessage } from "@xmtp/react-sdk";
 import Image from "next/image";
+import { formatEther } from "viem";
 
 const ChatWithMerchant = lazy(() => import("@/components/merchant/ChatWithMerchant"));
 
@@ -64,6 +65,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     queryKey: ORDER({ orderId, indexerUrl }),
     queryFn: () => fetchOrder(indexerUrl, orderId),
     retry: 3,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   console.log("Order orderstage", order);
@@ -138,7 +141,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
             ? getDisabledAction("Waiting for Buyer", "Please wait for the buyer to make payment")
             : getEnabledAction(
                 "Accept Order",
-                "Click “Accept Order” your order and send the tokens to the escrow account ",
+                "Click “Accept Order” to send the tokens to the escrow account ",
                 handleAcceptOrder,
               );
         }
@@ -174,7 +177,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     async function release() {
       console.log("Release funds");
       const writeResult = await writeContractAsync(
-        { toastId },
+        { toastId, waitForReceipt: true },
         {
           address: p2p.address,
           abi: p2p.abi,
@@ -203,7 +206,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
     async function pay() {
       const writeResult = await writeContractAsync(
-        { toastId },
+        { toastId, waitForReceipt: true },
         {
           address: p2p.address,
           abi: p2p.abi,
@@ -222,6 +225,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     console.log("Accept order");
 
     const alreadyApproved = allowance! >= BigInt(order?.quantity || 0);
+    console.log("qwAllowance", formatEther(allowance!), formatEther(BigInt(order?.quantity || 0)), alreadyApproved);
 
     if (!alreadyApproved) {
       const approveHash = await writeToken(
@@ -236,7 +240,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     }
 
     const writeResult = await writeContractAsync(
-      { toastId },
+      { toastId, waitForReceipt: true },
       {
         address: p2p.address,
         abi: p2p.abi,
@@ -246,7 +250,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     );
     // Optimistically update the order status
     handleOptimisticUpdate(OrderState.Accepted, writeResult);
-    conversation && sendMessage(conversation, "Paid. TxHash: " + writeResult.txHash);
+    conversation && sendMessage(conversation, "Accepted. TxHash: " + writeResult.txHash);
   };
 
   function handleOptimisticUpdate(status: OrderState, writeResult: WriteContractWithToastReturnType) {
@@ -254,7 +258,14 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     if (status === OrderState.Released || status === OrderState.Accepted || status === OrderState.Cancelled) {
       queryClient.refetchQueries({ queryKey: TOKEN_BALANCE({ address: order?.offer.token.id! }) });
     }
-    queryClient.setQueryData(ORDER_STATUS({ indexerUrl, orderId }), updatedStatus);
+    console.log("qworderStatusQueryKey", orderStatusQueryKey);
+    // queryClient.setQueryData(orderStatusQueryKey, (data: any) => {
+    //   console.log("qwOptimisticUpdate", data, status, writeResult);
+    //   const newD = [...data];
+    //   newD[7] = status;
+    //   return newD;
+    // });
+    refetchOrderStatus();
     setTransactionHashes([...(transactionHashes || []), { hash: writeResult.txHash, status: OrderState[status] }]);
   }
 
@@ -286,51 +297,104 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
 
   const { text, onClick, disabled, buttonText, shouldPoll } = getButtonConfig();
 
-  //poll order status
-  const { data: orderStatus } = useQuery({
-    queryKey: ORDER_STATUS({ orderId, indexerUrl }),
-    queryFn: () => fetchOrderStatus(indexerUrl, orderId),
-    retry: 3,
-    enabled: shouldPoll && pollToggle,
-    refetchInterval: q => {
-      console.log("qeRefetching order status", q);
-      const fetchedStatus = q.state.data?.status;
-      q.state;
-      if (fetchedStatus === order?.status || fetchedStatus === undefined) return POLLING_INTERVAL;
+  // poll order status
+  const {
+    data: orderStatusContract,
+    queryKey: orderStatusQueryKey,
+    refetch: refetchOrderStatus,
+  } = useReadContract({
+    abi: p2p.abi,
+    address: p2p.address,
+    functionName: "orders",
+    args: [BigInt(orderId)],
+    query: {
+      enabled: shouldPoll && pollToggle,
+      refetchInterval: q => {
+        console.log("qeRefetching order status", q);
+        const fetchedStatus = q.state.data?.[7];
+        q.state;
+        if (fetchedStatus === order?.status || fetchedStatus === undefined) return POLLING_INTERVAL;
 
-      const updatedOrder = { ...order, status: fetchedStatus };
-      if (fetchedStatus === OrderState.Cancelled) {
-        //TODO@Jovells replace address with correct txhash
-        showModal(<OrderCancellationModal txHash={address!} />);
-      } else if (fetchedStatus === OrderState.Released) {
-        showModal(<BuyerReleaseModal txHash={address!} cryptoAmount={cryptoAmount!} fiatAmount={fiatAmount!} />);
-      } else if (fetchedStatus === OrderState.Paid) {
-        showModal(<SellerPaymentConfirmedModal txHash={address!} fiatAmount={fiatAmount!} />);
-      } else if (fetchedStatus === OrderState.Accepted) {
-        isBuyer &&
-          toast.success(
-            t => {
-              return (
-                <div>
-                  <div className="text-gray-500">Order Accepted</div>
-                  <div className="text-gray-500">Please Proceed to pay</div>
-                </div>
-              );
-            },
-            {
-              duration: 5000,
-            },
-          );
-      } else {
-        toast.success("Order Status Updated: " + fetchedStatus, { id: toastId });
-      }
+        const updatedOrder = { ...order, status: fetchedStatus };
+        if (fetchedStatus === OrderState.Cancelled) {
+          //TODO@Jovells replace address with correct txhash
+          showModal(<OrderCancellationModal txHash={address!} />);
+        } else if (fetchedStatus === OrderState.Released) {
+          isBuyer &&
+            showModal(<BuyerReleaseModal txHash={address!} cryptoAmount={cryptoAmount!} fiatAmount={fiatAmount!} />);
+        } else if (fetchedStatus === OrderState.Paid) {
+          isSeller && showModal(<SellerPaymentConfirmedModal txHash={address!} fiatAmount={fiatAmount!} />);
+        } else if (fetchedStatus === OrderState.Accepted) {
+          isBuyer &&
+            toast.success(
+              t => {
+                return (
+                  <div>
+                    <div className="text-gray-500">Order Accepted</div>
+                    <div className="text-gray-500">Please Proceed to pay</div>
+                  </div>
+                );
+              },
+              {
+                duration: 5000,
+              },
+            );
+        } else {
+          toast.success("Order Status Updated: " + fetchedStatus, { id: toastId });
+        }
 
-      queryClient.setQueryData(ORDER({ indexerUrl, orderId }), updatedOrder);
-      console.log("qeRefetching order status", order?.status, updatedOrder.status);
+        queryClient.setQueryData(ORDER({ indexerUrl, orderId }), updatedOrder);
+        console.log("qeRefetching order status", order?.status, updatedOrder.status);
 
-      return POLLING_INTERVAL;
+        return POLLING_INTERVAL;
+      },
     },
   });
+  const orderStatus = { status: orderStatusContract?.[7] };
+  // const { data: orderStatus } = useQuery({
+  //   queryKey: ORDER_STATUS({ orderId, indexerUrl }),
+  //   queryFn: () => fetchOrderStatus(indexerUrl, orderId),
+  //   retry: 3,
+  //   enabled: shouldPoll && pollToggle,
+  //   refetchInterval: q => {
+  //     console.log("qeRefetching order status", q);
+  //     const fetchedStatus = q.state.data?.status;
+  //     q.state;
+  //     if (fetchedStatus === order?.status || fetchedStatus === undefined) return POLLING_INTERVAL;
+
+  //     const updatedOrder = { ...order, status: fetchedStatus };
+  //     if (fetchedStatus === OrderState.Cancelled) {
+  //       //TODO@Jovells replace address with correct txhash
+  //       showModal(<OrderCancellationModal txHash={address!} />);
+  //     } else if (fetchedStatus === OrderState.Released) {
+  //       showModal(<BuyerReleaseModal txHash={address!} cryptoAmount={cryptoAmount!} fiatAmount={fiatAmount!} />);
+  //     } else if (fetchedStatus === OrderState.Paid) {
+  //       showModal(<SellerPaymentConfirmedModal txHash={address!} fiatAmount={fiatAmount!} />);
+  //     } else if (fetchedStatus === OrderState.Accepted) {
+  //       isBuyer &&
+  //         toast.success(
+  //           t => {
+  //             return (
+  //               <div>
+  //                 <div className="text-gray-500">Order Accepted</div>
+  //                 <div className="text-gray-500">Please Proceed to pay</div>
+  //               </div>
+  //             );
+  //           },
+  //           {
+  //             duration: 5000,
+  //           },
+  //         );
+  //     } else {
+  //       toast.success("Order Status Updated: " + fetchedStatus, { id: toastId });
+  //     }
+
+  //     queryClient.setQueryData(ORDER({ indexerUrl, orderId }), updatedOrder);
+  //     console.log("qeRefetching order status", order?.status, updatedOrder.status);
+
+  //     return POLLING_INTERVAL;
+  //   },
+  // });
 
   if (!order && orderLoading) {
     console.log("Loading order", order, orderLoading);
@@ -353,7 +417,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     );
   }
 
-  const { isTrader, isMerchant, isBuy, isSell, isBuyer, otherParty } = userConfig!;
+  const { isTrader, isMerchant, isBuy, isSell, isBuyer, isSeller, otherParty } = userConfig!;
   if (orderError) {
     console.log("Error fetching order", orderError);
   }
@@ -381,7 +445,40 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   const isBuyerAndNotYetAccepted = order?.status === OrderState.Pending && isBuyer && isTrader;
   const isPending = order?.status === OrderState.Pending;
   const isPaid = order?.status === OrderState.Paid;
+  const isAccepted = order?.status === OrderState.Accepted || order.status === OrderState.Paid;
   const isCompleted = order?.status === OrderState.Released || order?.status === OrderState.Cancelled;
+  const sellerText = {
+    1: {
+      head: "Order Information",
+      sub: isAccepted ? "Order Accepted" : text,
+    },
+    2: {
+      head: "Confirm Payment",
+      sub: isPaid ? "Please confirm that the payment has been made" : "Wait for buyer  to pay",
+    },
+    3: {
+      head: "Release",
+      sub: isPaid ? text : "After confirming the payment has been made, release crypto",
+    },
+  };
+  const buyerText = {
+    1: {
+      head: "Order Information",
+      sub: isAccepted ? "Order Accepted" : text,
+    },
+    2: {
+      head: "Make payment",
+      sub: isPaid
+        ? "You have made Payment"
+        : isAccepted
+        ? text
+        : "Please make payment after merchant accepts your order",
+    },
+    3: {
+      head: "Wait for Release",
+      sub: isPaid ? text : "After payment, wait for release",
+    },
+  };
   return (
     <Suspense
       fallback={
@@ -428,7 +525,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
             <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl">
               {/* Header */}
               <div className="flex justify-between mb-6">
-                <h2 className="text-lg text-gray-500 dark:text-gray-400">{buttonText}</h2>
+                <h2 className="text-lg text-gray-500 dark:text-gray-400">Order in Progress</h2>
 
                 <div
                   className={`px-2 py-1 text-sm text-gray-100 rounded-xl ${isBuyer ? " bg-[#4ade80]" : "bg-[#f6465d]"}`}
@@ -456,6 +553,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                   </div>
                   <div className="ml-4 flex-grow">
                     <span className="text-darkGray dark:text-darkGray-dark font-semibold">Order Information</span>
+                    <p className="text-gray-500 dark:text-gray-400">{isBuyer ? buyerText[1].sub : sellerText[1].sub}</p>
+
                     <div className="flex border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4 mt-2 flex-col justify-start items-start gap-1 w-full">
                       <InfoBlock
                         isAmount
@@ -489,14 +588,9 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                   </div>
                   <div className="ml-4 flex-grow">
                     <span className="text-darkGray dark:text-darkGray-dark font-semibold">
-                      {isSell
-                        ? isPaid
-                          ? "Confirm Payment"
-                          : "Wait For Payment"
-                        : isPaid
-                        ? "Payment Made"
-                        : "Make Payment"}
+                      {isBuyer ? buyerText[2].head : sellerText[2].head}
                     </span>
+                    <p className="text-gray-500 dark:text-gray-400">{isBuyer ? buyerText[2].sub : sellerText[2].sub}</p>
                     <div className="w-full border  mb-4 mt-2 flex rounded-xl p-4 h-auto border-gray-200 dark:border-gray-700">
                       <div className="w-full  flex flex-col gap-4">
                         <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
@@ -532,8 +626,10 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                     </div>
                   </div>
                   <div className="ml-4 flex-grow">
-                    <span className="text-darkGray dark:text-darkGray-dark font-semibold">Proceed</span>
-                    <p className="text-gray-500 dark:text-gray-400">{text}</p>
+                    <span className="text-darkGray dark:text-darkGray-dark font-semibold">
+                      {isBuyer ? buyerText[3].head : sellerText[3].head}
+                    </span>
+                    <p className="text-gray-500 dark:text-gray-400">{isBuyer ? buyerText[3].sub : sellerText[3].sub}</p>
                   </div>
                 </div>
               </div>
