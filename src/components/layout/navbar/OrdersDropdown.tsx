@@ -11,24 +11,14 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import React from "react";
 import { ArrowRight, ChevronRight } from "lucide-react";
+import useMyPendingOrders from "@/common/hooks/useMyOrders";
 
 export function OrdersDropdown() {
   const { indexerUrl } = useContracts();
   const { address: userAddress } = useUser();
-  const options = {
-    page: 0,
-    quantity: 10,
-    merchant: userAddress,
-    trader: userAddress,
-    status_not: OrderState.Released,
-  };
-  const { data: myOrders, isLoading } = useQuery({
-    queryKey: ["orders", options],
-    queryFn: () => fetchOrders(indexerUrl, options),
-    enabled: !!userAddress,
-    retry: false,
-  });
+  const { myOrders, isLoading, total } = useMyPendingOrders();
 
+ 
   console.log("myOrders", myOrders);
 
   return (

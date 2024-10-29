@@ -23,6 +23,7 @@ import {
       currency,
       amount,
       orderBy,
+      orderId,
       orderDirection,
       isActive,
       withoutBots,
@@ -44,6 +45,7 @@ import {
         { name: "maxOrder_gt", value: realAmount, type: "String" },
         { name: "minOrder_lt", value: realAmount, type: "String" },
         { name: "paymentMethod", value: paymentMethod, type: "String" },
+        { name: "id", value: orderId, type: "String" },
         withoutBots ? { name: "merchant_not", value: BOT_MERCHANT_ID, type: "String" } : undefined,
       ],
     });

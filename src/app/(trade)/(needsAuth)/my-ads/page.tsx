@@ -108,6 +108,7 @@ const MyAds = () => {
   const { address } = useUser();
   const trade = searchParams.get("trade") || "Buy";
   const crypto = searchParams.get("crypto") || "USDT";
+  const isOptimistic = searchParams.get("optimistic") === "true";
 
   const { data: tokens } = useQuery({
     queryKey: ACCEPTED_TOKENS(indexerUrl),
@@ -145,6 +146,7 @@ const MyAds = () => {
   const { isPending, isError, error, data, isFetching, isPlaceholderData } = useQuery({
     queryKey: MY_ADS({ indexerUrl, options }),
     queryFn: () => fetchAds(indexerUrl, options),
+    enabled: !isOptimistic,
     // placeholderData: keepPreviousData,
   });
 

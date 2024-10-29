@@ -132,7 +132,7 @@ const ClaimModal = () => {
 
   return (
     <>
-      <div className={`w-full bg-white rounded-t-xl p-0 flex flex-col items-center dark:bg-gray-800 lg:rounded-xl`}>
+      <div className={`w-full bg-white rounded-t-xl p-6 flex flex-col items-center dark:bg-gray-800 lg:rounded-xl`}>
         <div className="w-full flex flex-row justify-end">
           <button onClick={hideModal} aria-label="Close modal" className="text-gray-600 dark:text-gray-300">
             <X />

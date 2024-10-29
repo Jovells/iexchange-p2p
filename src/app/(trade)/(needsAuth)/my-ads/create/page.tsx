@@ -19,10 +19,10 @@ import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast"
 import { useUser } from "@/common/contexts/UserContext";
 import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
 import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
-import { AccountDetails, PaymentMethod } from "@/common/api/types";
-import { MY_ADS } from "@/common/constants/queryKeys";
+import { AccountDetails, FetchAdsOptions, Offer, PaymentMethod } from "@/common/api/types";
+import { ADS, MY_ADS } from "@/common/constants/queryKeys";
 import { MY_ADS_PAGE } from "@/common/page-links";
-
+import MyAds from "../page";
 
 const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 const formSchema = z
@@ -184,11 +184,44 @@ const CreateAd = () => {
           //replace with proper optimistic update
           // Redirect or handle success
           console.log("//////////////////////////////////////");
-          queryClient.refetchQueries({ queryKey: MY_ADS({ indexerUrl }) }).then(() => {
-            setSubmitting(false);
-            toast.success("Ad created successfully", { id });
-            router.push(MY_ADS_PAGE);
-          });
+          const newOffer: Offer = {
+            id: decodedLogs?.[0].args.offerId.toString(),
+            token: tokens?.find(t => t.id === token)!,
+            currency: currencies?.find(c => c.currency === currency)!,
+            paymentMethod: paymentMethods?.find(p => p.method === paymentMethod)!,
+            rate: rate.toString(),
+            minOrder: minOrder.toString(),
+            maxOrder: maxOrder.toString(),
+            active: true,
+            merchant: {
+              id: accountHash,
+              name: accountName,
+              terms: terms,
+              timeLimit: timeLimit,
+            },
+            depositAddress: {
+              id: depositAddress,
+            },
+            offerType: offerTypes[offerType],
+            accountHash: accountHash,
+          };
+          const options: FetchAdsOptions = {
+            page: 0,
+            quantity: 10,
+            merchant: address,
+          };
+
+          await queryClient.setQueryData(
+            MY_ADS({ indexerUrl, options }),
+            (oldData: { hasNext: boolean; offers: Offer[] } | undefined) => ({
+              ...oldData,
+              offers: [newOffer, ...(oldData?.offers || [])],
+            }),
+          );
+
+          router.push(MY_ADS_PAGE + "?optimitic=true");
+          setSubmitting(false);
+          toast.success("Ad created successfully", { id });
         } catch (error: any) {
           console.error("Transaction failed:", error);
           toast.error(error.message, { id });
@@ -215,7 +248,7 @@ const CreateAd = () => {
       <div className="my-4 flex flex-col gap-4">
         <Tabs onTabChange={setActiveTab as any} />
         <div className="flex flex-col gap-2">
-          <h1 className='text-black dark:text-white'>Create Advert</h1>
+          <h1 className="text-black dark:text-white">Create Advert</h1>
           <p className="text-gray-400">Please fill in the information to proceed to post an Ad.</p>
         </div>
       </div>
@@ -237,11 +270,7 @@ const CreateAd = () => {
                 }
                 label="Asset"
               />
-              {errors.token && (
-                <span className="text-red-500 text-sm mt-1">
-                  {errors.token}
-                </span>
-              )}
+              {errors.token && <span className="text-red-500 text-sm mt-1">{errors.token}</span>}
             </div>
 
             <div className="flex flex-col w-full sm:w-1/3">
@@ -255,23 +284,14 @@ const CreateAd = () => {
                 }
                 label="Fiat"
               />
-              {errors.currency && (
-                <span className="text-red-500 text-sm mt-1">
-                  {errors.currency}
-                </span>
-              )}
+              {errors.currency && <span className="text-red-500 text-sm mt-1">{errors.currency}</span>}
             </div>
 
             <div className="flex flex-col w-full sm:w-1/3">
               <Input name="rate" label="Rate" />
-              {errors.rate && (
-                <span className="text-red-500 text-sm mt-1">
-                  {errors.rate}
-                </span>
-              )}
+              {errors.rate && <span className="text-red-500 text-sm mt-1">{errors.rate}</span>}
             </div>
           </div>
-
         </div>
         <div className="flex flex-col gap-8">
           <h1 className="text-[#01a2e4] font-bold">Amount and Method</h1>
@@ -346,7 +366,7 @@ const CreateAd = () => {
             />
             <Button
               loading={submitting}
-              text="Add Post"
+              text="Create Ad"
               // icon="/images/icons/add-circle.png"
               iconPosition="right"
               className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-600 rounded-xl px-4 py-2 w-fit"

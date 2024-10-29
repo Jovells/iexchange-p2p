@@ -76,7 +76,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
           modalType="success"
           title="Successfully Staked"
           description="You have successfully secured a merchant placement."
-          icon="/images/icons/alert-success.png"
+          icon="/images/icons/alert-success.svg"
         />
       );
       refetch?.();

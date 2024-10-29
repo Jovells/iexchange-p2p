@@ -4,7 +4,7 @@ import { useModal } from '../contexts/ModalContext';
 import ModalAlert from '@/components/modals';
 import { useEffect, useRef, useState } from "react";
 import { decodeEventLog, TransactionReceipt } from "viem";
-import { WriteContractWithToastReturnType } from "../api/types";
+import { DecodedLog, WriteContractWithToastReturnType } from "../api/types";
 
 type Options = {
   timeTimeToWait?: number;
@@ -12,12 +12,12 @@ type Options = {
   toastId?: string;
   modalAction?: any;
   onTxSent?: (txHash: `0x${string}`) => Promise<any>;
-  onReceipt?: ({ receipt, decodedLogs }: { receipt: TransactionReceipt; decodedLogs: any[] }) => Promise<any>;
+  onReceipt?: ({ receipt, decodedLogs }: { receipt: TransactionReceipt; decodedLogs: DecodedLog[] }) => Promise<any>;
   errorMessage?: string;
   loadingMessage?: string;
   successMessage?: string;
   waitForReceipt?: boolean;
-  args?: any;
+  args?: Record<string, any>;
 };
 
 function useWriteContractWithToast(numConfirmations = 1) {
@@ -101,16 +101,16 @@ function useWriteContractWithToast(numConfirmations = 1) {
     const handleReceipt = async () => {
       console.log("qsvb receipt", receipt, promiseResolveReject);
       if (receipt && promiseResolveReject) {
-        let logs = [];
+        let logs: DecodedLog[] = [];
         console.log("qs receipt", receipt.logs);
         for (const log of receipt.logs) {
           try {
-            console.log("qs log", log.data, log.topics, options?.args[0].abi);
+            console.log("qs log", log.data, log.topics, options?.args?.[0].abi);
             const decoded = decodeEventLog({
-              abi: options?.args[0].abi,
+              abi: options?.args?.[0].abi,
               data: log.data,
               topics: log.topics,
-            });
+            }) as DecodedLog;
             logs.push(decoded || log);
           } catch (e) {
             console.log("qs error", e);
@@ -130,11 +130,11 @@ function useWriteContractWithToast(numConfirmations = 1) {
                   buttonClick={options.modalAction}
                   modalType="success"
                   title="Successful"
-                  description={options.successMessage || options.args[0].functionName + " successful"}
+                  description={options.successMessage || options.args?.[0].functionName + " successful"}
                   icon="../../images/icons/success.png"
                 />,
               )
-            : toast.success(options?.successMessage || options?.args[0].functionName + " successful", {
+            : toast.success(options?.successMessage || options?.args?.[0].functionName + " successful", {
                 id: options?.toastId,
               });
         }

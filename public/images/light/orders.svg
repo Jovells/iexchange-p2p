@@ -1,7 +1,1 @@
-<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M10 13.3333V15.8333" stroke="black" stroke-width="1.2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8.33301 17.4999C8.33301 16.5833 9.08301 15.8333 9.99967 15.8333C10.9163 15.8333 11.6663 16.5833 11.6663 17.4999C11.6663 18.4166 10.9163 19.1666 9.99967 19.1666" stroke="black" stroke-width="1.2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M15.0003 17.5H11.667" stroke="#1E1F20" stroke-width="1.2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8.33333 17.5H5" stroke="#1E1F20" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.16699 4.58341C4.16699 2.25008 4.75033 1.66675 7.08366 1.66675H7.95865C8.83365 1.66675 9.02531 1.92505 9.35864 2.36672L10.2337 3.53341C10.4587 3.82507 10.5837 4.00012 11.167 4.00012H12.917C15.2503 4.00012 15.8337 4.58346 15.8337 6.91679V10.4167C15.8337 12.7501 15.2503 13.3334 12.917 13.3334H7.08366C4.75033 13.3334 4.16699 12.7501 4.16699 10.4167V7.78339" stroke="#1E1F20" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-logs"><path d="M13 12h8"/><path d="M13 18h8"/><path d="M13 6h8"/><path d="M3 12h1"/><path d="M3 18h1"/><path d="M3 6h1"/><path d="M8 12h1"/><path d="M8 18h1"/><path d="M8 6h1"/></svg>

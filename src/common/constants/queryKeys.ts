@@ -1,11 +1,11 @@
-import { OfferType } from "../api/types";
+import { FetchAdsOptions, OfferType } from "../api/types";
 
 export const ORDER = ({ indexerUrl, orderId }: { indexerUrl: string; orderId: String }) => [
   "order",
   indexerUrl,
   orderId,
 ];
-export const ADS = (indexerUrl: string) => ["ads", indexerUrl];
+export const ADS = (indexerUrl: string, options: FetchAdsOptions) => ["ads", indexerUrl, options];
 export const ACCOUNT_DETAILS = (accountHash: string) => ["accountDetails", accountHash];
 export const ORDERS = ({
   currentPage,

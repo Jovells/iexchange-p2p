@@ -8,11 +8,14 @@ export type Token = {
   isTraded?: boolean;
 };
 
+export type DecodedLog = { eventname: string; args: Record<string, any> };
+
 export interface FetchAdsOptions {
   quantity?: number;
   page?: number;
   offerType?: string;
   tokenId?: string;
+  orderId?: string | number;
   merchant?: string;
   paymentMethod?: string;
   currency?: string;
@@ -131,6 +134,6 @@ export type AccountDetails = {
 
 export type WriteContractWithToastReturnType = {
   receipt?: TransactionReceipt;
-  decodedLogs?: any[];
+  decodedLogs?: DecodedLog[];
   txHash: string;
 };
