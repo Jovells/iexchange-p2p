@@ -240,7 +240,7 @@ export default function QuickTradePage() {
               <div className="flex items-center">
                 <input
                   type="text"
-                  className="flex-1 text-2xl sm:text-xl text-ellipsis bg-transparent outline-none text-black dark:text-white"
+                  className="flex-1 text-lg font-bold md:text-2xl text-ellipsis bg-transparent outline-none text-black dark:text-white"
                   placeholder={minAndMax.minFiat + " - " + minAndMax.maxFiat}
                   value={fiatAmount}
                   onChange={e => handleFormDataChange("fiatAmount", e.target.value)}
@@ -274,7 +274,7 @@ export default function QuickTradePage() {
               <div className="flex items-center">
                 <input
                   type="text"
-                  className="flex-1 text-2xl sm:text-xl bg-transparent outline-none text-black dark:text-white"
+                  className="flex-1 text-lg font-bold md:text-2xl bg-transparent outline-none text-black dark:text-white"
                   placeholder={minAndMax.minCrypto + " - " + minAndMax.maxCrypto}
                   value={cryptoAmount}
                   onChange={e => handleFormDataChange("cryptoAmount", e.target.value)}
