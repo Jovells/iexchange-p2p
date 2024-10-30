@@ -67,16 +67,16 @@ export default function QuickTradePage() {
       })) || [],
     combine: results => {
       const min = Number(results[0].data?.offers[0].minOrder || 0);
-      const max = Number(results[1].data?.offers[0].maxOrder || 0);
+      const max = Math.min(Number(results[1].data?.offers[0].maxOrder || 0), 1000000000 * 10 ** 18);
       const minRate = Number(results[0].data?.offers[0].rate || 0);
       const maxRate = Number(results[1].data?.offers[0].rate || 0);
 
       return {
         data: {
           minCrypto: formatCurrency(min, ""),
-          maxCrypto: formatCurrency(max, "", 5),
+          maxCrypto: formatCurrency(max, ""),
           minFiat: formatCurrency(min * minRate, ""),
-          maxFiat: formatCurrency(max * maxRate, "", 5),
+          maxFiat: formatCurrency(max * maxRate, ""),
         },
         isPending: results.some(result => result.isPending),
         isLoading: results.some(result => result.isLoading),
@@ -192,7 +192,7 @@ export default function QuickTradePage() {
         <h2 className="text-xl lg:text-2xl font-bold mb-4 text-gray-900 dark:text-white">
           {isBuy ? "Buy" : "Sell"} {token?.symbol} {isBuy ? "with" : "for"} {currency?.symbol} onchain
         </h2>
-        <p className="text-gray-600 dark:text-gray-400">Quickly Buy and Sell Crypto with various payment methods</p>
+        <p className="text-gray-600  dark:text-gray-400">Quickly Buy and Sell Crypto with various payment methods</p>
         <div className="flex flex-row mt-4 items-center gap-4">
           {isConnected && (
             <>
@@ -240,7 +240,7 @@ export default function QuickTradePage() {
               <div className="flex items-center">
                 <input
                   type="text"
-                  className="flex-1 text-2xl bg-transparent outline-none text-black dark:text-white"
+                  className="flex-1 text-2xl sm:text-xl text-ellipsis bg-transparent outline-none text-black dark:text-white"
                   placeholder={minAndMax.minFiat + " - " + minAndMax.maxFiat}
                   value={fiatAmount}
                   onChange={e => handleFormDataChange("fiatAmount", e.target.value)}
@@ -274,7 +274,7 @@ export default function QuickTradePage() {
               <div className="flex items-center">
                 <input
                   type="text"
-                  className="flex-1 text-2xl bg-transparent outline-none text-black dark:text-white"
+                  className="flex-1 text-2xl sm:text-xl bg-transparent outline-none text-black dark:text-white"
                   placeholder={minAndMax.minCrypto + " - " + minAndMax.maxCrypto}
                   value={cryptoAmount}
                   onChange={e => handleFormDataChange("cryptoAmount", e.target.value)}
@@ -288,7 +288,7 @@ export default function QuickTradePage() {
                   }))}
                   showBalance={false}
                   selectType="normal"
-                  initialValue={tokens?.[0]}
+                  initialValue={token}
                   //@ts-ignore
                   onValueChange={(value: Token) => {
                     console.log("qn", value);

@@ -2,7 +2,7 @@
 import CediH from "@/common/abis/CediH";
 import { fetchAds } from "@/common/api/fetchAds";
 import storeAccountDetails from "@/common/api/storeAccountDetails";
-import { FetchAdsOptions, Offer, Order, OrderState } from "@/common/api/types";
+import { FetchAdsOptions, Offer, Order, OrderState, PaymentMethod } from "@/common/api/types";
 import { BOT_MERCHANT_ID } from "@/common/constants";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { useUser } from "@/common/contexts/UserContext";
@@ -22,13 +22,9 @@ import { ORDER } from "@/common/constants/queryKeys";
 import { Bolt, Zap } from "lucide-react";
 import Link from "next/link";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-
-interface PaymentMethod {
-  id: string;
-  name: string;
-  rate: number;
-  icon?: string;
-}
+import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
+import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
+import Button from "@/components/ui/Button";
 
 export default function PaymentMethodsPage() {
   const { isConnected } = useUser();
@@ -36,6 +32,7 @@ export default function PaymentMethodsPage() {
   const searchParams = useSearchParams();
   const navigate = useRouter();
   const { indexerUrl, p2p } = useContracts();
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>();
   const {
     currencyId,
     tokenId,
@@ -51,7 +48,7 @@ export default function PaymentMethodsPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const { address } = useUser();
   const { writeContractAsync: writeToken } = useWriteContractWithToast();
-  const { writeContractAsync: writeP2p } = useWriteContractWithToast();
+  const { writeContractAsync: writeP2p, isPending } = useWriteContractWithToast();
   const queryClient = useQueryClient();
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
     abi: CediH,
@@ -67,6 +64,7 @@ export default function PaymentMethodsPage() {
 
   const tokensAmount = amounts.cryptoAmount ? BigInt(Math.floor(Number(amounts.cryptoAmount) * 10 ** 18)) : BigInt(0);
   const { currencies, tokens, paymentMethods } = useMarketData();
+  const { paymentMethods: userPaymentMethods } = useUserPaymentMethods();
 
   const options: FetchAdsOptions = {
     currency: currencyId,
@@ -166,6 +164,7 @@ export default function PaymentMethodsPage() {
       toast.error("Please select an offer");
       return;
     }
+    if (!paymentMethod) return toast.default("Please select a payment method");
 
     // Validate the form before submission
 
@@ -174,11 +173,11 @@ export default function PaymentMethodsPage() {
     const accountHash = isBuy
       ? selectedOffer.accountHash
       : await storeAccountDetails({
-          name: selectedOffer.paymentMethod.name as string,
+          name: paymentMethod.name as string,
           address: address as string,
-          number: selectedOffer.paymentMethod.number as string,
-          paymentMethod: selectedOffer.paymentMethod.method,
-          details: selectedOffer.paymentMethod.details,
+          number: paymentMethod.number as string,
+          paymentMethod: paymentMethod.method,
+          details: paymentMethod.details,
         });
 
     try {
@@ -222,7 +221,8 @@ export default function PaymentMethodsPage() {
             const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder } as Order;
             console.log("qworder", order);
             navigate.push("/order/" + orderId);
-            queryClient.setQueryData(ORDER({ indexerUrl, orderId }), order);
+            const q = queryClient.setQueryData(ORDER({ indexerUrl, orderId }), order);
+            console.log("qkl navigated in onreceipt", q);
           },
         },
         {
@@ -302,7 +302,7 @@ export default function PaymentMethodsPage() {
             <div className="bg-white min-w-96 dark:bg-gray-800 rounded-xl p-4 mb-6 border dark:border-gray-700">
               <h3 className="font-medium mb-4 dark:text-white">Preview Order</h3>
 
-              <div className="space-y-3 text-sm">
+              <div className="space-y-3 mb-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-300">You Pay</span>
                   <span className="font-medium text-lg dark:text-white">
@@ -362,12 +362,29 @@ export default function PaymentMethodsPage() {
                   </div>
                 </div>
               </div>
-              <button
+              {!isBuy && (
+                <PaymentMethodSelect
+                  addButton={!isBuy}
+                  skipStep1={selectedOffer?.paymentMethod.method}
+                  addButtonText={"Add " + selectedOffer?.paymentMethod.method + " details"}
+                  label=""
+                  initialValue=""
+                  selectedMethod={paymentMethod}
+                  placeholder="Select account to receive payment"
+                  name="paymentMethod"
+                  options={
+                    userPaymentMethods?.filter(method => method.method === selectedOffer?.paymentMethod.method) || []
+                  }
+                  onValueChange={value => setPaymentMethod(value)}
+                />
+              )}
+              <Button
+                loading={isPending}
                 onClick={handleSubmit}
                 className="w-full py-4 bg-primary hover:bg-primary-foreground text-white rounded-xl mt-6 font-medium"
               >
                 Place order
-              </button>
+              </Button>
             </div>
             {/* Payment Methods List */}
             <div className="min-w-96">

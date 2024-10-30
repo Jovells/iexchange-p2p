@@ -48,9 +48,6 @@ const SubNav = () => {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted || !isAuthenticated) {
-    return null;
-  }
 
   const homeIcon = getImage("home.svg");
   const clockIcon = getImage("clock.svg");
@@ -111,6 +108,11 @@ const SubNav = () => {
       </MenuDropdown>
     </div>
   );
+
+  if (!isMounted || !isAuthenticated) {
+    return null;
+  }
+
 
   return (
     <div className="border-0 mt-0 lg:mt-2 mb-0">

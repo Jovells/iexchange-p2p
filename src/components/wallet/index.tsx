@@ -44,7 +44,7 @@ const WalletConnect = () => {
             <span>{shortenAddress(walletAddress)}</span>
             <div onClick={() => handleDisconnect()}>
               <Image
-                src="/images/icons/disconnect.png"
+                src="/images/light/disconnect.png"
                 alt="Disconnect"
                 width={30}
                 height={30}

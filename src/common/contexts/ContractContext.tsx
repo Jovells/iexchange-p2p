@@ -55,7 +55,6 @@ export const ContractsProvider: FC<{ children: ReactNode }> = ({
     setCurrentChainId(chainId);
   }, [chainId]);
 
-  console.log("chainIdwagmi", indexerUrl);
 
   return (
     <ContractsContext.Provider value={{ p2p, faucet, tokens, indexerUrl, currentChain, isCorrectChain }}>

@@ -121,6 +121,7 @@ function useWriteContractWithToast(numConfirmations = 1) {
         setDecodedLogs(logs);
         console.log("qs decoded", logs, promiseResolveReject);
         await options?.onReceipt?.({ receipt, decodedLogs: logs });
+        console.log("qkl after onReceipt", promiseResolveReject);
         promiseResolveReject?.resolve({ receipt, decodedLogs: logs, txHash: receipt.transactionHash });
         if (options?.waitForReceipt) {
           options?.shouldShowModal

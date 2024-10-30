@@ -13,7 +13,7 @@ interface PaymentMethodSelectProps extends React.InputHTMLAttributes<HTMLInputEl
   label?: string;
   selectedMethod?: PaymentMethod;
   initialValue?: string;
-  skipStep1?: boolean;
+  skipStep1?: boolean | PaymentMethod["method"];
   options: PaymentMethod[] | [];
   onValueChange?: (value: PaymentMethod) => void;
   placeholder?: string;
@@ -56,7 +56,7 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
     showModal(
       <AddPaymentMethod
         onSuccess={p => handleSelect(p)}
-        method={skipStep1 ? selectedValue.method : undefined}
+        method={typeof skipStep1 === "string" ? skipStep1 : undefined}
         hideModal={hideModal}
       />,
     );
@@ -80,7 +80,7 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
     };
   }, [isOpen]);
 
-  const getIc = getImage("add-circle.svg")
+  const getIc = getImage("add-circle.svg");
 
   return (
     <div
