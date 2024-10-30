@@ -14,6 +14,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import useMyPendingOrders from "@/common/hooks/useMyOrders";
 
 const menuLinks = [
+  { href: "/quickTrade", label: "Quick Trade" },
   { href: "/", label: "P2P" },
   { href: "/appeal", label: "Appeals" },
   { href: MY_ADS_PAGE, label: "My Ads" }, // should on be visible to merchants

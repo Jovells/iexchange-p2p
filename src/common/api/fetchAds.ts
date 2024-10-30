@@ -42,9 +42,10 @@ import {
         { name: "currency", value: currency, type: "String" },
         { name: "active", value: isActive, type: "Boolean" },
         { name: "merchant", value: merchant, type: "String" },
-        { name: "maxOrder_gt", value: realAmount, type: "String" },
-        { name: "minOrder_lt", value: realAmount, type: "String" },
+        { name: "maxOrder_gt", value: realAmount, type: "BigInt" },
+        { name: "minOrder_lt", value: realAmount, type: "BigInt" },
         { name: "paymentMethod", value: paymentMethod, type: "String" },
+        { name: "rate_gt", value: "0", type: "BigInt" },
         { name: "id", value: orderId, type: "String" },
         withoutBots ? { name: "merchant_not", value: BOT_MERCHANT_ID, type: "String" } : undefined,
       ],
@@ -116,7 +117,7 @@ import {
     return {
       variables,
       query: `
-    query ads($first: Int!, $skip: Int!, $orderBy: Order_orderBy, $orderDirection: OrderDirection, ${queryVariables}) {
+    query ads($first: Int!, $skip: Int!, $orderBy: Offer_orderBy, $orderDirection: OrderDirection, ${queryVariables}) {
       offers(first: $first, orderBy: $orderBy, orderDirection: $orderDirection,  skip: $skip, where: { ${whereClauses} }) {
         id
         maxOrder

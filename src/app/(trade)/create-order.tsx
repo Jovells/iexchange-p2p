@@ -22,6 +22,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getBlock } from "@wagmi/core";
 import { config } from "@/common/configs";
 import { ORDER } from "@/common/constants/queryKeys";
+import { createOrderSchema } from "@/common/schema";
 
 interface Props {
   data: Offer;
@@ -75,35 +76,6 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
 
   const isBuy = orderType.toLowerCase() === "buy";
 
-  const formSchema = z.object({
-    toPay: z
-      .string()
-      .min(1, "Please enter a valid amount")
-      .refine(val => !isNaN(Number(val)) && Number(val) > 0, {
-        message: "Must be a valid positive number",
-      }),
-    toReceive: z
-      .string()
-      .min(1, "Please enter a valid amount")
-      .refine(
-        val => {
-          const valN = Number(val) * 10 ** 18;
-          const minOrder = Number(data.minOrder);
-          const maxOrder = Number(data.maxOrder);
-          console.log("valN", valN, "minOrder", minOrder, "maxOrder", maxOrder);
-          const res = !isNaN(valN) && valN >= minOrder && valN <= maxOrder;
-          return res;
-        },
-        {
-          message: `Value must be within ${formatCurrency(data.minOrder, data.token.symbol)} to ${formatCurrency(
-            data.maxOrder,
-            data.token.symbol,
-          )}`,
-        },
-      ),
-    paymentMethod: z.string().min(1, "Payment method is required"),
-  });
-
   function handleFormDateChange(name: string, value: string | PaymentMethod) {
     console.log("name", name, "orderType", orderType, "isbuy", isBuy);
     // Prevent non-numeric input for toPay and toReceive fields
@@ -146,8 +118,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   }, [orderType, toggleExpand]);
 
   const tokensAmount = toReceive ? BigInt(Math.floor(Number(toReceive) * 10 ** 18)) : BigInt(0);
-  console.log("qptokensAmount", formatEther(tokensAmount), "toReceive", toReceive);
-  console.log("qpallowance", allowance, "tokensAmount", tokensAmount);
+
   const alreadyApproved = allowance! >= tokensAmount || orderType === "buy";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -160,7 +131,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
 
     // Validate the form before submission
     const formData = { toPay, toReceive, paymentMethod: paymentMethod.method };
-    const result = formSchema.safeParse(formData);
+    const result = createOrderSchema(data).safeParse(formData);
     if (!result.success) {
       setErrors(result.error.issues);
       toast.error("Please correct the errors");

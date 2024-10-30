@@ -88,5 +88,3 @@ export const cconfig = createConfig({
 });
 
 export const config: Config = cconfig;
-
-console.log("qk config", config);

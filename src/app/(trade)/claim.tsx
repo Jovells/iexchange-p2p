@@ -9,7 +9,7 @@ import { FaFaucet } from "react-icons/fa";
 interface Props {
   className: string;
 }
-const claim: React.FC<Props> = ({ className }) => {
+const Claim: React.FC<Props> = ({ className }) => {
   const { isConnected } = useUser();
   const { openConnectModal } = useConnectModal();
   const { showModal, hideModal } = useModal();
@@ -33,4 +33,4 @@ const claim: React.FC<Props> = ({ className }) => {
   );
 };
 
-export default claim
+export default Claim;

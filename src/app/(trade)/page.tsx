@@ -5,22 +5,18 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import WalletConnectSection from "@/components/sections/WalletConnectSection";
 import IExchangeGuide from "@/components/sections/IExchangeGuide";
 import { useContracts } from "@/common/contexts/ContractContext";
-import { useQuery } from "@tanstack/react-query";
-import { fetchTokens } from "@/common/api/fetchTokens";
 import { PreparedCurrency } from "@/common/api/types";
-import { fetchCurrencies } from "@/common/api/fetchCurrencies";
-import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
 
-
-const Faqs = React.lazy(() => import('@/components/sections/Faqs'));
+const Faqs = React.lazy(() => import("@/components/sections/Faqs"));
 const P2PAds = React.lazy(() => import("./P2PAds"));
-const InputAmount = React.lazy(() => import('@/components/ui/InputWithSelect'));
-const SelectPaymentMethod = React.lazy(() => import('@/components/ui/InputSelect'));
+const InputAmount = React.lazy(() => import("@/components/ui/InputWithSelect"));
+const SelectPaymentMethod = React.lazy(() => import("@/components/ui/InputSelect"));
 import Loader from "@/components/loader/Loader";
 import CryptoSelector from "./cryptoSelector";
 import { useUser } from "@/common/contexts/UserContext";
 import { ACCEPTED_CURRENCIES, ACCEPTED_TOKENS, PAYMENT_METHODS } from "@/common/constants/queryKeys";
 import { useModal } from "@/common/contexts/ModalContext";
+import useMarketData from "@/common/hooks/useMarketData";
 
 interface P2PMarketProps {}
 
@@ -32,11 +28,8 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   const searchParams = useSearchParams();
   const { currentChain, indexerUrl } = useContracts();
   const [paymentMethod, setPaymentMethod] = useState("");
-  const { data: tokens } = useQuery({
-    queryKey: ACCEPTED_TOKENS(indexerUrl),
-    queryFn: () => fetchTokens(indexerUrl),
-    enabled: !!indexerUrl,
-  });
+  const { currencies, paymentMethods, acceptedCurrencies, tokens } = useMarketData();
+
   const [selectedCrypto, setSelectedCrypto] = useState(
     tokens?.find(t => t.symbol === searchParams.get("crypto") || ""),
   );
@@ -45,31 +38,14 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
     searchParams.get("trade")?.toLowerCase() || "buy",
   );
 
-  const { data: acceptedCurrencies } = useQuery({
-    queryKey: ACCEPTED_CURRENCIES(indexerUrl),
-    queryFn: () => fetchCurrencies(indexerUrl),
-    enabled: !!indexerUrl,
-  });
-
-  const currencies = acceptedCurrencies?.map(currency => ({
-    symbol: currency.currency,
-    name: currency.currency,
-    id: currency.id,
-    icon: currency.currency === "GHS" ? <p>₵</p> : currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p>,
-  }));
   currencies?.unshift({ symbol: "All", name: "All", id: "0x0", icon: <></> });
 
   const currencyFromUrl = acceptedCurrencies?.find(c => c.currency === searchParams.get("fiat"));
+
   const [currencyAmount, setCurrencyAmount] = useState({
     currency: currencyFromUrl?.currency || "All",
     id: currencyFromUrl?.id,
     amount: "",
-  });
-
-  const { data: paymentMethods } = useQuery({
-    queryKey: PAYMENT_METHODS(indexerUrl),
-    queryFn: () => fetchContractPaymentMethods(indexerUrl),
-    enabled: !!indexerUrl,
   });
 
   const handleTabChange = (tab: "buy" | "sell" | string) => {

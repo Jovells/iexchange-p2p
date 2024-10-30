@@ -2,10 +2,11 @@ import { Token } from "@/common/api/types";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { useUser } from "@/common/contexts/UserContext";
 import Loader from "@/components/loader/Loader";
+import ToolTip from "@/components/toolTip";
 import Button from "@/components/ui/Button";
 import { useCopyToClipboard } from "@/lib/utils";
 import { formatUnits } from "ethers";
-import { ClipboardCopy, ClipboardCopyIcon } from "lucide-react";
+import { ClipboardCopy, ClipboardCopyIcon, Copy } from "lucide-react";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import { useReadContract } from "wagmi";
@@ -13,10 +14,10 @@ import { useReadContract } from "wagmi";
 interface CryptoButtonProps {
   token: Token;
   selectedCrypto?: Token;
-  setSelectedCrypto?: Dispatch<SetStateAction<Token | undefined>>;
+  column?: boolean;
 }
 
-const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, setSelectedCrypto }) => {
+const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, column = true }) => {
   const { tokens, currentChain } = useContracts();
   const CopyToClipboard = useCopyToClipboard();
   const { address } = useUser();
@@ -49,19 +50,23 @@ const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, setS
         selectedCrypto?.symbol === token.symbol ? "  text-[#01a2e4]" : "text-black dark:text-gray-300"
       } hover:bg-gray-100 dark:hover:bg-gray-600  transition duration-300 ease-in-out`}
     >
-      <span className="flex items-center space-x-2">
-        <span className="">{token.symbol}</span>
-        <p className="bg-gray-100 text-xs rounded-[3.5px] px-2 py-0.5 dark:bg-gray-700 ">
+      <span className={`flex ${column ? "flex-col" : "items-center"} `}>
+        <span className="">
+          {token.symbol}
+          <ToolTip text="Copy token address to clipboard">
+            <Button
+              onClick={() => CopyToClipboard(token.id, "Token Address copied to clipboard")}
+              title="Copy to clipboard"
+              className="hover:bg-[#01a2e4] hover:text-white  transition duration-300 ease-in-out"
+            >
+              <Copy size={12} />
+            </Button>
+          </ToolTip>
+        </span>
+        <p className="bg-gray-100 text-xs text-gray-400  rounded-[3.5px] px-1 py-0.5 dark:bg-gray-700 ">
           {!isLoading ? "Balance: " + formattedBalance : <Loader size="xs" className="text-xs" loaderType="text" />}
         </p>
       </span>
-      <Button
-        onClick={() => CopyToClipboard(token.id, "Token Address copied to clipboard")}
-        title="Copy to clipboard"
-        className="hover:bg-[#01a2e4] hover:text-white  transition duration-300 ease-in-out"
-      >
-        <ClipboardCopyIcon size={16} />
-      </Button>
     </span>
   );
 }; 

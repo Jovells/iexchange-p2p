@@ -10,16 +10,19 @@ interface InputSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   initialValue?: Token;
   options: Token[];
+  showBalance?: boolean;
   onValueChange?: (value: Token | undefined) => void;
   placeholder?: string;
   selectType?: string;
 }
 
 const Select: React.FC<InputSelectProps> = ({
+  width,
   label,
   initialValue,
   options,
   onValueChange,
+  showBalance = true,
   placeholder = "All Tokens",
   selectType = "payment method",
   ...props
@@ -28,12 +31,14 @@ const Select: React.FC<InputSelectProps> = ({
   const [selectedValue, setSelectedValue] = useState(initialValue);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  console.log("qj selectedValue", selectedValue);
+
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleSelect = (value: Token) => {
     console.log("qj handleSelect", value);
     setSelectedValue(prevValue => {
-      const newValue = value.id === prevValue?.id ? undefined : value;
+      const newValue = value;
       if (onValueChange) {
         onValueChange(newValue);
       }
@@ -60,8 +65,6 @@ const Select: React.FC<InputSelectProps> = ({
     };
   }, [isOpen]);
 
-  const selectedOption = options.find(option => option === selectedValue);
-
   return (
     <div
       ref={dropdownRef}
@@ -70,14 +73,20 @@ const Select: React.FC<InputSelectProps> = ({
       <div className="w-full flex flex-col">
         {label && selectedValue && <span className="text-sm text-gray-500">{label}</span>}
         <div
-          className={`flex items-center w-full p-3 ${selectedValue ? "py-[10px]" : 'py-[14px]'} transition-all duration-300 ease-in-out`}
+          className={`flex items-center w-full p-3 ${
+            selectedValue ? "py-[10px]" : "py-[14px]"
+          } transition-all duration-300 ease-in-out`}
           onClick={toggleDropdown}
         >
           <div className="flex items-center flex-1 space-x-2">
             {!selectedValue && <span className="text-sm text-gray-500">{label}</span>}
-            <span className="text-black dark:text-white">
-              {selectedOption ? (
-                <CryptoButton token={selectedOption} />
+            <span className={"text-black dark:text-white" + width ? `w-[${width}px]` : "w-full"}>
+              {selectedValue ? (
+                showBalance ? (
+                  <CryptoButton token={selectedValue} />
+                ) : (
+                  selectedValue.symbol
+                )
               ) : (
                 <span className="text-gray-400">{placeholder}</span>
               )}
@@ -87,7 +96,7 @@ const Select: React.FC<InputSelectProps> = ({
         </div>
       </div>
       {isOpen && (
-        <div className="absolute w-full bg-white dark:bg-gray-700 p-2 border border-gray-200 dark:border-gray-600 rounded-[8px] shadow-md z-10 transition-all duration-300 ease-in-out">
+        <div className="absolute w-full min-w-44 bg-white dark:bg-gray-700 p-2 border border-gray-200 dark:border-gray-600 rounded-[8px] shadow-md z-10 transition-all duration-300 ease-in-out">
           {options.map(option => (
             <div
               key={option.id}
@@ -95,11 +104,7 @@ const Select: React.FC<InputSelectProps> = ({
               //@ts-ignore
               onClick={() => handleSelect(option)}
             >
-              <CryptoButton
-                token={option}
-                selectedCrypto={selectedOption}
-                setSelectedCrypto={() => handleSelect(option)}
-              />
+              <CryptoButton token={option} selectedCrypto={selectedValue} />
             </div>
           ))}
         </div>

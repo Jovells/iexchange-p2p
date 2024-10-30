@@ -22,8 +22,9 @@ export const formatBlockTimesamp = (timestamp: number | BigInt | string): string
 };
 
 //esport a function which takes the a number and amount and return a currency value. juse prepend the currenty with the string, and divide the number by 10^18  to two decimal places
-export const formatCurrency = (amount: string | number, currency: string): string => {
-  return `${(Number(amount) / 10 ** 18).toFixed(2)} ${currency}`;
+export const formatCurrency = (amount: string | number, currency: string, precision?: number): string => {
+  if (precision) return `${(Number(amount) / 10 ** 18).toPrecision(precision)}` + (currency ? ` ${currency}` : "");
+  return `${(Number(amount) / 10 ** 18).toFixed(2)}` + (currency ? ` ${currency}` : "");
 };
 export const parseStringToObject = (inputString: string): Record<string, string> => {
   const result: Record<string, string> = {};
@@ -84,6 +85,7 @@ export const useCopyToClipboard = () => {
 
 export const ixToast = {
   ...toast,
+  default: (message: Renderable, options?: ToastOptions) => toast(message, options),
   error: (message: Renderable, options?: ToastOptions) => {
     if (typeof message === "string" && message.includes("User rejected the request")) {
       return toast.error("You rejected the request", options);
@@ -111,20 +113,20 @@ export const getImage = (imageName: string, Element?: JSX.Element) => {
 };
 
 export const getPaymentMethodColor = (label: string) => {
-  switch (label) {
-    case 'm-pesa':
-      return 'border-red-600';
-    case 'airtel tigo mobile money':
+  switch (label.toLowerCase()) {
+    case "m-pesa":
+      return "border-red-600";
+    case "airtel tigo mobile money":
       return "border-[#01a2e4]";
-    case 'fidelity bank':
-      return 'border-yellow-800';
-    case 'mtn mobile money':
-      return 'border-yellow-600';
-    case 'mobile money':
+    case "fidelity bank":
+      return "border-yellow-800";
+    case "mtn mobile money":
       return "border-yellow-600";
-    case 'telecel mobile money':
-      return 'border-red-600';
+    case "mobile money":
+      return "border-yellow-600";
+    case "telecel mobile money":
+      return "border-red-600";
     default:
-      return 'border-gray-400'; 
+      return "border-gray-400";
   }
 };
