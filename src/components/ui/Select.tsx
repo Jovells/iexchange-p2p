@@ -14,6 +14,7 @@ interface InputSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onValueChange?: (value: Token | undefined) => void;
   placeholder?: string;
   selectType?: string;
+  column?: boolean;
 }
 
 const Select: React.FC<InputSelectProps> = ({
@@ -21,6 +22,7 @@ const Select: React.FC<InputSelectProps> = ({
   label,
   initialValue,
   options,
+  column,
   onValueChange,
   showBalance = true,
   placeholder = "All Tokens",
@@ -82,8 +84,8 @@ const Select: React.FC<InputSelectProps> = ({
             {!selectedValue && <span className="text-sm text-gray-500">{label}</span>}
             <span className={`text-black dark:text-white   w-[${width}px : "w-full"}`}>
               {selectedValue ? (
-                showBalance ? (
-                  <CryptoButton token={selectedValue} />
+                showBalance && selectedValue.id !== "0x0" ? (
+                  <CryptoButton column={column} token={selectedValue} />
                 ) : (
                   selectedValue.symbol
                 )
@@ -97,16 +99,18 @@ const Select: React.FC<InputSelectProps> = ({
       </div>
       {isOpen && (
         <div className="absolute w-full min-w-44 bg-white dark:bg-gray-700 p-2 border border-gray-200 dark:border-gray-600 rounded-[8px] shadow-md z-10 transition-all duration-300 ease-in-out">
-          {options.map(option => (
-            <div
-              key={option.id}
-              className="flex justify-between p-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer transition-all duration-300 ease-in-out"
-              //@ts-ignore
-              onClick={() => handleSelect(option)}
-            >
-              <CryptoButton token={option} selectedCrypto={selectedValue} />
-            </div>
-          ))}
+          {options.map(option => {
+            return (
+              <div
+                key={option?.id || "all"}
+                className="flex justify-between p-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer transition-all duration-300 ease-in-out"
+                //@ts-ignore
+                onClick={() => handleSelect(option)}
+              >
+                {option.id === "0x0" ? option.symbol : <CryptoButton token={option} selectedCrypto={selectedValue} />}
+              </div>
+            );
+          })}
         </div>
       )}
       <input type="hidden" {...props} value={selectedValue?.id} />

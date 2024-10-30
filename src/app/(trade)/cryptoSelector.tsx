@@ -26,7 +26,11 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto,
   return (
     <>
       <div className="hidden sm:flex justify-start items-center space-x-4">
-        <Select options={tokens} onValueChange={value => setSelectedCrypto(value)} />
+        <Select
+          options={[{ id: "0x0", name: "All Tokens", symbol: "All Tokens" }, ...tokens]}
+          column={false}
+          onValueChange={value => setSelectedCrypto(value?.id === "0x0" ? undefined : value)}
+        />
       </div>
       <CryptoSelectorInput
         tokens={tokens}
