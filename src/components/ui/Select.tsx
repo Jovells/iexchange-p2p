@@ -80,7 +80,7 @@ const Select: React.FC<InputSelectProps> = ({
         >
           <div className="flex items-center flex-1 space-x-2">
             {!selectedValue && <span className="text-sm text-gray-500">{label}</span>}
-            <span className={"text-black dark:text-white" + width ? `w-[${width}px]` : "w-full"}>
+            <span className={`text-black dark:text-white   w-[${width}px : "w-full"}`}>
               {selectedValue ? (
                 showBalance ? (
                   <CryptoButton token={selectedValue} />

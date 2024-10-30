@@ -297,9 +297,9 @@ export default function PaymentMethodsPage() {
 
         {/* Preview Order Card - Shows on Mobile */}
         {ads ? (
-          <>
+          <div className="flex gap-8 w-full  justify-end md:flex-row-reverse flex-col">
             {" "}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-6 border dark:border-gray-700">
+            <div className="bg-white min-w-96 dark:bg-gray-800 rounded-xl p-4 mb-6 border dark:border-gray-700">
               <h3 className="font-medium mb-4 dark:text-white">Preview Order</h3>
 
               <div className="space-y-3 text-sm">
@@ -370,39 +370,41 @@ export default function PaymentMethodsPage() {
               </button>
             </div>
             {/* Payment Methods List */}
-            <p className="mb-4">Payment Options:</p>
-            <div className="space-y-3">
-              {ads.map(offer => (
-                <div
-                  onClick={() => setSelectedOffer(offer)}
-                  key={offer.id}
-                  className={`p-4 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 cursor-pointer hover:bg-gray-50  dark:hover:bg-gray-700 ${
-                    selectedOffer?.id === offer.id ? "border-primary dark:border-primary" : ""
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-1 h-4 border ${getPaymentMethodColor(offer.paymentMethod.method)} rounded-full`}
-                      ></div>
-                      <span className="font-medium dark:text-white">{offer.paymentMethod.method}</span>
+            <div className="min-w-96">
+              <p className="mb-4 md:hidden dark:text-lightGray">Payment Options:</p>
+              <div className="space-y-3">
+                {ads.map(offer => (
+                  <div
+                    onClick={() => setSelectedOffer(offer)}
+                    key={offer.id}
+                    className={`p-4 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 cursor-pointer hover:bg-gray-50  dark:hover:bg-gray-700 ${
+                      selectedOffer?.id === offer.id ? "border-primary dark:border-primary" : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-1 h-4 border ${getPaymentMethodColor(offer.paymentMethod.method)} rounded-full`}
+                        ></div>
+                        <span className="font-medium dark:text-white">{offer.paymentMethod.method}</span>
+                      </div>
+                      <span className="text-sm text-primary font-medium">Best offer</span>
                     </div>
-                    <span className="text-sm text-yellow-600 font-medium">Best offer</span>
+                    <div className="text-sm flex flex-col gap-1 text-gray-600 dark:text-gray-300 mt-1 ">
+                      <span>
+                        Unit Price: 1 {token?.symbol} = {offer.rate} {currency?.name}
+                      </span>
+                      <span>Merchant: {offer.merchant.name || shortenAddress(offer.merchant.id)}</span>
+                    </div>
                   </div>
-                  <div className="text-sm flex flex-col gap-1 text-gray-600 dark:text-gray-300 mt-1 ">
-                    <span>
-                      Unit Price: 1 {token?.symbol} = {offer.rate} {currency?.name}
-                    </span>
-                    <span>Merchant: {offer.merchant.name || shortenAddress(offer.merchant.id)}</span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </>
+          </div>
         ) : isLoading || isBotAdsLoading ? (
           <Loader />
         ) : (
-          <div className="text-center text-gray-600 dark:text-gray-300">
+          <div className="text-gray-600 dark:text-gray-300">
             No {isBot ? "Bot" : ""} Ads Available For selected options.
             <div>
               <button onClick={() => setAdsType("normal")} className="text-primary hover:underline">

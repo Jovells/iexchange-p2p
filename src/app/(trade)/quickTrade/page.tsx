@@ -183,22 +183,21 @@ export default function QuickTradePage() {
   const enabled = fiatAmount && cryptoAmount && !formErrors.fiatAmount && !formErrors.cryptoAmount;
 
   return (
-    <div className=" flex gap-10 ">
+    <div className="flex flex-col lg:flex-row gap-10 p-4 lg:p-10">
       {/* Main Content */}
-      <div className=" self-center mb-8">
-        <h1 className="text-8xl font-bold mb-2 text-gray-900 dark:text-white">
-          {" "}
+      <div className="self-center mb-8 lg:mb-0">
+        <h1 className="text-4xl lg:text-8xl font-bold mb-2 text-gray-900 dark:text-white">
           <span className="gradient-text">P2P</span> Quick trade
         </h1>
-        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+        <h2 className="text-xl lg:text-2xl font-bold mb-4 text-gray-900 dark:text-white">
           {isBuy ? "Buy" : "Sell"} {token?.symbol} {isBuy ? "with" : "for"} {currency?.symbol} onchain
         </h2>
-        <p className="text-gray-600  dark:text-gray-400 ">Quickly Buy and Sell Crypto with various payment methods</p>
-        <div className="flex flex-row mt-4 item-center gap-4">
+        <p className="text-gray-600 dark:text-gray-400">Quickly Buy and Sell Crypto with various payment methods</p>
+        <div className="flex flex-row mt-4 items-center gap-4">
           {isConnected && (
             <>
-              <Claim className="w-[150px] hidden lg:flex" />
-              <div className="">
+              <Claim className="w-[150px]" />
+              <div>
                 <NetworkSwitcher />
               </div>
             </>
@@ -208,7 +207,7 @@ export default function QuickTradePage() {
       </div>
 
       {/* Form */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl md:shadow-lg md:p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 lg:p-6 w-full lg:w-1/2">
         <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
           <button
             onClick={() => setOfferType("buy")}
@@ -233,7 +232,7 @@ export default function QuickTradePage() {
         </div>
 
         <div className="space-y-4 w-full">
-          <div className={`flex  ${isBuy ? "flex-col" : "flex-col-reverse"} w-full gap-4 items-center`}>
+          <div className={`flex ${isBuy ? "flex-col" : "flex-col-reverse"} w-full gap-4 items-center`}>
             <div className="p-4 bg-gray-50 w-full dark:bg-gray-700 rounded-xl">
               <label className="block text-sm mb-2 text-black dark:text-white">
                 {isBuy ? "You Pay" : "You Receive"}
@@ -333,8 +332,8 @@ export default function QuickTradePage() {
             className={`w-full ${
               enabled
                 ? "bg-primary text-gray-100 hover:bg-primary-foreground"
-                : "bg-lightGray dark:bg-lightGray-dark text-gray-500 dark:text-gray-400   pointer-events-none"
-            }  flex items-center justify-center py-4    rounded-xl `}
+                : "bg-lightGray dark:bg-lightGray-dark text-gray-500 dark:text-gray-400 pointer-events-none"
+            } flex items-center justify-center py-4 rounded-xl`}
           >
             Select Payment Method
             <ArrowRight />
