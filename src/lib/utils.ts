@@ -4,6 +4,8 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import toast, { Renderable, ToastOptions } from "react-hot-toast";
 import { useTheme } from "@/common/contexts/ThemeProvider";
+import { getBlock } from "@wagmi/core";
+import { config } from "@/common/configs";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -130,3 +132,8 @@ export const getPaymentMethodColor = (label: string) => {
       return "border-gray-400";
   }
 };
+export async function fetchBlock(blockNumber: bigint | string) {
+  return await getBlock(config, {
+    blockNumber: BigInt(blockNumber),
+  });
+}

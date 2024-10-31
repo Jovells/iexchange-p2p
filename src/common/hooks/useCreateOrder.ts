@@ -1,3 +1,4 @@
+import { fetchBlock } from "./../../lib/utils";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ixToast as toast } from "@/lib/utils";
@@ -7,13 +8,11 @@ import { createOrderSchema } from "../schema";
 import storeAccountDetails from "../api/storeAccountDetails";
 import useWriteContractWithToast from "./useWriteContractWithToast";
 import { z } from "zod";
-import { getBlock } from "@wagmi/core";
 import { ORDER } from "../constants/queryKeys";
 import { useUser } from "../contexts/UserContext";
 import CediH from "../abis/CediH";
 import { useContracts } from "../contexts/ContractContext";
 import { useBalance, useReadContract } from "wagmi";
-import { config } from "../configs";
 
 const useCreateOrder = (
   offer: Offer | undefined,
@@ -163,7 +162,7 @@ const useCreateOrder = (
           onReceipt: async ({ receipt, decodedLogs }) => {
             console.log("qwreceiptdeclogs", receipt, decodedLogs);
             const orderId = decodedLogs[0].args.orderId.toString();
-            const block = await getBlock(config, { blockNumber: receipt.blockNumber });
+            const block = await fetchBlock(receipt.blockNumber);
             console.log("qwblock", block);
             const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder.current } as Order;
             console.log("qworder", order);

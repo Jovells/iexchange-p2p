@@ -10,7 +10,7 @@ import Button from "@/components/ui/Button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useReadContract } from "wagmi";
 import { OrderState, WriteContractWithToastReturnType } from "@/common/api/types";
-import { formatCurrency, formatBlockTimesamp, shortenAddress, getUserConfig } from "@/lib/utils";
+import { formatCurrency, formatBlockTimesamp, shortenAddress, getUserConfig, fetchBlock } from "@/lib/utils";
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import CediH from "@/common/abis/CediH";
 import Link from "next/link";
@@ -68,6 +68,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
+
+  const [timestamp, setTimestamp] = useState<string | bigint>(order?.blockTimestamp || BigInt(0));
 
   console.log("Order orderstage", order);
 
@@ -253,11 +255,15 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     conversation && sendMessage(conversation, "Accepted. TxHash: " + writeResult.txHash);
   };
 
-  function handleOptimisticUpdate(status: OrderState, writeResult: WriteContractWithToastReturnType) {
+  async function handleOptimisticUpdate(status: OrderState, writeResult: WriteContractWithToastReturnType) {
     const updatedStatus = { ...orderStatus, status };
     if (status === OrderState.Released || status === OrderState.Accepted || status === OrderState.Cancelled) {
       queryClient.refetchQueries({ queryKey: TOKEN_BALANCE({ address: order?.offer.token.id! }) });
     }
+
+    const blockNumber = writeResult?.receipt?.blockNumber;
+    const newTimeStamp = blockNumber ? (await fetchBlock(blockNumber)).timestamp : order?.blockTimestamp || "0";
+    setTimestamp(newTimeStamp);
     console.log("qworderStatusQueryKey", orderStatusQueryKey);
     // queryClient.setQueryData(orderStatusQueryKey, (data: any) => {
     //   console.log("qwOptimisticUpdate", data, status, writeResult);
@@ -533,7 +539,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                     <>
                       {" "}
                       <span className="text-gray-500 dark:text-gray-400">Bot will respond in </span>
-                      <Timer timestamp={order.blockTimestamp} seconds={3 * 60} />{" "}
+                      <Timer timestamp={timestamp} seconds={3 * 60} />{" "}
                     </>
                   )}
                 </div>
