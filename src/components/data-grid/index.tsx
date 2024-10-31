@@ -18,6 +18,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import ReactDOM from 'react-dom';
 
 type Column = {
   key: string;
@@ -147,19 +148,19 @@ const ExpandableTable = forwardRef(
                         modules={[Pagination, Navigation]}
                       >
                         {carouselData.map((row, index) => (
-                          <SwiperSlide key={0}>
+                          <SwiperSlide key={row.id}>
                             <div className="pb-5 m rounded-xl">
-                              <MobileBotRow
-                                row={row}
-                                index={0}
-                                columns={columns}
-                                actions={actions}
-                                handleRowClick={handleRowClick}
-                                expandedRowIndex={expandedRowIndex}
-                                children={children}
-                                closeExpandedRow={closeExpandedRow}
-                                columnGridTemplate={columnGridTemplate}
-                              />
+                            <MobileBotRow
+                              row={row}
+                              index={row.id}
+                              columns={columns}
+                              actions={actions}
+                              handleRowClick={handleRowClick}
+                              expandedRowIndex={expandedRowIndex}
+                              children={children}
+                              closeExpandedRow={closeExpandedRow}
+                              columnGridTemplate={columnGridTemplate}
+                            />
                             </div>
                           </SwiperSlide>
                         ))}
@@ -262,9 +263,8 @@ const ExpandableTable = forwardRef(
                 <button
                   key={page}
                   onClick={() => onPageChange(page - 1)}
-                  className={`px-4 py-2 rounded-[8px] border ${
-                    page === page - 1 ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]" : "bg-transparent text-[#01a2e4]"
-                  } hover:bg-blue-200 transition-colors duration-200`}
+                  className={`px-4 py-2 rounded-[8px] border ${page === page - 1 ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]" : "bg-transparent text-[#01a2e4]"
+                    } hover:bg-blue-200 transition-colors duration-200`}
                 >
                   {page}
                 </button>
@@ -272,11 +272,10 @@ const ExpandableTable = forwardRef(
                 {totalPages > 1 && (
                   <button
                     onClick={() => onPageChange(totalPages - 1)}
-                    className={`px-4 py-2 rounded-[8px] border ${
-                      page === totalPages - 1
+                    className={`px-4 py-2 rounded-[8px] border ${page === totalPages - 1
                         ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]"
                         : "bg-transparent text-[#01a2e4]"
-                    } hover:bg-blue-200 transition-colors duration-200`}
+                      } hover:bg-blue-200 transition-colors duration-200`}
                   >
                     {page}
                   </button>
@@ -325,15 +324,14 @@ const BottomUpModal: React.FC<ModalProps> = ({ closeExpandedRow, data, expandedR
     setTimeout(() => closeExpandedRow(), 300); // Wait for the animation to finish before closing
   };
 
-  return (
+  return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50 transition-opacity duration-300"
+      className="fixed inset-0  bg-opacity-50 flex items-end justify-center z-50 transition-opacity duration-300"
       style={{ opacity: isVisible ? 1 : 0 }}
     >
       <div
-        className={`flex flex-col bg-white dark:bg-gray-800 w-full rounded-t-xl max-h-[500px] transition-transform duration-300 transform ${
-          isVisible ? "translate-y-0" : "translate-y-full"
-        }`}
+        className={`flex flex-col bg-white dark:bg-gray-800 w-full rounded-t-xl max-h-[500px] transition-transform duration-300 transform ${isVisible ? "translate-y-0" : "translate-y-full"
+          }`}
       >
         {/* Modal Header */}
         <div className="p-4 py-6 border-b border-gray-600 flex flex-row justify-between items-center">
@@ -346,7 +344,7 @@ const BottomUpModal: React.FC<ModalProps> = ({ closeExpandedRow, data, expandedR
           {children(data[expandedRowIndex], handleClose)}
         </div>
       </div>
-    </div>
+    </div>, document.body
   );
 };
 
@@ -369,9 +367,8 @@ const ExpandableRow: React.FC<{ expanded: boolean; children: React.ReactNode }> 
 
   return (
     <div
-      className={`col-span-full overflow-hidden transition-all duration-500 ease-in-out border-b border-[#C3D5F124] dark:border-gray-600 ${
-        expanded ? "opacity-100" : "opacity-0"
-      }`}
+      className={`col-span-full overflow-hidden transition-all duration-500 ease-in-out border-b border-[#C3D5F124] dark:border-gray-600 ${expanded ? "opacity-100" : "opacity-0"
+        }`}
       style={{ maxHeight: height }}
       onTransitionEnd={handleTransitionEnd}
     >
@@ -423,9 +420,8 @@ const MobileRow: React.FC<RowProps> = ({
                 handleRowClick(index);
                 action.onClick(row);
               }}
-              className={`${
-                row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
-              } text-white text-sm px-4 py-3 rounded-xl`}
+              className={`${row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
+                } text-white text-sm px-4 py-3 rounded-xl`}
             >
               {label}
             </button>
@@ -467,9 +463,8 @@ const MobileBotRow: React.FC<RowProps> = ({
                 handleRowClick(index);
                 action.onClick(row);
               }}
-              className={`${
-                row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
-              } text-white text-sm px-4 py-3 rounded-xl`}
+              className={`${row.offerType === offerTypes.buy ? "bg-[#2D947A]" : "bg-[#F14E4E]"
+                } text-white text-sm px-4 py-3 rounded-xl`}
             >
               {label}
             </button>
@@ -517,11 +512,10 @@ const DesktopRow: React.FC<RowProps> = ({
                     action.onClick(row);
                     handleRowClick(index);
                   }}
-                  className={`${
-                    row.offerType === offerTypes.buy
+                  className={`${row.offerType === offerTypes.buy
                       ? "bg-[#2ebd85] hover:bg-[#249d6e]"
                       : "bg-[#F14E4E] hover:bg-[#d13e3e]"
-                  } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
+                    } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
                 >
                   {label}
                 </button>
@@ -566,11 +560,10 @@ const BotRow: React.FC<RowProps> = ({
                     action.onClick(row);
                     handleRowClick(index);
                   }}
-                  className={`${
-                    row.offerType === offerTypes.buy
+                  className={`${row.offerType === offerTypes.buy
                       ? "bg-[#2ebd85] hover:bg-[#249d6e]"
                       : "bg-[#F14E4E] hover:bg-[#d13e3e]"
-                  } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
+                    } text-white text-sm px-4 py-3 rounded-xl min-w-[130px] transition-colors duration-200`}
                 >
                   {label}
                 </button>
