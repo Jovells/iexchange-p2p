@@ -1,7 +1,7 @@
 "use client";
 import { Timer } from "./timer";
 import React, { lazy, Suspense, useState } from "react";
-import { offerTypes } from "@/common/constants";
+import { BOT_MERCHANT_ID, offerTypes } from "@/common/constants";
 import fetchAccountDetails from "@/common/api/fetchAccountDetails";
 import fetchOrder from "@/common/api/fetchOrder";
 import { useContracts } from "@/common/contexts/ContractContext";
@@ -479,6 +479,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
       sub: isPaid ? text : "After payment, wait for release",
     },
   };
+  const isBot = order.offer.merchant.id === BOT_MERCHANT_ID;
   return (
     <Suspense
       fallback={
@@ -525,7 +526,17 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
             <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl">
               {/* Header */}
               <div className="flex justify-between mb-6">
-                <h2 className="text-lg text-gray-500 dark:text-gray-400">Order in Progress</h2>
+                <div className="flex items-center gap-2">
+                  {isBot && <span className="rounded text-gray-100 font-bold text-sm p-1 bg-primary">BOT ORDER</span>}{" "}
+                  <h2 className="text-lg text-gray-500 dark:text-gray-400">Order in Progress</h2>
+                  {shouldPoll && isBot && (
+                    <>
+                      {" "}
+                      <span className="text-gray-500 dark:text-gray-400">Bot will respond in </span>
+                      <Timer timestamp={order.blockTimestamp} seconds={3 * 60} />{" "}
+                    </>
+                  )}
+                </div>
 
                 <div
                   className={`px-2 py-1 text-sm text-gray-100 rounded-xl ${isBuyer ? " bg-[#4ade80]" : "bg-[#f6465d]"}`}

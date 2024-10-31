@@ -17,6 +17,7 @@ import Messages from "./Messages";
 import { checksumAddress } from "viem";
 import useInitXmtpClient from "@/common/hooks/useInitXmtpClient";
 import ModalAlert from "../modals";
+import { BOT_MERCHANT_ID } from "@/common/constants";
 
 const ChatWithMerchant = ({
   otherParty,
@@ -128,10 +129,15 @@ const ChatWithMerchant = ({
     startConversationError,
   );
 
+  const isBot = otherParty.id === BOT_MERCHANT_ID;
+
   return (
     <div id="messagesContainer" className="w-full h-[600px] border rounded-xl flex flex-col dark:border-gray-700">
       <div className="w-full flex content-between justify-between bg-gray-100 dark:bg-gray-800 p-3 rounded-t-xl text-black dark:text-white">
-        {otherParty.name} {shortenAddress(otherParty.id)}
+        <span>
+          {" "}
+          {otherParty.name} {shortenAddress(otherParty.id)}
+        </span>
         {/* TODO @Jovells refine this */}
         {otherUserIsOnNetwork ? (
           <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
