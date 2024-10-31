@@ -8,6 +8,8 @@ export const POST_AD_PAGE = "/my-ads/create"
 export const ORDER_HISTORY_PAGE = "/dashboard/history/orders"
 export const APPEALS_PAGE = "/appeals"
 export const MY_ADS_PAGE = "/my-ads"
+export const QUICK_TRADE_PAGE = "/quick";
+export const SELECT_PAYMENT_METHOD_PAGE = (searchParams: string) => QUICK_TRADE_PAGE + `/2?${searchParams}`;
 
 
 export const WELCOME_PAGE = "/"

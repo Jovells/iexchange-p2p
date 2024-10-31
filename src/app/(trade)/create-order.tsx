@@ -5,7 +5,7 @@ import InputWithSelect from "@/components/ui/InputWithSelect";
 import Button from "@/components/ui/Button";
 import MerchantProfile from "@/components/merchant/MerchantProfile";
 import { useRouter } from "next/navigation";
-import { useReadContract } from "wagmi";
+import { useBalance, useReadContract } from "wagmi";
 import { decodeEventLog, formatEther } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
 import CediH from "@/common/abis/CediH";
@@ -23,6 +23,7 @@ import { getBlock } from "@wagmi/core";
 import { config } from "@/common/configs";
 import { ORDER } from "@/common/constants/queryKeys";
 import { createOrderSchema } from "@/common/schema";
+import useCreateOrder from "@/common/hooks/useCreateOrder";
 
 interface Props {
   data: Offer;
@@ -31,15 +32,7 @@ interface Props {
 }
 
 const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
-  const [{ toPay, toPayForContract, toReceive, toReceiveForContract, paymentMethod }, setFormData] = useState({
-    toPay: "",
-    toPayForContract: "",
-    toReceive: "",
-    toReceiveForContract: "",
-    paymentMethod: data.paymentMethod,
-  });
   const queryClient = useQueryClient();
-  const [errors, setErrors] = useState<z.ZodIssue[]>([]);
   const { p2p, tokens, currentChain, indexerUrl } = useContracts();
   const token = tokens.find(token => token.address.toLowerCase() === data.token.id.toLowerCase());
   const { address: userAddress } = useUser();
@@ -50,65 +43,22 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
   const afterRef = useRef<(value: any) => any>();
   const { paymentMethods: userPaymentMethods, isFetching, refetch } = useUserPaymentMethods();
   const { showModal, hideModal } = useModal();
+  const {
+    handleSubmit,
+    errors,
+    isPending,
+    isApprovePending,
+    toPay,
+    toReceive,
+    paymentMethod,
+    alreadyApproved,
+    handleFormDataChange,
+  } = useCreateOrder(data);
 
   const trade = orderType === "buy" ? "Buy" : "Sell";
   const crypto = data.token.symbol;
 
-  const {
-    writeContractAsync: writeToken,
-    data: approveHash,
-    isSuccess: isApproveSuccess,
-    isPending: isApprovePending,
-  } = useWriteContractWithToast();
-  const { writeContractAsync: writeP2p, data: p2phash, receipt, isSuccess, isPending } = useWriteContractWithToast();
-
-  const isMerchant = userAddress === data.merchant.id;
-
-  const { data: allowance, refetch: refetchAllowance } = useReadContract({
-    abi: CediH,
-    address: data.token.id,
-    functionName: "allowance",
-    args: [userAddress!, p2p.address],
-    query: {
-      enabled: orderType === "sell",
-    },
-  });
-
   const isBuy = orderType.toLowerCase() === "buy";
-
-  function handleFormDateChange(name: string, value: string | PaymentMethod) {
-    console.log("name", name, "orderType", orderType, "isbuy", isBuy);
-    // Prevent non-numeric input for toPay and toReceive fields
-    if ((name === "toPay" || name === "toReceive") && !/^\d*\.?\d*$/.test(value as string)) {
-      return;
-    }
-
-    if (name === "toPay") {
-      let newToReceive;
-
-      newToReceive = Number(value) / Number(data.rate);
-
-      setFormData(prev => ({
-        ...prev,
-        toPay: value as string,
-        toReceive: Number(newToReceive.toPrecision(4)).toString(), //TODO: @Jovells GET DECIMAL PLACES FROM TOKEN/CURRENCY
-        toReceiveForContract: newToReceive.toString(),
-      }));
-    } else if (name === "toReceive") {
-      let newToPay;
-
-      newToPay = Number(value) * Number(data.rate);
-
-      setFormData(prev => ({
-        ...prev,
-        toReceive: value as string,
-        toPay: Number(newToPay.toPrecision(4)).toString(), //TODO: @Jovells GET DECIMAL PLACES FROM TOKEN/CURRENCY
-        toPayForContract: newToPay.toString(),
-      }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-  }
 
   useEffect(() => {
     if (prevOrderType.current !== orderType) {
@@ -116,119 +66,6 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
       prevOrderType.current = orderType;
     }
   }, [orderType, toggleExpand]);
-
-  const tokensAmount = toReceive ? BigInt(Math.floor(Number(toReceive) * 10 ** 18)) : BigInt(0);
-
-  const alreadyApproved = allowance! >= tokensAmount || orderType === "buy";
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("orderType", orderType, "paymentMethod", paymentMethod);
-    e.preventDefault();
-    if (isMerchant) {
-      toast.error("You cannot trade with yourself");
-      return;
-    }
-
-    // Validate the form before submission
-    const formData = { toPay, toReceive, paymentMethod: paymentMethod.method };
-    const result = createOrderSchema(data).safeParse(formData);
-    if (!result.success) {
-      setErrors(result.error.issues);
-      toast.error("Please correct the errors");
-      return;
-    } else {
-      setErrors([]);
-    }
-
-    const depositAddress = isBuy ? data.depositAddress.id : userAddress;
-
-    const accountHash = isBuy
-      ? data.accountHash
-      : await storeAccountDetails({
-          name: paymentMethod.name as string,
-          address: userAddress as string,
-          number: paymentMethod.number as string,
-          paymentMethod: paymentMethod.method,
-          details: paymentMethod.details,
-        });
-
-    try {
-      if (!alreadyApproved) {
-        const approveHash = await writeToken(
-          { waitForReceipt: true },
-          {
-            abi: tokens[0].abi,
-            address: data.token.id,
-            functionName: "approve",
-            args: [p2p.address, tokensAmount],
-          },
-        );
-        refetchAllowance();
-      }
-      newOrder.current = {
-        accountHash: accountHash as `0x${string}`,
-        offer: data,
-        trader: { id: userAddress! },
-        depositAddress: { id: depositAddress! },
-        orderType: data.offerType,
-        quantity: tokensAmount.toString(),
-        status: OrderState.Pending,
-      } satisfies Partial<Order>;
-
-      const toastId = "createOrder";
-
-      const writeRes = await writeP2p(
-        {
-          waitForReceipt: true,
-          toastId,
-          loadingMessage: "Creating Order",
-          successMessage: "Order Created Successfully",
-          onTxSent: async () => toast.loading("Order Sent. Waiting for finalisation", { id: toastId }),
-          onReceipt: async ({ receipt, decodedLogs }) => {
-            console.log("qwreceiptdeclogs", receipt, decodedLogs);
-            const orderId = decodedLogs[0].args.orderId.toString();
-            const block = await getBlock(config, { blockNumber: receipt.blockNumber });
-            console.log("qwblock", block);
-            const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder.current } as Order;
-            console.log("qworder", order);
-            navigate.push("/order/" + orderId);
-            queryClient.setQueryData(ORDER({ indexerUrl, orderId }), order);
-            afterRef.current?.("done");
-          },
-        },
-        {
-          abi: p2p.abi,
-          address: p2p.address,
-          functionName: "createOrder",
-          args: [BigInt(data.id), tokensAmount, depositAddress, accountHash],
-        },
-      );
-      console.log("qwwriteRes", writeRes);
-    } catch (e: any) {
-      toast.error("An error occurred. Please try again" + e.message);
-      console.log("error", e);
-    }
-  };
-
-  useEffect(() => {
-    const getTimeStampAndNavigate = async () => {
-      console.log("qweisSuccess", isSuccess, "receipt", receipt);
-
-      if (isSuccess && receipt) {
-        let orderId: string;
-        for (const log of receipt.logs) {
-          try {
-            //TODO: @Jovells MOVE BLOCKTIMESTAMP ELSEWHERE
-
-            break;
-          } catch (e) {
-            continue;
-          }
-        }
-      }
-    };
-    getTimeStampAndNavigate();
-  }, [isSuccess, receipt, p2phash, navigate]);
 
   let paymentsMethods = isBuy
     ? [data.paymentMethod]
@@ -250,7 +87,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
             name="toPay"
             currencies={[{ symbol: data.currency.currency, id: data.currency.id, name: data.currency.currency }]}
             value={toPay}
-            onValueChange={value => handleFormDateChange("toPay", value.amount)}
+            onValueChange={value => handleFormDataChange("toPay", value.amount)}
             readOnly={false}
             selectIsReadOnly={true}
           />
@@ -264,7 +101,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
             name="toReceive"
             value={toReceive}
             currencies={[{ symbol: data.token.symbol, id: data.token.id, name: data.token.name }]}
-            onValueChange={value => handleFormDateChange("toReceive", value.amount)}
+            onValueChange={value => handleFormDataChange("toReceive", value.amount)}
             readOnly={false}
             selectIsReadOnly={true}
           />
@@ -282,7 +119,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
               placeholder="Select Payment Method"
               name="paymentMethod"
               options={paymentsMethods}
-              onValueChange={value => handleFormDateChange("paymentMethod", value)}
+              onValueChange={value => handleFormDataChange("paymentMethod", value)}
             />
           }
           {errors.find(e => e.path[0] === "paymentMethod") && (

@@ -4,13 +4,13 @@ import { formatCurrency } from "@/lib/utils";
 
 export const createOrderSchema = (data: Offer) =>
   z.object({
-    toPay: z
+    fiatAmount: z
       .string()
       .min(1, "Please enter a valid amount")
       .refine(val => !isNaN(Number(val)) && Number(val) > 0, {
         message: "Must be a valid positive number",
       }),
-    toReceive: z
+    cryptoAmount: z
       .string()
       .min(1, "Please enter a valid amount")
       .refine(

@@ -5,16 +5,16 @@ import MenuDropdown from "../../ui/MenuDropdown";
 import Link from 'next/link';
 import WalletConnect from "@/components/wallet";
 import { useEffect, useState } from "react";
-import { DASHBOARD_PAGE, MY_ADS_PAGE, ORDER_HISTORY_PAGE } from "@/common/page-links";
+import { DASHBOARD_PAGE, MY_ADS_PAGE, ORDER_HISTORY_PAGE, QUICK_TRADE_PAGE } from "@/common/page-links";
 import useIsMerchant from "@/common/hooks/useIsMerchant";
-import { useUser } from '@/common/contexts/UserContext';
-import { usePathname, useRouter } from 'next/navigation';
-import { getImage } from '@/lib/utils';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useUser } from "@/common/contexts/UserContext";
+import { usePathname, useRouter } from "next/navigation";
+import { getImage } from "@/lib/utils";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import useMyPendingOrders from "@/common/hooks/useMyOrders";
 
 const menuLinks = [
-  { href: "/quickTrade", label: "Quick Trade" },
+  { href: QUICK_TRADE_PAGE, label: "Quick Trade" },
   { href: "/", label: "P2P" },
   { href: "/appeal", label: "Appeals" },
   { href: MY_ADS_PAGE, label: "My Ads" }, // should on be visible to merchants

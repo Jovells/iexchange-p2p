@@ -22,7 +22,7 @@ const TradeLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     }, []);
 
     return (
-      <div className="relative min-h-screen flex flex-col">
+      <div className="relative lg:container min-h-screen flex flex-col">
         {isLoading ? (
           <Loader loaderType="spinner" className="h-screen" />
         ) : (
