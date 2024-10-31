@@ -49,7 +49,7 @@ const ModalManager: React.FC = () => {
 
       <div
         className={classnames(
-          "relative z-20 transition-transform duration-300 ease-out transform",
+          "relative z-20 bg-white dark:bg-gray-800 p-4 transition-transform duration-300 ease-out transform",
           isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0",
           "w-full sm:w-auto lg:w-[500px] rounded-t-lg lg:rounded-[8px]",
         )}

@@ -5,24 +5,13 @@ import InputWithSelect from "@/components/ui/InputWithSelect";
 import Button from "@/components/ui/Button";
 import MerchantProfile from "@/components/merchant/MerchantProfile";
 import { useRouter } from "next/navigation";
-import { useBalance, useReadContract } from "wagmi";
-import { decodeEventLog, formatEther } from "viem";
 import { useContracts } from "@/common/contexts/ContractContext";
-import CediH from "@/common/abis/CediH";
 import { Offer, Order, OrderState, PaymentMethod } from "@/common/api/types";
-import { formatCurrency, ixToast as toast } from "@/lib/utils";
-import z from "zod";
-import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
-import storeAccountDetails from "@/common/api/storeAccountDetails";
 import { useModal } from "@/common/contexts/ModalContext";
 import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
 import { useUser } from "@/common/contexts/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
-import { getBlock } from "@wagmi/core";
-import { config } from "@/common/configs";
-import { ORDER } from "@/common/constants/queryKeys";
-import { createOrderSchema } from "@/common/schema";
 import useCreateOrder from "@/common/hooks/useCreateOrder";
 
 interface Props {
@@ -32,24 +21,15 @@ interface Props {
 }
 
 const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
-  const queryClient = useQueryClient();
-  const { p2p, tokens, currentChain, indexerUrl } = useContracts();
-  const token = tokens.find(token => token.address.toLowerCase() === data.token.id.toLowerCase());
-  const { address: userAddress } = useUser();
   const prevOrderType = useRef(orderType);
-  const searchParams = useSearchParams();
-  const navigate = useRouter();
-  const newOrder = useRef<Partial<Order>>();
-  const afterRef = useRef<(value: any) => any>();
   const { paymentMethods: userPaymentMethods, isFetching, refetch } = useUserPaymentMethods();
-  const { showModal, hideModal } = useModal();
   const {
     handleSubmit,
     errors,
     isPending,
     isApprovePending,
-    toPay,
-    toReceive,
+    fiatAmount,
+    cryptoAmount,
     paymentMethod,
     alreadyApproved,
     handleFormDataChange,
@@ -84,29 +64,29 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
           <InputWithSelect
             placeholder={isBuy ? "You Pay" : "You Receive"}
             initialCurrencyName={data.currency.currency}
-            name="toPay"
+            name="fiatAmount"
             currencies={[{ symbol: data.currency.currency, id: data.currency.id, name: data.currency.currency }]}
-            value={toPay}
-            onValueChange={value => handleFormDataChange("toPay", value.amount)}
+            value={fiatAmount}
+            onValueChange={value => handleFormDataChange("fiatAmount", value.amount)}
             readOnly={false}
             selectIsReadOnly={true}
           />
-          {errors.find(e => e.path[0] === "toPay") && (
-            <p className="text-red-500">{errors.find(e => e.path[0] === "toPay")?.message}</p>
+          {errors.find(e => e.path[0] === "fiatAmount") && (
+            <p className="text-red-500">{errors.find(e => e.path[0] === "fiatAmount")?.message}</p>
           )}
 
           <InputWithSelect
             placeholder={isBuy ? "You Receive" : "You Pay"}
             initialCurrencyName={data.token.symbol}
-            name="toReceive"
-            value={toReceive}
+            name="cryptoAmount"
+            value={cryptoAmount}
             currencies={[{ symbol: data.token.symbol, id: data.token.id, name: data.token.name }]}
-            onValueChange={value => handleFormDataChange("toReceive", value.amount)}
+            onValueChange={value => handleFormDataChange("cryptoAmount", value.amount)}
             readOnly={false}
             selectIsReadOnly={true}
           />
-          {errors.find(e => e.path[0] === "toReceive") && (
-            <p className="text-red-500">{errors.find(e => e.path[0] === "toReceive")?.message}</p>
+          {errors.find(e => e.path[0] === "cryptoAmount") && (
+            <p className="text-red-500">{errors.find(e => e.path[0] === "cryptoAmount")?.message}</p>
           )}
           {
             <PaymentMethodSelect

@@ -75,15 +75,15 @@ const useCreateOrder = (
         cryptoAmountForContract: newCryptoAmount.toString(),
       }));
     } else if (name === "cryptoAmount") {
-      let newToPay;
+      let newFiatAmount;
 
-      newToPay = Number(value) * Number(offer.rate);
+      newFiatAmount = Number(value) * Number(offer.rate);
 
       setFormData(prev => ({
         ...prev,
         cryptoAmount: value as string,
-        fiatAmount: Number(newToPay.toPrecision(4)).toString(), //TODO: @Jovells GET DECIMAL PLACES FROM TOKEN/CURRENCY
-        fiatAmountForContract: newToPay.toString(),
+        fiatAmount: Number(newFiatAmount.toPrecision(4)).toString(), //TODO: @Jovells GET DECIMAL PLACES FROM TOKEN/CURRENCY
+        fiatAmountForContract: newFiatAmount.toString(),
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value as PaymentMethod }));
