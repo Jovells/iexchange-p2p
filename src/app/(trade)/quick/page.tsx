@@ -187,7 +187,7 @@ export default function QuickTradePage() {
   return (
     <>
       {/* cta */}
-      <div className="self-center max-w-prose mb-6 lg:mb-0 text-center lg:text-left">
+      <div className="self-center max-w-prose mb-6 lg:mb-0 mt-16 lg:mt-0 text-center lg:text-left">
         <h1 className="text-3xl sm:text-4xl lg:text-8xl font-bold mb-2 text-gray-900 dark:text-white">
           <span className="gradient-text">P2P</span> Quick trade
         </h1>
