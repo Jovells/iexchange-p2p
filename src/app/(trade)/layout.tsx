@@ -8,6 +8,7 @@ import Footer from "@/components/layout/footer";
 import Loader from "@/components/loader/Loader";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import ScrollToTopOnPageChange from "@/components/layout/ScrollToTop";
 
 const TradeLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +37,7 @@ const TradeLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
             {!path.includes("dashboard") && <Footer />}
           </>
         )}
+        {/* <ScrollToTopOnPageChange /> */}
       </div>
     );
 }
