@@ -66,7 +66,7 @@ const ExpandableTable = forwardRef(
     }: ExpandableTableProps,
     ref,
   ) => {
-    const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
+    const [expandedRowIndex, setExpandedRowIndex] = useState<number | string | null>(null);
     const [isMobile, setIsMobile] = useState<boolean>(window?.innerWidth <= 768);
     const { openConnectModal } = useConnectModal();
     const { isConnected } = useUser();
@@ -81,7 +81,7 @@ const ExpandableTable = forwardRef(
       };
     }, []);
 
-    const handleRowClick = (index: number) => {
+    const handleRowClick = (index: number | string) => {
       if (requiresAuthToOpen && !isConnected) {
         return openConnectModal?.();
       }
@@ -150,28 +150,28 @@ const ExpandableTable = forwardRef(
                         {carouselData.map((row, index) => (
                           <SwiperSlide key={row.id}>
                             <div className="pb-5 m rounded-xl">
-                            <MobileBotRow
-                              row={row}
-                              index={row.id}
-                              columns={columns}
-                              actions={actions}
-                              handleRowClick={handleRowClick}
-                              expandedRowIndex={expandedRowIndex}
-                              children={children}
-                              closeExpandedRow={closeExpandedRow}
-                              columnGridTemplate={columnGridTemplate}
-                            />
+                              <MobileBotRow
+                                row={row}
+                                index={row.id}
+                                columns={columns}
+                                actions={actions}
+                                handleRowClick={handleRowClick}
+                                expandedRowIndex={expandedRowIndex}
+                                children={children}
+                                closeExpandedRow={closeExpandedRow}
+                                columnGridTemplate={columnGridTemplate}
+                              />
                             </div>
                           </SwiperSlide>
                         ))}
                       </Swiper>
                     </div>
                   )}
-                  {data.map((row: Offer, index) => (
+                  {data.map((row: Offer) => (
                     <MobileRow
-                      key={index + 1}
+                      key={row.id}
                       row={row}
-                      index={index + 1}
+                      index={row.id}
                       columns={columns}
                       actions={actions}
                       handleRowClick={handleRowClick}
@@ -206,8 +206,8 @@ const ExpandableTable = forwardRef(
                         }}
                         modules={[Autoplay, Pagination, Navigation]}
                       >
-                        {carouselData.map((row, index) => (
-                          <SwiperSlide key={0}>
+                        {carouselData.map(row => (
+                          <SwiperSlide key={row.id}>
                             <div className=" rounded-xl">
                               <BotRow
                                 row={row}
@@ -227,10 +227,10 @@ const ExpandableTable = forwardRef(
                     </div>
                   )}
                   {data.map((row, index) => (
-                    <React.Fragment key={index + 1}>
+                    <React.Fragment key={row.id}>
                       <DesktopRow
                         row={row}
-                        index={index + 1}
+                        index={row.id}
                         columns={columns}
                         actions={actions}
                         handleRowClick={handleRowClick}
@@ -263,8 +263,9 @@ const ExpandableTable = forwardRef(
                 <button
                   key={page}
                   onClick={() => onPageChange(page - 1)}
-                  className={`px-4 py-2 rounded-[8px] border ${page === page - 1 ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]" : "bg-transparent text-[#01a2e4]"
-                    } hover:bg-blue-200 transition-colors duration-200`}
+                  className={`px-4 py-2 rounded-[8px] border ${
+                    page === page - 1 ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]" : "bg-transparent text-[#01a2e4]"
+                  } hover:bg-blue-200 transition-colors duration-200`}
                 >
                   {page}
                 </button>
@@ -272,10 +273,11 @@ const ExpandableTable = forwardRef(
                 {totalPages > 1 && (
                   <button
                     onClick={() => onPageChange(totalPages - 1)}
-                    className={`px-4 py-2 rounded-[8px] border ${page === totalPages - 1
+                    className={`px-4 py-2 rounded-[8px] border ${
+                      page === totalPages - 1
                         ? "bg-[#01A2E4] text-white hover:bg-[#01A2E4]"
                         : "bg-transparent text-[#01a2e4]"
-                      } hover:bg-blue-200 transition-colors duration-200`}
+                    } hover:bg-blue-200 transition-colors duration-200`}
                   >
                     {page}
                   </button>
@@ -330,8 +332,9 @@ const BottomUpModal: React.FC<ModalProps> = ({ closeExpandedRow, data, expandedR
       style={{ opacity: isVisible ? 1 : 0 }}
     >
       <div
-        className={`flex flex-col bg-white dark:bg-gray-800 w-full rounded-t-xl max-h-[500px] transition-transform duration-300 transform ${isVisible ? "translate-y-0" : "translate-y-full"
-          }`}
+        className={`flex flex-col bg-white dark:bg-gray-800 w-full rounded-t-xl max-h-[500px] transition-transform duration-300 transform ${
+          isVisible ? "translate-y-0" : "translate-y-full"
+        }`}
       >
         {/* Modal Header */}
         <div className="p-4 py-6 border-b border-gray-600 flex flex-row justify-between items-center">
@@ -344,7 +347,8 @@ const BottomUpModal: React.FC<ModalProps> = ({ closeExpandedRow, data, expandedR
           {children(data[expandedRowIndex], handleClose)}
         </div>
       </div>
-    </div>, document.body
+    </div>,
+    document.body,
   );
 };
 
@@ -367,8 +371,9 @@ const ExpandableRow: React.FC<{ expanded: boolean; children: React.ReactNode }> 
 
   return (
     <div
-      className={`col-span-full overflow-hidden transition-all duration-500 ease-in-out border-b border-[#C3D5F124] dark:border-gray-600 ${expanded ? "opacity-100" : "opacity-0"
-        }`}
+      className={`col-span-full overflow-hidden transition-all duration-500 ease-in-out border-b border-[#C3D5F124] dark:border-gray-600 ${
+        expanded ? "opacity-100" : "opacity-0"
+      }`}
       style={{ maxHeight: height }}
       onTransitionEnd={handleTransitionEnd}
     >
@@ -381,11 +386,11 @@ const ExpandableRow: React.FC<{ expanded: boolean; children: React.ReactNode }> 
 
 interface RowProps {
   row: Offer;
-  index: number;
+  index: number | string;
   columns: Column[];
   actions: Action[];
-  handleRowClick: (index: number) => void;
-  expandedRowIndex: number | null;
+  handleRowClick: (index: number | string) => void;
+  expandedRowIndex: number | string | null;
   children: (row: any, toggleExpand: () => void) => ReactElement;
   closeExpandedRow: () => void;
   columnGridTemplate?: string;

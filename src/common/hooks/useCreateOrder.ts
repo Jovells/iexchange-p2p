@@ -22,7 +22,7 @@ const useCreateOrder = (
   const [{ fiatAmount, cryptoAmount, paymentMethod }, setFormData] = useState({
     fiatAmount: initialFormData?.fiatAmount || "",
     cryptoAmount: initialFormData?.cryptoAmount || "",
-    paymentMethod: initialFormData?.paymentMethod || offer?.paymentMethod,
+    paymentMethod: initialFormData?.paymentMethod,
   });
   const [errors, setErrors] = useState<z.ZodIssue[]>([]);
   const newOrder = useRef<Partial<Order>>({});
@@ -94,10 +94,11 @@ const useCreateOrder = (
   const alreadyApproved = allowance! >= tokensAmount || isBuy;
 
   const handleSubmit = async (e: React.BaseSyntheticEvent) => {
+    e.preventDefault();
     if (!offer) return toast.error("please Select an offer");
+    if (!paymentMethod) return toast.error("please Select a payment method");
     const isMerchant = offer.merchant.id === userAddress;
 
-    e.preventDefault();
     if (isMerchant) {
       toast.error("You cannot trade with yourself");
       return;
@@ -120,12 +121,13 @@ const useCreateOrder = (
     const accountHash = isBuy
       ? offer.accountHash
       : await storeAccountDetails({
-          name: offer.paymentMethod.name as string,
+          name: paymentMethod.name as string,
           address: userAddress as string,
-          number: offer.paymentMethod.number as string,
-          paymentMethod: offer.paymentMethod.method,
-          details: offer.paymentMethod.details,
+          number: paymentMethod.number as string,
+          paymentMethod: paymentMethod?.method,
+          details: paymentMethod.details,
         });
+    const toastId = "createOrder";
 
     try {
       if (!alreadyApproved) {
@@ -149,8 +151,6 @@ const useCreateOrder = (
         quantity: tokensAmount.toString(),
         status: OrderState.Pending,
       } satisfies Partial<Order>;
-
-      const toastId = "createOrder";
 
       const writeRes = await writeP2p(
         {
@@ -179,7 +179,7 @@ const useCreateOrder = (
       );
       console.log("qwwriteRes", writeRes);
     } catch (e: any) {
-      toast.error("An error occurred. Please try again" + e.message);
+      toast.error("An error occurred. Please try again " + e.message, { id: toastId });
       console.log("error", e);
     }
   };

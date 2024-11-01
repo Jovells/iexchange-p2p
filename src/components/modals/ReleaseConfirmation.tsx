@@ -36,7 +36,7 @@ const ReleaseConfirmation: React.FC<Props> = ({ onClick, cryptoAmount, fiatAmoun
         </a>
         <Button
           text="OK"
-          className="w-full text-black dark:text-white bg-transparent border border-gray-200 dark:border-gray-600"
+          className="w-full mt-2 text-black dark:text-white bg-transparent border border-gray-200 dark:border-gray-600"
           onClick={hideModal}
         />
       </div>,

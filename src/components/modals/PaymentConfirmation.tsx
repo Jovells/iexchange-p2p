@@ -38,7 +38,7 @@ const PaymentConfirmation: React.FC<Props> = ({ onClick, amount, accountName, ac
         </a>
         <Button
           text="OK"
-          className="w-full mt -5 text-black dark:text-white bg-transparent border border-gray-200 dark:border-gray-600"
+          className="w-full mt-2 text-black dark:text-white bg-transparent border border-gray-200 dark:border-gray-600"
           onClick={hideModal}
         />
       </div>,

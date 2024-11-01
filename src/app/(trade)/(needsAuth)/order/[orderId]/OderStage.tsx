@@ -486,6 +486,35 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
     },
   };
   const isBot = order.offer.merchant.id === BOT_MERCHANT_ID;
+  const currentStep = (() => {
+    switch (true) {
+      case isPending:
+        return 1;
+      case order?.status === OrderState.Accepted:
+        return 2;
+      case isPaid:
+        return 3;
+      default:
+        return 1;
+    }
+  })();
+
+  const botCountDown = (action: string) =>
+    isBot &&
+    shouldPoll && (
+      <div className="flex rounded p-2 w-full bg-primary  items-center  justify-center flex-row ">
+        <span className="flex flex-col items-center text-gray-100 ">
+          <span className="pb-2 font-bold"> Order will be {action} in: </span>
+          <Timer
+            className={"bg-white !text-xl  !text-primary !font-bold"}
+            sizeInPx={"10px"}
+            timestamp={timestamp}
+            seconds={2 * 60}
+          />
+        </span>
+      </div>
+    );
+
   return (
     <Suspense
       fallback={
@@ -519,7 +548,6 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           </div>
         </div>
       </div>
-
       <div className="container mx-auto px-0 py-4 ">
         <div className="w-full h-auto grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
           {/* Chat Section */}
@@ -533,15 +561,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
               {/* Header */}
               <div className="flex justify-between mb-6">
                 <div className="flex items-center gap-2">
-                  {isBot && <span className="rounded text-gray-100 font-bold text-sm p-1 bg-primary">BOT ORDER</span>}{" "}
+                  {isBot && <span className="rounded text-gray-100 font-bold text-sm p-1 bg-primary">BOT</span>}{" "}
                   <h2 className="text-lg text-gray-500 dark:text-gray-400">Order in Progress</h2>
-                  {shouldPoll && isBot && (
-                    <>
-                      {" "}
-                      <span className="text-gray-500 dark:text-gray-400">Bot will respond in </span>
-                      <Timer timestamp={timestamp} seconds={3 * 60} />{" "}
-                    </>
-                  )}
                 </div>
 
                 <div
@@ -571,7 +592,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                   <div className="ml-4 flex-grow">
                     <span className="text-darkGray dark:text-darkGray-dark font-semibold">Order Information</span>
                     <p className="text-gray-500 dark:text-gray-400">{isBuyer ? buyerText[1].sub : sellerText[1].sub}</p>
-
+                    {currentStep === 1 && botCountDown(isBuyerAndNotYetAccepted ? "accepted" : "paid")}
                     <div className="flex border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4 mt-2 flex-col justify-start items-start gap-1 w-full">
                       <InfoBlock
                         isAmount
@@ -608,6 +629,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                       {isBuyer ? buyerText[2].head : sellerText[2].head}
                     </span>
                     <p className="text-gray-500 dark:text-gray-400">{isBuyer ? buyerText[2].sub : sellerText[2].sub}</p>
+
+                    {currentStep === 2 && botCountDown("paid")}
                     <div className="w-full border  mb-4 mt-2 flex rounded-xl p-4 h-auto border-gray-200 dark:border-gray-700">
                       <div className="w-full  flex flex-col gap-4">
                         <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
@@ -647,6 +670,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                       {isBuyer ? buyerText[3].head : sellerText[3].head}
                     </span>
                     <p className="text-gray-500 dark:text-gray-400">{isBuyer ? buyerText[3].sub : sellerText[3].sub}</p>
+                    {currentStep === 3 && botCountDown("released")}
                   </div>
                 </div>
               </div>
