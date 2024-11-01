@@ -186,7 +186,8 @@ export default function QuickTradePage() {
 
   const enabled = fiatAmount && cryptoAmount && !formErrors.fiatAmount && !formErrors.cryptoAmount;
 
-  const ready = !isLoading && !isLoadingRate;
+  const isReady = (!isLoading && !isLoadingRate) || (minAndMax && estimatedRate);
+  console.log({ isLoading, isLoadingRate, minAndMax, estimatedRate, ready: isReady });
 
   return (
     <>
@@ -216,7 +217,7 @@ export default function QuickTradePage() {
       {/* form */}
 
       <div className=" w-full max-w-[500px] mx-auto lg:mx-0">
-        {ready ? (
+        {isReady ? (
           <div className=" p-4 sm:p-6 w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg ">
             <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
               <button
@@ -317,9 +318,13 @@ export default function QuickTradePage() {
 
               <div className="px-4 text-sm text-center text-gray-600 dark:text-gray-400">
                 {minAndMax.maxCrypto === "0.00" ? (
-                  <p className="text-red-500 mt-1 text-sm">
-                    {"No Ads Available. Please try a different currency or token"}
-                  </p>
+                  isLoading ? (
+                    <Loader loaderType="text" />
+                  ) : (
+                    <p className="text-red-500 mt-1 text-sm">
+                      {"No Ads Available. Please try a different currency or token"}
+                    </p>
+                  )
                 ) : (
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-1">
