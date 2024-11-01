@@ -148,7 +148,7 @@ const SubNav = () => {
   if (!isMounted || !isAuthenticated) {
     return (
       <div className="border-0 mt-0 lg:mt-2 mb-0">
-        <div className="w-full lg:container lg:mx-auto flex flex-row justify-between items-center px-2 lg:px-0">
+        <div className="container mx-auto flex flex-row justify-between items-center">
           <div className="flex flex-row gap-4 pl-2 lg:pl-0">{renderLinks1(menuLinks2)}</div>
           {renderMenuDropdowns2()}
         </div>
@@ -159,7 +159,7 @@ const SubNav = () => {
 
   return (
     <div className="border-0 mt-0 lg:mt-2 mb-0">
-      <div className="w-full lg:container lg:mx-auto flex flex-row justify-between items-center px-2 lg:px-0">
+      <div className="container mx-auto flex flex-row justify-between items-center">
         <div className="flex flex-row gap-4 pl-2 lg:pl-0">{renderLinks(menuLinks)}</div>
         {renderMenuDropdowns()}
       </div>

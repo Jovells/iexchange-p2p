@@ -524,8 +524,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         </div>
       }
     >
-      <div className="w-full bg-[#CCE0F6] dark:bg-gray-800 p-0">
-        <div className="w-full lg:container lg:mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between py-10 lg:px-0">
+      <div className="w-full bg-[#CCE0F6] dark:bg-gray-800">
+        <div className="w-full lg:container lg:mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between py-10 px-6">
           <div className="gap-3">
             <span className="font-bold text-gray-600 dark:text-gray-300">Order Created</span>
             <div className="flex flex-row space-x-2">
@@ -550,9 +550,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         </div>
       </div>
 
-      <Wrapper>
-        <div className="container mx-auto">
-          <div className="w-full h-auto grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
+        <div className="container mx-auto py-6">
+          <div className="w-full h-auto grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-6">
             {/* Chat Section */}
             <div className="hidden lg:block">
               <ChatWithMerchant conversation={conversation} setConversation={setConversation} otherParty={otherParty} />
@@ -766,7 +765,6 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
             )}
           </div>
         </div>
-      </Wrapper>
 
       {isChatModalOpen && (
         <div className="fixed inset-0 flex items-end bg-black bg-opacity-50 z-50">
