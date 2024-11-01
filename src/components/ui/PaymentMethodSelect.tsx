@@ -85,7 +85,7 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className="relative border border-gray-300 dark:border-gray-600 dark:hover:border-[#01a2e4]   hover:border-[#01a2e4] rounded-xl cursor-pointer w-full"
+      className="relative border border-gray-300 dark:border-gray-600 dark:hover:border-[#01a2e4] hover:border-[#01a2e4] rounded-xl cursor-pointer w-full"
     >
       <div className="w-full flex flex-col px-3 py-3">
         {label && selectedValue && <span className="text-sm text-gray-500 dark:text-gray-200">{label}</span>}
