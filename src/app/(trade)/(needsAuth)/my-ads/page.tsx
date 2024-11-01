@@ -17,6 +17,7 @@ import CryptoSelector from "../../cryptoSelector";
 import { fetchTokens } from "@/common/api/fetchTokens";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
+import Wrapper from '@/components/layout/Wrapper';
 
 const BuySellOptions = [
   {
@@ -186,52 +187,54 @@ const MyAds = () => {
   }
 
   return (
-    <div className="container mx-auto p-0 py-4">
-      <div className="py-12 flex flex-col gap-10">
-        <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
-          <InputSelect
-            initialValue="all"
-            onValueChange={setOfferType}
-            options={BuySellOptions}
-            selectType="normal"
-            style={{ paddingTop: "14px", padding: "14px" }}
-          />
-          <div className="w-full">
-            <CryptoSelector
-              tokens={tokens}
-              selectedCrypto={selectedCrypto}
-              setSelectedCrypto={setSelectedCrypto}
-              showFaucet={false}
+    <Wrapper>
+      <div className="container mx-auto p-0 py-4">
+        <div className="py-12 flex flex-col gap-10">
+          <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
+            <InputSelect
+              initialValue="all"
+              onValueChange={setOfferType}
+              options={BuySellOptions}
+              selectType="normal"
+              style={{ paddingTop: "14px", padding: "14px" }}
+            />
+            <div className="w-full">
+              <CryptoSelector
+                tokens={tokens}
+                selectedCrypto={selectedCrypto}
+                setSelectedCrypto={setSelectedCrypto}
+                showFaucet={false}
+              />
+            </div>
+            <InputWithSelect
+              onValueChange={setCurrencyAmount}
+              currencies={currencies}
+              placeholder="Enter amount"
+              readOnly={false}
+            />
+            <InputSelect
+              showLabel={false}
+              initialValue="usd"
+              placeholder="All Payment Methods"
+              options={paymentMethods.map((method: any) => ({
+                value: method.method,
+                label: method.method,
+              }))}
+              onValueChange={setPaymentMethod}
+              className="bg-white dark:bg-gray-800 text-black dark:text-white"
+              style={{ paddingTop: "14px", padding: "14px" }}
             />
           </div>
-          <InputWithSelect
-            onValueChange={setCurrencyAmount}
-            currencies={currencies}
-            placeholder="Enter amount"
-            readOnly={false}
-          />
-          <InputSelect
-            showLabel={false}
-            initialValue="usd"
-            placeholder="All Payment Methods"
-            options={paymentMethods.map((method: any) => ({
-              value: method.method,
-              label: method.method,
-            }))}
-            onValueChange={setPaymentMethod}
-            className="bg-white dark:bg-gray-800 text-black dark:text-white"
-            style={{ paddingTop: "14px", padding: "14px" }}
+          <GridTable
+            columns={columns}
+            data={data?.offers || []}
+            actions={actions}
+            itemsPerPage={50}
+            isLoading={isFetching}
           />
         </div>
-        <GridTable
-          columns={columns}
-          data={data?.offers || []}
-          actions={actions}
-          itemsPerPage={50}
-          isLoading={isFetching}
-        />
       </div>
-    </div>
+    </Wrapper>
   );
 };
 

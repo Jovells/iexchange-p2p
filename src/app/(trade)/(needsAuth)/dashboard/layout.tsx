@@ -50,9 +50,9 @@ export default function DashboardLayout({
                     <SubNav />
                 </div>
                 <div className="pt-[10px]">
-                    <div className="lg:hidden px-4 py-2 bg-white text-gray-600 dark:transparent dark:text-gray-200 flex flex-row justify-between items-center">
+                    <div className="lg:hidden dark:text-gray-200 flex flex-row justify-between items-center p-4 pt-10 mb-4 border-b border-gray-300 dark:border-gray-800">
                         <button onClick={toggleDrawer} className="text-gray-600 dark:text-gray-200 flex items-center">
-                            <Menu className="mr-2 h-10 w-10" />
+                            <Menu className="h-full w-10" />
                         </button>
                         {session.status === "authenticated" && (
                             <div className="">
@@ -60,9 +60,9 @@ export default function DashboardLayout({
                             </div>
                         )}
                     </div>
-                    <div className="flex flex-row flex-1 p-0 pt-0 lg:pt-0">
+                    <div className="flex flex-row flex-1">
                         <SideNav isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
-                        <div className="flex-1 p-0 lg:p-6 h-screen bg-white dark:bg-transparent overflow-y-auto pl-0 lg:pl-[280px]">
+                        <div className="flex-1 px-4 lg:p-6 h-screen bg-white dark:bg-transparent overflow-y-auto lg:pl-[280px]">
                             {children}
                         </div>
                     </div>
