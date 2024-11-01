@@ -99,7 +99,7 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
         <div className="flex items-center justify-start gap-4 flex-shrink">
           <input
             type="text"
-            className="flex-1 min-w-0 px-2 py-1 bg-transparent text-black dark:text-white focus:outline-none focus:ring-0"
+            className="flex-1 min-w-0 px-2 py-0 bg-transparent text-black dark:text-white focus:outline-none focus:ring-0"
             value={valueToDisplay.amount}
             readOnly={readOnly}
             placeholder={!selectedValue.amount ? placeholder : ""}
