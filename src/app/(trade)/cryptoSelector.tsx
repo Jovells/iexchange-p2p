@@ -18,8 +18,8 @@ import Select from "@/components/ui/Select";
 interface CryptoSelectorProps {
   tokens: Token[];
   selectedCrypto?: Token;
-  setSelectedCrypto: Dispatch<SetStateAction<Token | undefined>>;
-  showFaucet?:boolean
+  setSelectedCrypto: (crypto: Token | undefined) => void;
+  showFaucet?: boolean;
 }
 
 const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto, setSelectedCrypto, showFaucet=true }) => {

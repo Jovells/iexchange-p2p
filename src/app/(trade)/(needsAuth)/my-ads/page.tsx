@@ -137,7 +137,6 @@ const MyAds = () => {
     // placeholderData: keepPreviousData,
   });
 
-  currencies?.unshift({ symbol: "All", name: "All", id: "0x0", icon: <></> });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

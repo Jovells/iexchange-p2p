@@ -49,7 +49,7 @@ export default function QuickTradePage() {
     isActive: true,
   };
 
-  const { data: estimatedRate } = useQuery({
+  const { data: estimatedRate, isLoading: isLoadingRate } = useQuery({
     queryKey: ["estimatedRate", options],
     queryFn: async () => {
       const response = await fetchAds(indexerUrl, options);
@@ -57,6 +57,7 @@ export default function QuickTradePage() {
         response.offers.reduce((acc, offer) => acc + Number(offer.rate), 0) / response.offers.length,
       ).toPrecision(4);
     },
+    placeholderData: "0.00",
   });
 
   const { data: minAndMax, isLoading } = useQueries({
@@ -185,6 +186,8 @@ export default function QuickTradePage() {
 
   const enabled = fiatAmount && cryptoAmount && !formErrors.fiatAmount && !formErrors.cryptoAmount;
 
+  const ready = !isLoading && !isLoadingRate;
+
   return (
     <>
       {/* cta */}
@@ -208,142 +211,154 @@ export default function QuickTradePage() {
         </div>
       </div>
       {/* form */}
+
       <div className=" w-full max-w-[500px] mx-auto lg:mx-0">
-        <div className=" p-4 sm:p-6 w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg ">
-          <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
-            <button
-              onClick={() => setOfferType("buy")}
-              className={`flex-1 px-4 py-3 font-medium border-b-2 ${
-                isBuy
-                  ? "border-primary text-darkGray dark:text-darkGray-dark"
-                  : "text-gray-400 dark:border-darkGray dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
-              }`}
-            >
-              Buy
-            </button>
-            <button
-              onClick={() => setOfferType("sell")}
-              className={`flex-1 px-4 py-3 font-medium border-b-2 ${
-                !isBuy
-                  ? "border-primary text-darkGray dark:text-darkGray-dark"
-                  : "dark:border-darkGray text-gray-400 dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
-              }`}
-            >
-              Sell
-            </button>
-          </div>
-
-          <div className="space-y-4 w-full">
-            <div className={`flex ${isBuy ? "flex-col" : "flex-col-reverse"} w-full gap-4 items-center`}>
-              <div className="p-4 bg-gray-50 w-full dark:bg-gray-700 rounded-xl">
-                <label className="block text-sm mb-2 text-black dark:text-white">
-                  {isBuy ? "You Pay" : "You Receive"}
-                </label>
-                <div className="flex items-center">
-                  <input
-                    type="text"
-                    className="w-full flex-1 text-lg font-bold md:text-2xl text-ellipsis bg-transparent outline-none text-black dark:text-white"
-                    placeholder={minAndMax.minFiat + " - " + minAndMax.maxFiat}
-                    value={fiatAmount}
-                    onChange={e => handleFormDataChange("fiatAmount", e.target.value)}
-                  />
-                  <div className="w-28 ml-2">
-                    <InputSelect
-                      style={{ paddingTop: "10px", padding: "10px" }}
-                      options={(currencies || []).map(currency => ({
-                        value: currency.id,
-                        label: currency.name,
-                        ...currency,
-                      }))}
-                      selectType="normal"
-                      initialValue={currency.id}
-                      onValueChange={value => {
-                        setCurrency(currencies?.find(currency => currency.id === value));
-                        console.log("qm", value);
-                      }}
-                      readOnly={false}
-                      className="bg-white dark:bg-gray-800 text-black dark:text-white" // Adding dark mode styles
-                    />
-                  </div>
-                </div>
-                {formErrors.fiatAmount && <p className="text-red-500 mt-1 text-sm">{formErrors.fiatAmount}</p>}
-              </div>
-
-              <div className="p-4 w-full bg-gray-50 dark:bg-gray-700 rounded-xl">
-                <label className="block text-sm mb-2 text-black dark:text-white">
-                  {!isBuy ? "You Sell" : "You Receive"}
-                </label>
-                <div className="flex items-center">
-                  <input
-                    type="text"
-                    className="w-full flex-1 text-lg text-ellipsis font-bold md:text-2xl bg-transparent outline-none text-black dark:text-white"
-                    placeholder={minAndMax.minCrypto + " - " + minAndMax.maxCrypto}
-                    value={cryptoAmount}
-                    onChange={e => handleFormDataChange("cryptoAmount", e.target.value)}
-                  />
-                  <div className="w-28 ml-2">
-                    <Select
-                      label=""
-                      options={(tokens || []).map(token => ({
-                        value: token.id,
-                        label: token.name,
-                        ...token,
-                      }))}
-                      showBalance={false}
-                      selectType="normal"
-                      initialValue={token}
-                      //@ts-ignore
-                      onValueChange={(value: Token) => {
-                        console.log("qn", value);
-                        setToken(tokens?.find(t => t.id === value?.id));
-                        console.log(value);
-                      }}
-                      readOnly={false}
-                      className="bg-white dark:bg-gray-800 text-black dark:text-white" // Adding dark mode styles
-                    />
-                  </div>
-                </div>
-                {formErrors.cryptoAmount && <p className="text-red-500 mt-1 text-sm">{formErrors.cryptoAmount}</p>}
-              </div>
+        {ready ? (
+          <div className=" p-4 sm:p-6 w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg ">
+            <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setOfferType("buy")}
+                className={`flex-1 px-4 py-3 font-medium border-b-2 ${
+                  isBuy
+                    ? "border-primary text-darkGray dark:text-darkGray-dark"
+                    : "text-gray-400 dark:border-darkGray dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
+                }`}
+              >
+                Buy
+              </button>
+              <button
+                onClick={() => setOfferType("sell")}
+                className={`flex-1 px-4 py-3 font-medium border-b-2 ${
+                  !isBuy
+                    ? "border-primary text-darkGray dark:text-darkGray-dark"
+                    : "dark:border-darkGray text-gray-400 dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
+                }`}
+              >
+                Sell
+              </button>
             </div>
 
-            <div className="px-4 text-sm text-center text-gray-600 dark:text-gray-400">
-              {minAndMax.maxCrypto === "0.00" ? (
-                <p className="text-red-500 mt-1 text-sm">
-                  {"No Ads Available. Please try a different currency or token"}
-                </p>
-              ) : (
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1">
-                    <span>Estimated price</span>
-                    <ToolTip text="This is estimated based on the available advertisements on P2P Market. Click on Select Payment Method to view actual prices.">
-                      <svg className="w-4 h-4 hover:text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                        <path d="M12 16v-4m0-4h.01" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
-                    </ToolTip>
+            <div className="space-y-4 w-full">
+              <div className={`flex ${isBuy ? "flex-col" : "flex-col-reverse"} w-full gap-4 items-center`}>
+                <div className="p-4 bg-gray-50 w-full dark:bg-gray-700 rounded-xl">
+                  <label className="block text-sm mb-2 text-black dark:text-white">
+                    {isBuy ? "You Pay" : "You Receive"}
+                  </label>
+                  <div className="flex items-center">
+                    <input
+                      type="text"
+                      className="w-full flex-1 text-lg font-bold md:text-2xl text-ellipsis bg-transparent outline-none text-black dark:text-white"
+                      placeholder={minAndMax.minFiat + " - " + minAndMax.maxFiat}
+                      value={fiatAmount}
+                      onChange={e => handleFormDataChange("fiatAmount", e.target.value)}
+                    />
+                    <div className="w-28 ml-2">
+                      <InputSelect
+                        style={{ paddingTop: "10px", padding: "10px" }}
+                        options={(currencies || []).map(currency => ({
+                          value: currency.id,
+                          label: currency.name,
+                          ...currency,
+                        }))}
+                        selectType="normal"
+                        initialValue={currency.id}
+                        onValueChange={value => {
+                          setCurrency(currencies?.find(currency => currency.id === value));
+                          console.log("qm", value);
+                        }}
+                        readOnly={false}
+                        className="bg-white dark:bg-gray-800 text-black dark:text-white" // Adding dark mode styles
+                      />
+                    </div>
                   </div>
-
-                  <span>
-                    1 {token?.symbol} ≈ {estimatedRate} {currency?.name}
-                  </span>
+                  {formErrors.fiatAmount && <p className="text-red-500 mt-1 text-sm">{formErrors.fiatAmount}</p>}
                 </div>
-              )}
-            </div>
 
-            <Link
-              href={SELECT_PAYMENT_METHOD_PAGE(searchParams)}
-              className={`w-full ${
-                enabled
-                  ? "bg-primary text-gray-100 hover:bg-primary-foreground"
-                  : "bg-lightGray dark:bg-lightGray-dark text-gray-500 dark:text-gray-400 pointer-events-none"
-              } flex items-center justify-center py-4 rounded-xl`}
-            >
-              Select Payment Method
-              <ArrowRight />
-            </Link>
+                <div className="p-4 w-full bg-gray-50 dark:bg-gray-700 rounded-xl">
+                  <label className="block text-sm mb-2 text-black dark:text-white">
+                    {!isBuy ? "You Sell" : "You Receive"}
+                  </label>
+                  <div className="flex items-center">
+                    <input
+                      type="text"
+                      className="w-full flex-1 text-lg text-ellipsis font-bold md:text-2xl bg-transparent outline-none text-black dark:text-white"
+                      placeholder={minAndMax.minCrypto + " - " + minAndMax.maxCrypto}
+                      value={cryptoAmount}
+                      onChange={e => handleFormDataChange("cryptoAmount", e.target.value)}
+                    />
+                    <div className="w-28 ml-2">
+                      <Select
+                        label=""
+                        options={(tokens || []).map(token => ({
+                          value: token.id,
+                          label: token.name,
+                          ...token,
+                        }))}
+                        showBalance={false}
+                        selectType="normal"
+                        initialValue={token}
+                        //@ts-ignore
+                        onValueChange={(value: Token) => {
+                          console.log("qn", value);
+                          setToken(tokens?.find(t => t.id === value?.id));
+                          console.log(value);
+                        }}
+                        readOnly={false}
+                        className="bg-white dark:bg-gray-800 text-black dark:text-white" // Adding dark mode styles
+                      />
+                    </div>
+                  </div>
+                  {formErrors.cryptoAmount && <p className="text-red-500 mt-1 text-sm">{formErrors.cryptoAmount}</p>}
+                </div>
+              </div>
+
+              <div className="px-4 text-sm text-center text-gray-600 dark:text-gray-400">
+                {minAndMax.maxCrypto === "0.00" ? (
+                  <p className="text-red-500 mt-1 text-sm">
+                    {"No Ads Available. Please try a different currency or token"}
+                  </p>
+                ) : (
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-1">
+                      <span>Estimated price</span>
+                      <ToolTip text="This is estimated based on the available advertisements on P2P Market. Click on Select Payment Method to view actual prices.">
+                        <svg
+                          className="w-4 h-4 hover:text-primary"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                        >
+                          <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                          <path d="M12 16v-4m0-4h.01" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      </ToolTip>
+                    </div>
+
+                    <span>
+                      1 {token?.symbol} ≈ {estimatedRate} {currency?.name}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <Link
+                href={SELECT_PAYMENT_METHOD_PAGE(searchParams)}
+                className={`w-full ${
+                  enabled
+                    ? "bg-primary text-gray-100 hover:bg-primary-foreground"
+                    : "bg-lightGray dark:bg-lightGray-dark text-gray-500 dark:text-gray-400 pointer-events-none"
+                } flex items-center justify-center py-4 rounded-xl`}
+              >
+                Select Payment Method
+                <ArrowRight />
+              </Link>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <Loader />
+          </div>
+        )}
       </div>
     </>
   );

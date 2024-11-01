@@ -14,12 +14,14 @@ const useMarketData = () => {
     enabled: !!indexerUrl,
   });
 
-  const currencies = acceptedCurrencies?.map(currency => ({
-    symbol: currency.currency,
-    name: currency.currency,
-    id: currency.id,
-    icon: currencyIcons[currency.currency],
-  }));
+  const currencies = acceptedCurrencies
+    ?.map(currency => ({
+      symbol: currency.currency,
+      name: currency.currency,
+      id: currency.id,
+      icon: currencyIcons[currency.currency],
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const { data: paymentMethods } = useQuery({
     queryKey: PAYMENT_METHODS(indexerUrl),

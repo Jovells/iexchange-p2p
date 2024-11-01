@@ -31,6 +31,8 @@ import {
 
     const realAmount = amount ? (parseFloat(amount) * 10 ** 18).toString() : undefined;
 
+    console.log("realAmount", realAmount, amount);
+
     const operation = constructAdsQuery({
       first: quantity,
       skip: page * quantity,

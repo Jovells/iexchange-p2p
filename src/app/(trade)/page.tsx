@@ -5,7 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import WalletConnectSection from "@/components/sections/WalletConnectSection";
 import IExchangeGuide from "@/components/sections/IExchangeGuide";
 import { useContracts } from "@/common/contexts/ContractContext";
-import { PreparedCurrency } from "@/common/api/types";
+import { PreparedCurrency, Token } from "@/common/api/types";
 
 const Faqs = React.lazy(() => import("@/components/sections/Faqs"));
 const P2PAds = React.lazy(() => import("./P2PAds"));
@@ -33,21 +33,20 @@ const P2PMarket: React.FC = () => {
   const searchParams = useSearchParams();
   const { currentChain, indexerUrl } = useContracts();
   const { currencies, paymentMethods, acceptedCurrencies, tokens } = useMarketData();
-  currencies?.unshift({ symbol: "All", name: "All", id: "0x0", icon: <></> });
 
   const selectedCrypto = tokens?.find(t => t.symbol === searchParams.get("crypto") || "");
   const paymentMethod = searchParams.get("paymentMethod") || "";
   const activeTab = searchParams.get("trade")?.toLowerCase() || "buy";
   const firstCurrency = currencies?.find(c => c.name === "USD");
   const currencyAmount: CurrencyAmount = {
-    currency: searchParams.get("currency") || firstCurrency?.name || "All",
-    id: (searchParams.get("currencyId") as `0x${string}`) || firstCurrency?.id || "0x0",
+    currency: searchParams.get("currency") || firstCurrency?.name || "",
+    id: (searchParams.get("currencyId") as `0x${string}`) || firstCurrency?.id || "",
     amount: searchParams.get("amount") || "",
   };
 
-  const setSelectedCrypto = (crypto: any) => {
+  const setSelectedCrypto = (crypto: Token | undefined) => {
     const query = new URLSearchParams(searchParams.toString());
-    query.set("crypto", crypto.symbol);
+    query.set("crypto", crypto?.symbol || "");
     router.push(`${pathname}?${query.toString()}`);
   };
 
