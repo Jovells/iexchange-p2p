@@ -136,7 +136,7 @@ const ChatWithMerchant = ({
 
 
   return (
-    <div id="messagesContainer" className="w-full h-[600px] lg:h-full border rounded-xl flex flex-col dark:border-gray-700">
+    <div id="messagesContainer" className="w-full h-[600px] border rounded-xl flex flex-col dark:border-gray-700">
       <div className="w-full flex content-between justify-between bg-gray-100 dark:bg-gray-800 p-3 rounded-t-xl text-black dark:text-white">
         <span>
           {" "}
