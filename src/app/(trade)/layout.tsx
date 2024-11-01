@@ -22,17 +22,17 @@ const TradeLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     }, []);
 
     return (
-      <div className="relative lg:container min-h-screen flex flex-col">
+      <div className="relative min-h-screen flex flex-col">
         {isLoading ? (
           <Loader loaderType="spinner" className="h-screen" />
         ) : (
           <>
-            <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#14161B] border-b border-gray-300 dark:border-gray-800">
+            <div className="fixed top-0 left-0 right-0 z-50 border-b border-gray-300 dark:border-gray-800 bg-white dark:bg-[#14161B]">
               <MainNav />
               <SubNav />
             </div>
 
-            <div className="flex-grow pt-[100px]">{children}</div>
+            {<div className={`lex-grow pt-[100px] ${path.includes("dashboard") && "pr-0 lg:pr-6 pl-0 lg:pl-[260px]"}`}>{children}</div>}
             {!path.includes("dashboard") && <Footer />}
           </>
         )}
