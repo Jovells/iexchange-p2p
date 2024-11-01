@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { getImage } from "@/lib/utils";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import useMyPendingOrders from "@/common/hooks/useMyOrders";
+import MultiLevelDropdown from './MultiLevelDropdown';
 
 const menuLinks = [
   { href: QUICK_TRADE_PAGE, label: "Quick Trade" },
@@ -90,14 +91,14 @@ const SubNav = () => {
       );
     });
 
-    const renderLinks1 = (links: { href: string; label: string }[]) =>(
-      links.map(link => {
-        const isActive = currentPath === link.href;
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`
+  const renderLinks1 = (links: { href: string; label: string }[]) => (
+    links.map(link => {
+      const isActive = currentPath === link.href;
+      return (
+        <Link
+          key={link.href}
+          href={link.href}
+          className={`
           block px-2 py-2 pl-0 font-medium 
           ${link.label === "My Ads" && !isMerchant ? "hidden" : "flex"} 
           text-[14px] 
@@ -108,12 +109,12 @@ const SubNav = () => {
           transition-colors duration-200 ease-in-out
           ${isActive ? "border-b-2 dark:border-[#01A2E4]" : "border-0"} 
       `}
-          >
-            {link.label}
-          </Link>
-        );
-      })
-    )
+        >
+          {link.label}
+        </Link>
+      );
+    })
+  )
 
   const renderMenuDropdowns = () => (
     <div className="flex flex-row gap-4">
@@ -148,7 +149,7 @@ const SubNav = () => {
   if (!isMounted || !isAuthenticated) {
     return (
       <div className="border-0 mt-0 lg:mt-2 mb-0">
-        <div className="container mx-auto flex flex-row justify-between items-center">
+        <div className="container mx-auto px-3 lg:px-6 flex flex-row justify-between items-center">
           <div className="flex flex-row gap-4 pl-2 lg:pl-0">{renderLinks1(menuLinks2)}</div>
           {renderMenuDropdowns2()}
         </div>
@@ -159,9 +160,12 @@ const SubNav = () => {
 
   return (
     <div className="border-0 mt-0 lg:mt-2 mb-0">
-      <div className="container mx-auto flex flex-row justify-between items-center">
+      <div className="container mx-auto px-3 lg:px-6 flex flex-row justify-between items-center">
         <div className="flex flex-row gap-4 pl-2 lg:pl-0">{renderLinks(menuLinks)}</div>
-        {renderMenuDropdowns()}
+        <div className="hidden lg:inline-block">
+          {renderMenuDropdowns()}
+        </div>
+        <MultiLevelDropdown />
       </div>
     </div>
   );

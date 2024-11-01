@@ -92,7 +92,7 @@ const P2PMarket: React.FC = () => {
   return (
     <Wrapper>
       <WalletConnectSection />
-      <div className="container mx-auto flex flex-col items-start space-y-4">
+      <div className="container mx-auto px-0  lg:px-6 flex flex-col items-start space-y-4">
         <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
           {/* <button onClick={showModal1}>ddd</button> */}
           <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
