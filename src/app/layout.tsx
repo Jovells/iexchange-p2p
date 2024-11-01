@@ -43,7 +43,7 @@ export default function RootLayout({
                 <Toaster />
                 <Suspense fallback={<TopLoader />}>
                   {children}
-                  <PostAd className="block lg:hidden" text="Post Ad" />
+                  {/* <PostAd className="block lg:hidden" text="Post Ad" /> */}
                 </Suspense>
                 <ModalManager />
                 <ScrollToTopOnPageChange />
