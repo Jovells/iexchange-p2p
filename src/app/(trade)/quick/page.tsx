@@ -11,7 +11,7 @@ import Select from "@/components/ui/Select";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { formatEther } from "ethers";
 import { formatCurrency } from "@/lib/utils";
 import { set, z } from "zod";
@@ -21,6 +21,7 @@ import { useUser } from "@/common/contexts/UserContext";
 import WalletConnect from "@/components/wallet";
 import { QUICK_TRADE_PAGE, SELECT_PAYMENT_METHOD_PAGE } from "@/common/page-links";
 import FaucetAndNetwork from "@/components/faucetAndNetwork";
+import { BOT_MERCHANT_ID } from "@/common/constants";
 
 interface CurrencyInput {
   amount: string;
@@ -39,7 +40,14 @@ export default function QuickTradePage() {
 
   const isBuy = offerType === "buy";
 
-  const options: FetchAdsOptions = { currency: currencies?.[0].id, quantity: 10, tokenId: token?.id, offerType };
+  const options: FetchAdsOptions = {
+    currency: currencies?.[0].id,
+    quantity: 10,
+    merchant: BOT_MERCHANT_ID,
+    tokenId: token?.id,
+    offerType,
+    isActive: true,
+  };
 
   const { data: estimatedRate } = useQuery({
     queryKey: ["estimatedRate", options],
@@ -51,21 +59,14 @@ export default function QuickTradePage() {
     },
   });
 
-  const nonBotOptions: FetchAdsOptions = {
-    ...options,
-    quantity: 1,
-    isActive: true,
-    withoutBots: true,
-  };
-
   const { data: minAndMax, isLoading } = useQueries({
     queries:
       [
         { orderBy: "minOrder", orderDirection: "asc" },
         { orderBy: "maxOrder", orderDirection: "desc" },
       ].map(method => ({
-        queryKey: ["ads", { ...nonBotOptions, ...method }],
-        queryFn: () => fetchAds(indexerUrl, { ...nonBotOptions, ...method }),
+        queryKey: ["ads", { ...options, ...method, quantity: 1 }],
+        queryFn: () => fetchAds(indexerUrl, { ...options, ...method, quantity: 1 }),
       })) || [],
     combine: results => {
       const min = Number(results[0].data?.offers[0].minOrder || 0);
@@ -105,11 +106,9 @@ export default function QuickTradePage() {
       }),
   });
 
-  const [{ fiatAmount, fiatAmountForContract, cryptoAmount, cryptoAmountForContract }, setFormData] = useState({
+  const [{ fiatAmount, cryptoAmount }, setFormData] = useState({
     fiatAmount: "",
-    fiatAmountForContract: "",
     cryptoAmount: "",
-    cryptoAmountForContract: "",
   });
 
   function handleFormDataChange(name: "cryptoAmount" | "fiatAmount", value: string) {
@@ -158,13 +157,15 @@ export default function QuickTradePage() {
     }
   }
 
-  if (!currency && currencies && currencies.length > 0) {
-    setCurrency(currencies[0]);
-  }
+  useLayoutEffect(() => {
+    if (!currency && currencies && currencies.length > 0) {
+      setCurrency(currencies.find(c => c.name === "USD") || currencies[0]);
+    }
 
-  if (!token && tokens && tokens.length > 0) {
-    setToken(tokens.find(t => t.symbol === "USDT") || tokens[0]);
-  }
+    if (!token && tokens && tokens.length > 0) {
+      setToken(tokens.find(t => t.symbol === "USDT") || tokens[0]);
+    }
+  }, [currency, token, !!currencies?.[0], !!tokens?.[0]]);
 
   if (!token || !currency) {
     return <Loader />;
@@ -212,19 +213,21 @@ export default function QuickTradePage() {
           <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
             <button
               onClick={() => setOfferType("buy")}
-              className={`flex-1 px-4 py-3 font-medium border-b-2 ${isBuy
-                ? "border-primary text-darkGray dark:text-darkGray-dark"
-                : "text-gray-400 dark:border-darkGray dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
-                }`}
+              className={`flex-1 px-4 py-3 font-medium border-b-2 ${
+                isBuy
+                  ? "border-primary text-darkGray dark:text-darkGray-dark"
+                  : "text-gray-400 dark:border-darkGray dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
+              }`}
             >
               Buy
             </button>
             <button
               onClick={() => setOfferType("sell")}
-              className={`flex-1 px-4 py-3 font-medium border-b-2 ${!isBuy
-                ? "border-primary text-darkGray dark:text-darkGray-dark"
-                : "dark:border-darkGray text-gray-400 dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
-                }`}
+              className={`flex-1 px-4 py-3 font-medium border-b-2 ${
+                !isBuy
+                  ? "border-primary text-darkGray dark:text-darkGray-dark"
+                  : "dark:border-darkGray text-gray-400 dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
+              }`}
             >
               Sell
             </button>
@@ -330,10 +333,11 @@ export default function QuickTradePage() {
 
             <Link
               href={SELECT_PAYMENT_METHOD_PAGE(searchParams)}
-              className={`w-full ${enabled
-                ? "bg-primary text-gray-100 hover:bg-primary-foreground"
-                : "bg-lightGray dark:bg-lightGray-dark text-gray-500 dark:text-gray-400 pointer-events-none"
-                } flex items-center justify-center py-4 rounded-xl`}
+              className={`w-full ${
+                enabled
+                  ? "bg-primary text-gray-100 hover:bg-primary-foreground"
+                  : "bg-lightGray dark:bg-lightGray-dark text-gray-500 dark:text-gray-400 pointer-events-none"
+              } flex items-center justify-center py-4 rounded-xl`}
             >
               Select Payment Method
               <ArrowRight />
