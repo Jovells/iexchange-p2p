@@ -19,6 +19,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import ReactDOM from 'react-dom';
+import CustomPagination from './CustomPagination';
 
 type Column = {
   key: string;
@@ -44,6 +45,7 @@ type ExpandableTableProps = {
   pageSize?: number;
   totalRecords?: number;
   hasNextPage?: boolean;
+  paginationType?: "numbers" | "default"
   onPageChange: (page: number) => void;
 };
 
@@ -63,6 +65,7 @@ const ExpandableTable = forwardRef(
       totalRecords = data.length,
       onPageChange,
       hasNextPage,
+      paginationType = "default",
     }: ExpandableTableProps,
     ref,
   ) => {
@@ -248,9 +251,11 @@ const ExpandableTable = forwardRef(
             </>
           )}
 
-          {isNoAds && <div className="p-4 text-center text-black dark:text-white">No records to show</div>}
+          {isNoAds && data && data.length > 0 && <div className="p-4 text-center text-black dark:text-white">No records to show</div>}
 
-          {data && data.length > 0 && (
+          {paginationType == "default" && <CustomPagination currentPage={page} onPageChange={onPageChange} hasNextPage={!!hasNextPage} />}
+
+          {paginationType == "numbers" && data && data.length > 0 && (
             <div className="flex justify-center py-3">
               <div className="flex items-center mx-4 gap-2">
                 <button
@@ -292,6 +297,7 @@ const ExpandableTable = forwardRef(
               </div>
             </div>
           )}
+
         </div>
       </div>
     );
