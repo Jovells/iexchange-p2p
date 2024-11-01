@@ -11,7 +11,6 @@ import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/common/contexts/ThemeProvider";
 import { Suspense } from "react";
 import PostAd from "./(trade)/postAd";
-import ScrollToTopOnPageChange from "@/components/layout/ScrollToTop";
 
 const inter = Inter({ subsets: ["latin"] });
 const roboto = Roboto({
@@ -42,11 +41,12 @@ export default function RootLayout({
               <ModalContextProvider>
                 <Toaster />
                 <Suspense fallback={<TopLoader />}>
+                <div>
                   {children}
                   <PostAd className="block lg:hidden" text="Post Ad" />
+                </div>
                 </Suspense>
                 <ModalManager />
-                <ScrollToTopOnPageChange />
               </ModalContextProvider>
             </WalletProvider>
           </ThemeProvider>
