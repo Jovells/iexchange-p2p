@@ -187,7 +187,7 @@ export default function QuickTradePage() {
   return (
     <>
       {/* cta */}
-      <div className="self-center max-w-prose mb-6 lg:mb-0 text-center lg:text-left">
+      <div className="self-center max-w-prose mb-10 lg:mb-0 mt-16 lg:mt-0 text-center lg:text-left">
         <h1 className="text-3xl sm:text-4xl lg:text-8xl font-bold mb-2 text-gray-900 dark:text-white">
           <span className="gradient-text">P2P</span> Quick trade
         </h1>
@@ -197,9 +197,14 @@ export default function QuickTradePage() {
         <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
           Quickly Buy and Sell Crypto with various payment methods
         </p>
-
-        <WalletConnect />
-        <FaucetAndNetwork className="w-full lg:place-self-start md:w-[400px] md:flex-nowrap flex flex-wrap place-self-center mb-4 h-[50px] " />
+        <div className="flex flex-col justify-center items-center lg:justify-start lg:items-start w-full">
+          <div>
+            <WalletConnect />
+          </div>
+          <div>
+            <FaucetAndNetwork className="w-full lg:place-self-start md:w-[400px] md:flex-nowrap flex flex-wrap place-self-center mb-4 h-[50px] " />
+          </div>
+        </div>
       </div>
       {/* form */}
       <div className=" w-full max-w-[500px] mx-auto lg:mx-0">
@@ -207,21 +212,19 @@ export default function QuickTradePage() {
           <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
             <button
               onClick={() => setOfferType("buy")}
-              className={`flex-1 px-4 py-3 font-medium border-b-2 ${
-                isBuy
-                  ? "border-primary text-darkGray dark:text-darkGray-dark"
-                  : "text-gray-400 dark:border-darkGray dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
-              }`}
+              className={`flex-1 px-4 py-3 font-medium border-b-2 ${isBuy
+                ? "border-primary text-darkGray dark:text-darkGray-dark"
+                : "text-gray-400 dark:border-darkGray dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
+                }`}
             >
               Buy
             </button>
             <button
               onClick={() => setOfferType("sell")}
-              className={`flex-1 px-4 py-3 font-medium border-b-2 ${
-                !isBuy
-                  ? "border-primary text-darkGray dark:text-darkGray-dark"
-                  : "dark:border-darkGray text-gray-400 dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
-              }`}
+              className={`flex-1 px-4 py-3 font-medium border-b-2 ${!isBuy
+                ? "border-primary text-darkGray dark:text-darkGray-dark"
+                : "dark:border-darkGray text-gray-400 dark:text-gray-500 hover:text-darkGray dark:hover:text-darkGray-dark hover:border-primary"
+                }`}
             >
               Sell
             </button>
@@ -327,11 +330,10 @@ export default function QuickTradePage() {
 
             <Link
               href={SELECT_PAYMENT_METHOD_PAGE(searchParams)}
-              className={`w-full ${
-                enabled
-                  ? "bg-primary text-gray-100 hover:bg-primary-foreground"
-                  : "bg-lightGray dark:bg-lightGray-dark text-gray-500 dark:text-gray-400 pointer-events-none"
-              } flex items-center justify-center py-4 rounded-xl`}
+              className={`w-full ${enabled
+                ? "bg-primary text-gray-100 hover:bg-primary-foreground"
+                : "bg-lightGray dark:bg-lightGray-dark text-gray-500 dark:text-gray-400 pointer-events-none"
+                } flex items-center justify-center py-4 rounded-xl`}
             >
               Select Payment Method
               <ArrowRight />

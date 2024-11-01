@@ -41,8 +41,10 @@ export default function RootLayout({
               <ModalContextProvider>
                 <Toaster />
                 <Suspense fallback={<TopLoader />}>
+                <div>
                   {children}
                   <PostAd className="block lg:hidden" text="Post Ad" />
+                </div>
                 </Suspense>
                 <ModalManager />
               </ModalContextProvider>

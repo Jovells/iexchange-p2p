@@ -43,7 +43,7 @@ const ModalAlert: React.FC<Props> = ({
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col bg-white dark:bg-gray-800 shadow-xl rounded-xl py-10 w-[500px] min-h-[250px]">
       <div className="w-full flex flex-row justify-end">
         <button
           onClick={hideModal}
@@ -53,7 +53,7 @@ const ModalAlert: React.FC<Props> = ({
           <X />
         </button>
       </div>
-      <div className="flex p-10 flex-col justify-center items-center gap-8 bg-white dark:bg-gray-800 shadow-xl rounded-xl py-10 w-[500px] min-h-[250px]">
+      <div className="flex p-10 flex-col justify-center items-center gap-8">
         {icon ? (
           typeof icon === "string" ? (
             <img src={icon} alt="icon" className="h-28 w-28" />
@@ -79,7 +79,7 @@ const ModalAlert: React.FC<Props> = ({
           )
         )}
         <h1 className="text-center text-lg text-black dark:text-white">{title}</h1>
-        <p className="text-md text-gray-400 dark:text-gray-300 text-center">{description}</p>
+        <p className="text-md text-gray-400 dark:text-gray-300 text-center px-6">{description}</p>
         <div className="flex gap-2">
           <Button
             loading={loading}

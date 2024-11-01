@@ -31,6 +31,7 @@ import DetailBlock from "./detailBlock";
 import { CachedConversation, useSendMessage } from "@xmtp/react-sdk";
 import Image from "next/image";
 import { formatEther } from "viem";
+import Wrapper from "@/components/layout/Wrapper";
 
 const ChatWithMerchant = lazy(() => import("@/components/merchant/ChatWithMerchant"));
 
@@ -414,8 +415,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   if (!order) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <h2 className="text-2xl font-semibold text-gray-700">Order Not Found</h2>
-        <p className="text-gray-500 mt-2">The order you are looking for does not exist</p>
+        <h2 className="text-2xl font-semibold">Order Not Found</h2>
+        <p className="mt-2">The order you are looking for does not exist</p>
         <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4]">
           Go Home
         </Link>
@@ -436,8 +437,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   if (isConnected && !(isTrader || isMerchant)) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <h2 className="text-2xl font-semibold text-gray-700">Unauthorized Access</h2>
-        <p className="text-gray-500 mt-2">You are not authorized to view this page.</p>
+        <h2 className="text-2xl font-semibold">Unauthorized Access</h2>
+        <p className="mt-2">You are not authorized to view this page.</p>
         <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4]">
           Go Home
         </Link>
@@ -523,7 +524,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
         </div>
       }
     >
-      <div className="w-full bg-[#CCE0F6] dark:bg-gray-800 px-6">
+      <div className="w-full bg-[#CCE0F6] dark:bg-gray-800 p-0">
         <div className="w-full lg:container lg:mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between py-10 lg:px-0">
           <div className="gap-3">
             <span className="font-bold text-gray-600 dark:text-gray-300">Order Created</span>
@@ -548,207 +549,218 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
           </div>
         </div>
       </div>
-      <div className="container mx-auto px-0 py-4 ">
-        <div className="w-full h-auto grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
-          {/* Chat Section */}
-          <div className="hidden lg:block">
-            <ChatWithMerchant conversation={conversation} setConversation={setConversation} otherParty={otherParty} />
-          </div>
 
-          {/* Order Information Section */}
-          {!isCompleted ? (
-            <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl">
-              {/* Header */}
-              <div className="flex justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  {isBot && <span className="rounded text-gray-100 font-bold text-sm p-1 bg-primary">BOT</span>}{" "}
-                  <h2 className="text-lg text-gray-500 dark:text-gray-400">Order in Progress</h2>
-                </div>
+      <Wrapper>
+        <div className="container mx-auto">
+          <div className="w-full h-auto grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-20">
+            {/* Chat Section */}
+            <div className="hidden lg:block">
+              <ChatWithMerchant conversation={conversation} setConversation={setConversation} otherParty={otherParty} />
+            </div>
 
-                <div
-                  className={`px-2 py-1 text-sm text-gray-100 rounded-xl ${isBuyer ? " bg-[#4ade80]" : "bg-[#f6465d]"}`}
-                >
-                  {isBuyer ? "Buy" : "Sell"}
-                </div>
-              </div>
-
-              {/* Order Details */}
-              <div className="flex flex-col items-start gap-8">
-                <div className="flex w-full">
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={` ${
-                        isPending ? "bg-primary" : "bg-lightGray dark:bg-lightGray-dark"
-                      } text-white rounded-full w-10 h-12 flex items-center justify-center font-bold`}
-                    >
-                      1
-                    </div>
-                    <div
-                      className={`h-full border-l-2   ${
-                        isPending ? "border-primary" : "border-lightGray dark:border-lightGray-dark"
-                      }`}
-                    ></div>
+            {/* Order Information Section */}
+            {!isCompleted ? (
+              <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl">
+                {/* Header */}
+                <div className="flex justify-between mb-6">
+                  <div className="flex items-center gap-2">
+                    {isBot && <span className="rounded text-gray-100 font-bold text-sm p-1 bg-primary">BOT</span>}{" "}
+                    <h2 className="text-lg text-gray-500 dark:text-gray-400">Order in Progress</h2>
                   </div>
-                  <div className="ml-4 flex-grow">
-                    <span className="text-darkGray dark:text-darkGray-dark font-semibold">Order Information</span>
-                    <p className="text-gray-500 dark:text-gray-400">{isBuyer ? buyerText[1].sub : sellerText[1].sub}</p>
-                    {currentStep === 1 && botCountDown(isBuyerAndNotYetAccepted ? "accepted" : "paid")}
-                    <div className="flex border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4 mt-2 flex-col justify-start items-start gap-1 w-full">
-                      <InfoBlock
-                        isAmount
-                        label="Fiat Amount"
-                        value={isBuyer ? fiatAmount : cryptoAmount}
-                        isBuyer={isBuyer}
-                      />
-                      <InfoBlock label="Price" value={order?.offer.rate} />
-                      <InfoBlock label="Receive Quantity" value={isBuyer ? cryptoAmount : fiatAmount} />
-                    </div>
+
+                  <div
+                    className={`px-2 py-1 text-sm text-gray-100 rounded-xl ${
+                      isBuyer ? " bg-[#4ade80]" : "bg-[#f6465d]"
+                    }`}
+                  >
+                    {isBuyer ? "Buy" : "Sell"}
                   </div>
                 </div>
-              </div>
 
-              {/* Payment Details */}
-              <div className="flex flex-col items-start gap-8">
-                <div className="flex flex-row w-full">
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={` ${
-                        isPaid ? "bg-lightGray dark:bg-lightGray-dark" : "bg-primary"
-                      } text-white rounded-full w-10 h-12 flex items-center justify-center font-bold`}
-                    >
-                      2
-                    </div>
-                    <div
-                      className={`h-full border-l-2   ${
-                        isPaid ? "border-lightGray dark:border-lightGray-dark" : "border-primary"
-                      }`}
-                    ></div>
-                  </div>
-                  <div className="ml-4 flex-grow">
-                    <span className="text-darkGray dark:text-darkGray-dark font-semibold">
-                      {isBuyer ? buyerText[2].head : sellerText[2].head}
-                    </span>
-                    <p className="text-gray-500 dark:text-gray-400">{isBuyer ? buyerText[2].sub : sellerText[2].sub}</p>
-
-                    {currentStep === 2 && botCountDown("paid")}
-                    <div className="w-full border  mb-4 mt-2 flex rounded-xl p-4 h-auto border-gray-200 dark:border-gray-700">
-                      <div className="w-full  flex flex-col gap-4">
-                        <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
-                        <DetailBlock
-                          label="Account Name"
-                          value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.name}
-                        />
-                        <DetailBlock
-                          label="Account Number"
-                          value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.number}
-                        />
+                {/* Order Details */}
+                <div className="flex flex-col items-start gap-8">
+                  <div className="flex w-full">
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={` ${
+                          isPending ? "bg-primary" : "bg-lightGray dark:bg-lightGray-dark"
+                        } text-white rounded-full w-10 h-12 flex items-center justify-center font-bold`}
+                      >
+                        1
                       </div>
+                      <div
+                        className={`h-full border-l-2   ${
+                          isPending ? "border-primary" : "border-lightGray dark:border-lightGray-dark"
+                        }`}
+                      ></div>
+                    </div>
+                    <div className="ml-4 flex-grow">
+                      <span className="text-darkGray dark:text-darkGray-dark font-semibold">Order Information</span>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        {isBuyer ? buyerText[1].sub : sellerText[1].sub}
+                      </p>
 
-                      {accountDetails?.details && (
-                        <div className="w-full">
+                      <div className="flex border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4 mt-2 flex-col justify-start items-start gap-1 w-full">
+                        <InfoBlock
+                          isAmount
+                          label="Fiat Amount"
+                          value={isBuyer ? fiatAmount : cryptoAmount}
+                          isBuyer={isBuyer}
+                        />
+                        <InfoBlock label="Price" value={order?.offer.rate} />
+                        <InfoBlock label="Receive Quantity" value={isBuyer ? cryptoAmount : fiatAmount} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Details */}
+                <div className="flex flex-col items-start gap-8">
+                  <div className="flex flex-row w-full">
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={` ${
+                          isPaid ? "bg-lightGray dark:bg-lightGray-dark" : "bg-primary"
+                        } text-white rounded-full w-10 h-12 flex items-center justify-center font-bold`}
+                      >
+                        2
+                      </div>
+                      <div
+                        className={`h-full border-l-2   ${
+                          isPaid ? "border-lightGray dark:border-lightGray-dark" : "border-primary"
+                        }`}
+                      ></div>
+                    </div>
+                    <div className="ml-4 flex-grow">
+                      <span className="text-darkGray dark:text-darkGray-dark font-semibold">
+                        {isBuyer ? buyerText[2].head : sellerText[2].head}
+                      </span>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        {isBuyer ? buyerText[2].sub : sellerText[2].sub}
+                      </p>
+                      <div className="w-full border  mb-4 mt-2 flex rounded-xl p-4 h-auto border-gray-200 dark:border-gray-700">
+                        <div className="w-full  flex flex-col gap-4">
+                          <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
                           <DetailBlock
-                            label="Extra Details"
-                            value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.details}
+                            label="Account Name"
+                            value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.name}
+                          />
+                          <DetailBlock
+                            label="Account Number"
+                            value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.number}
                           />
                         </div>
-                      )}
+
+                        {accountDetails?.details && (
+                          <div className="w-full">
+                            <DetailBlock
+                              label="Extra Details"
+                              value={isBuyerAndNotYetAccepted ? "********" : accountDetails?.details}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Proceed Information */}
-              <div className="flex flex-col items-start gap-8 mb-12">
-                <div className="flex flex-row w-full">
-                  <div className="flex flex-col items-center">
-                    <div className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">
-                      3
+                {/* Proceed Information */}
+                <div className="flex flex-col items-start gap-8 mb-12">
+                  <div className="flex flex-row w-full">
+                    <div className="flex flex-col items-center">
+                      <div className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">
+                        3
+                      </div>
+                    </div>
+                    <div className="ml-4 flex-grow">
+                      <span className="text-darkGray dark:text-darkGray-dark font-semibold">
+                        {isBuyer ? buyerText[3].head : sellerText[3].head}
+                      </span>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        {isBuyer ? buyerText[3].sub : sellerText[3].sub}
+                      </p>
                     </div>
                   </div>
-                  <div className="ml-4 flex-grow">
-                    <span className="text-darkGray dark:text-darkGray-dark font-semibold">
-                      {isBuyer ? buyerText[3].head : sellerText[3].head}
-                    </span>
-                    <p className="text-gray-500 dark:text-gray-400">{isBuyer ? buyerText[3].sub : sellerText[3].sub}</p>
-                    {currentStep === 3 && botCountDown("released")}
+                </div>
+
+                {/* Transactions */}
+                {transactionHashes && (
+                  <div>
+                    <h2 className="text-gray-700 dark:text-gray-300">Transactions:</h2>
+                    {transactionHashes.map((hash, index) => (
+                      <div key={index} className="flex flex-row items-center space-x-2">
+                        <div className="text-gray-500 dark:text-gray-400">{hash.status} :</div>
+                        <a
+                          href={`${currentChain?.blockExplorers?.default.url}/tx/${hash.hash}`}
+                          target="_blank"
+                          className="text-blue-500 dark:text-blue-300"
+                        >
+                          {shortenAddress(hash.hash, 8)}
+                        </a>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              </div>
+                )}
 
-              {/* Transactions */}
-              {transactionHashes && (
-                <div>
-                  <h2 className="text-gray-700 dark:text-gray-300">Transactions:</h2>
-                  {transactionHashes.map((hash, index) => (
-                    <div key={index} className="flex flex-row items-center space-x-2">
-                      <div className="text-gray-500 dark:text-gray-400">{hash.status} :</div>
-                      <a
-                        href={`${currentChain?.blockExplorers?.default.url}/tx/${hash.hash}`}
-                        target="_blank"
-                        className="text-blue-500 dark:text-blue-300"
-                      >
-                        {shortenAddress(hash.hash, 8)}
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex flex-col lg:flex-row gap-6 my-6">
-                <Button
-                  loading={isWriteContractPending}
-                  text={buttonText}
-                  className={`${
-                    disabled
-                      ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
-                      : "bg-black dark:bg-slate-100 dark:text-gray-900 text-white hover:bg-gray-400 dark:hover:bg-gray-400 transition duration-300 ease-in-out"
-                  } rounded-xl px-4 py-2`}
-                  onClick={onClick}
-                  disabled={disabled}
-                />
-                {isCancellable && (
+                {/* Action Buttons */}
+                <div className="flex flex-col lg:flex-row gap-6 my-6">
                   <Button
-                    text="Cancel Order"
-                    className="text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 rounded-xl px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-300 ease-in-out"
-                    onClick={handleCancelOrder}
+                    loading={isWriteContractPending}
+                    text={buttonText}
+                    className={`${
+                      disabled
+                        ? "bg-slate-100 text-gray-500 dark:bg-slate-800 dark:text-gray-400"
+                        : "bg-black dark:bg-slate-100 dark:text-gray-900 text-white hover:bg-gray-400 dark:hover:bg-gray-400 transition duration-300 ease-in-out"
+                    } rounded-xl px-4 py-2`}
+                    onClick={onClick}
+                    disabled={disabled}
                   />
-                )}
-                <Button
-                  text="Chat With Merchant"
-                  icon={<MessageCircle />}
-                  className="block lg:hidden bg-[#01a2e4] text-black dark:text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4] dark:hover:bg-blue-500 transition duration-300 ease-in-out"
-                  onClick={() => setIsChatModalOpen(true)}
-                />
-              </div>
-            </div>
-          ) : (
-            /* Order completed sections */
-            <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl flex flex-col">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl text-gray-500 font-bold dark:text-gray-400">Order {buttonText}</h2>
-                {order.status === OrderState.Cancelled ? (
-                  <Image src="/images/icons/cancelled.svg" alt="success" width={60} height={60} />
-                ) : (
-                  <Image src="/images/icons/success.svg" alt="success" width={60} height={60} />
-                )}
-              </div>
-              <div className=" flex-grow">
-                <span className="text-black dark:text-white ">
-                  {isBuyer ? "Buy" + " " + order.offer.token.symbol : "Sell" + " " + order.offer.token.symbol}
-                </span>
-                <div className="flex border border-lightGray dark:border-lightGray-dark rounded-xl p-4 flex-col justify-start items-start gap-1 w-full mt-6">
-                  <InfoBlock isAmount label="Fiat Amount" value={fiatAmount} isBuyer={isBuyer} />
-                  <InfoBlock label="Price" value={order?.offer.rate} />
-                  <InfoBlock label="Total Quantity" value={formatCurrency(order.quantity, order.offer.token.symbol)} />
-                  {/* <InfoBlock label="Time created" value={isBuyer ? cryptoAmount : fiatAmount} /> */}
-                  <InfoBlock label="Payment method" value={order.offer.paymentMethod.method} />
+                  {isCancellable && (
+                    <Button
+                      text="Cancel Order"
+                      className="text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 rounded-xl px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-300 ease-in-out"
+                      onClick={handleCancelOrder}
+                    />
+                  )}
+                  <Button
+                    text="Chat With Merchant"
+                    icon={<MessageCircle />}
+                    className="block lg:hidden bg-[#01a2e4] text-black dark:text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4] dark:hover:bg-blue-500 transition duration-300 ease-in-out"
+                    onClick={() => setIsChatModalOpen(true)}
+                  />
                 </div>
               </div>
-            </div>
-          )}
+            ) : (
+              /* Order completed sections */
+              <div className="p-6 h-full shadow-lg border border-gray-300 dark:border-gray-700 rounded-xl flex flex-col">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl text-gray-500 font-bold dark:text-gray-400">Order {buttonText}</h2>
+                  {order.status === OrderState.Cancelled ? (
+                    <Image src="/images/icons/cancelled.svg" alt="success" width={60} height={60} />
+                  ) : (
+                    <Image src="/images/icons/success.svg" alt="success" width={60} height={60} />
+                  )}
+                </div>
+                <div className=" flex-grow">
+                  <span className="text-black dark:text-white ">
+                    {isBuyer ? "Buy" + " " + order.offer.token.symbol : "Sell" + " " + order.offer.token.symbol}
+                  </span>
+                  <div className="flex border border-lightGray dark:border-lightGray-dark rounded-xl p-4 flex-col justify-start items-start gap-1 w-full mt-6">
+                    <InfoBlock isAmount label="Fiat Amount" value={fiatAmount} isBuyer={isBuyer} />
+                    <InfoBlock label="Price" value={order?.offer.rate} />
+                    <InfoBlock
+                      label="Total Quantity"
+                      value={formatCurrency(order.quantity, order.offer.token.symbol)}
+                    />
+                    {/* <InfoBlock label="Time created" value={isBuyer ? cryptoAmount : fiatAmount} /> */}
+                    <InfoBlock label="Payment method" value={order.offer.paymentMethod.method} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </Wrapper>
 
       {isChatModalOpen && (
         <div className="fixed inset-0 flex items-end bg-black bg-opacity-50 z-50">

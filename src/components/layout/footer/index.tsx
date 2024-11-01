@@ -20,7 +20,7 @@ const Footer = () => {
   const youtubeIcon = getImage("youtube.svg")
 
   return (
-    <footer className="border-t border-[#C3C9D0] dark:border-[#3D4651] dark:bg-[#1F2932]">
+    <footer className="border-t border-[#C3C9D0] dark:border-[#3D4651] ">
       <div className="container mx-auto py-8">
         {/* socials and theme toggle */}
         <div className="pt-10 pb-14 ">
