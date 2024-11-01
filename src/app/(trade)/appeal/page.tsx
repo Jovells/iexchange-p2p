@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import Stake from './stake';
 import InProgress from "@/components/datatable/inProgress";
+import Wrapper from '@/components/layout/Wrapper';
 
 const columns: any = [
   {
@@ -61,37 +62,40 @@ const Appeals = () => {
   };
 
   return <InProgress />;
+
   return (
-    <div className="container mx-auto p-0 py-4 pt-0">
-      {!hasStake && (
-        <div className="min-h-[500px] flex justify-center items-center">
-          <div className="flex flex-col justify-center items-center space-y-4">
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Get to settle cases and resolve trading problems by staking $20 and get returns.
-            </p>
-            <Button
-              text="Stake on Platform"
-              iconPosition="right"
-              icon="/images/icons/export.svg"
-              className="border px-3 py-2 rounded-xl text-gray-500 dark:text-gray-200"
-              onClick={handleStake}
-            />
+    <Wrapper>
+      <div className="container mx-auto p-0 py-4 pt-0">
+        {!hasStake && (
+          <div className="min-h-[500px] flex justify-center items-center">
+            <div className="flex flex-col justify-center items-center space-y-4">
+              <p className="text-xl text-gray-600 dark:text-gray-300">
+                Get to settle cases and resolve trading problems by staking $20 and get returns.
+              </p>
+              <Button
+                text="Stake on Platform"
+                iconPosition="right"
+                icon="/images/icons/export.svg"
+                className="border px-3 py-2 rounded-xl text-gray-500 dark:text-gray-200"
+                onClick={handleStake}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {hasStake && (
-        <div className="py-12 flex flex-col gap-10">
-          <div className="flex flex-col gap-3">
-            <h1 className="text-gray-600 dark:text-white text-xl">Awaiting Case</h1>
-            <p className="text-gray-500 dark:text-white">Pick up an order and settle cases fairly.</p>
+        {hasStake && (
+          <div className="py-12 flex flex-col gap-10">
+            <div className="flex flex-col gap-3">
+              <h1 className="text-gray-600 dark:text-white text-xl">Awaiting Case</h1>
+              <p className="text-gray-500 dark:text-white">Pick up an order and settle cases fairly.</p>
+            </div>
+            <GridTable columns={columns} data={data.length > 0 ? data : []} actions={actions} itemsPerPage={50} />
           </div>
-          <GridTable columns={columns} data={data.length > 0 ? data : []} actions={actions} itemsPerPage={50} />
-        </div>
-      )}
+        )}
 
-      <FaqsSection />
-    </div>
+        <FaqsSection />
+      </div>
+    </Wrapper>
   );
 };
 

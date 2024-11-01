@@ -17,6 +17,7 @@ import { useUser } from "@/common/contexts/UserContext";
 import { ACCEPTED_CURRENCIES, ACCEPTED_TOKENS, PAYMENT_METHODS } from "@/common/constants/queryKeys";
 import { useModal } from "@/common/contexts/ModalContext";
 import useMarketData from "@/common/hooks/useMarketData";
+import Wrapper from "@/components/layout/Wrapper";
 
 interface P2PMarketProps {}
 
@@ -67,7 +68,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
   }
 
   return (
-    <>
+    <Wrapper>
       <WalletConnectSection />
       <div className="container mx-auto  p-0 flex flex-col items-start space-y-4">
         <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
@@ -103,7 +104,7 @@ const P2PMarket: React.FC<P2PMarketProps> = () => {
           <Faqs />
         </Suspense>
       </div>
-    </>
+    </Wrapper>
   );
 };
 
