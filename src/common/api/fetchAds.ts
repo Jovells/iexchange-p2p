@@ -29,7 +29,7 @@ import {
       withoutBots,
     } = options || {};
 
-    const realAmount = amount ? (parseFloat(amount) * 10 ** 18).toString() : undefined;
+    const realAmount = amount ? (BigInt(amount) * BigInt(10 ** 18)).toString() : undefined;
 
     console.log("realAmount", realAmount, amount);
 
@@ -44,8 +44,8 @@ import {
         { name: "currency", value: currency, type: "String" },
         { name: "active", value: isActive, type: "Boolean" },
         { name: "merchant", value: merchant, type: "String" },
-        { name: "maxOrder_gt", value: realAmount, type: "BigInt" },
-        { name: "minOrder_lt", value: realAmount, type: "BigInt" },
+        { name: "maxOrder_gte", value: realAmount, type: "BigInt" },
+        { name: "minOrder_lte", value: realAmount, type: "BigInt" },
         { name: "paymentMethod", value: paymentMethod, type: "String" },
         { name: "rate_gt", value: "0", type: "BigInt" },
         { name: "id", value: orderId, type: "String" },
