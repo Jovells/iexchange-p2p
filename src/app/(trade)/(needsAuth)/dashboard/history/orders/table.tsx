@@ -1,11 +1,11 @@
-'use client'
-import ExpandableTable from '@/components/data-grid'
-import { useSearchParams } from 'next/navigation';
-import React, { FC, Suspense, useRef, useState } from 'react'
-import {  useQuery } from "@tanstack/react-query";
+"use client";
+import ExpandableTable from "@/components/data-grid";
+import { useSearchParams } from "next/navigation";
+import React, { FC, Suspense, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import Button from "@/components/ui/Button";
-import { useContracts } from '@/common/contexts/ContractContext';
+import { useContracts } from "@/common/contexts/ContractContext";
 import OrderStage from "@/app/(trade)/(needsAuth)/order/[orderId]/OderStage";
 import { fetchOrders } from "@/common/api/fetchOrders";
 import { OfferType, Order, OrderOptions, OrderState } from "@/common/api/types";
@@ -103,4 +103,4 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
   );
 };
 
-export default OrdersTable
+export default OrdersTable;

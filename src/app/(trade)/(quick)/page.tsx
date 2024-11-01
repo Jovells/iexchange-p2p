@@ -169,7 +169,7 @@ export default function QuickTradePage() {
   }, [currency, token, !!currencies?.[0], !!tokens?.[0]]);
 
   if (!token || !currency) {
-    return <Loader />;
+    return <Loader fullPage />;
   }
 
   console.log("ql", "curr", minAndMax, "tok", tokens, "cu", currency, "to", token, "esr", estimatedRate);
@@ -194,10 +194,10 @@ export default function QuickTradePage() {
       {/* cta */}
       <div className="self-center max-w-prose mb-10 lg:mb-0 mt-16 lg:mt-0 text-center lg:text-left">
         <h1 className="text-3xl sm:text-4xl lg:text-8xl font-bold mb-2 text-gray-900 dark:text-white">
-          <span className="gradient-text">P2P</span> Quick trade
+          <span className="gradient-text">P2P</span> Quick Trade
         </h1>
         <h2 className="text-lg sm:text-xl  lg:text-2xl font-bold mb-3 lg:mb-4 text-gray-900 dark:text-white">
-          Buy and Sell crypto right from your decentralised wallet
+          Quickly Buy and Sell crypto right from your decentralised wallet
         </h2>
         <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
           Quickly Buy and Sell Crypto with various payment methods
@@ -250,6 +250,7 @@ export default function QuickTradePage() {
                   </label>
                   <div className="flex items-center">
                     <input
+                      disabled={minAndMax.maxCrypto === "0.00" || isLoading}
                       type="text"
                       className="w-full flex-1 text-lg font-bold md:text-2xl text-ellipsis bg-transparent outline-none text-black dark:text-white"
                       placeholder={minAndMax.minFiat + " - " + minAndMax.maxFiat}
@@ -275,7 +276,9 @@ export default function QuickTradePage() {
                       />
                     </div>
                   </div>
-                  {formErrors.fiatAmount && <p className="text-red-500 mt-1 text-sm">{formErrors.fiatAmount}</p>}
+                  {formErrors.fiatAmount && minAndMax.maxCrypto !== "0.00" && (
+                    <p className="text-red-500 mt-1 text-sm">{formErrors.fiatAmount}</p>
+                  )}
                 </div>
 
                 <div className="p-4 w-full bg-gray-50 dark:bg-gray-700 rounded-xl">
@@ -284,6 +287,7 @@ export default function QuickTradePage() {
                   </label>
                   <div className="flex items-center">
                     <input
+                      disabled={minAndMax.maxCrypto === "0.00" || isLoading}
                       type="text"
                       className="w-full flex-1 text-lg text-ellipsis font-bold md:text-2xl bg-transparent outline-none text-black dark:text-white"
                       placeholder={minAndMax.minCrypto + " - " + minAndMax.maxCrypto}
@@ -312,7 +316,9 @@ export default function QuickTradePage() {
                       />
                     </div>
                   </div>
-                  {formErrors.cryptoAmount && <p className="text-red-500 mt-1 text-sm">{formErrors.cryptoAmount}</p>}
+                  {formErrors.cryptoAmount && minAndMax.maxCrypto !== "0.00" && (
+                    <p className="text-red-500 mt-1 text-sm">{formErrors.cryptoAmount}</p>
+                  )}
                 </div>
               </div>
 
@@ -363,7 +369,7 @@ export default function QuickTradePage() {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex container w-screen items-center justify-center h-full">
             <Loader />
           </div>
         )}

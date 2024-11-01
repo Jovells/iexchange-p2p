@@ -13,11 +13,14 @@ import { useUser } from "../contexts/UserContext";
 import CediH from "../abis/CediH";
 import { useContracts } from "../contexts/ContractContext";
 import { useBalance, useReadContract } from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 const useCreateOrder = (
   offer: Offer | undefined,
   initialFormData?: { fiatAmount?: string; cryptoAmount?: string; paymentMethod?: PaymentMethod },
 ) => {
+  const { openConnectModal } = useConnectModal();
+  const { isConnected } = useUser();
   const { indexerUrl } = useContracts();
   const [{ fiatAmount, cryptoAmount, paymentMethod }, setFormData] = useState({
     fiatAmount: initialFormData?.fiatAmount || "",
@@ -94,6 +97,7 @@ const useCreateOrder = (
   const alreadyApproved = allowance! >= tokensAmount || isBuy;
 
   const handleSubmit = async (e: React.BaseSyntheticEvent) => {
+    if (!isConnected) return openConnectModal?.();
     e.preventDefault();
     if (!offer) return toast.error("please Select an offer");
     if (!paymentMethod) return toast.error("please Select a payment method");

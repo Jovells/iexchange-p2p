@@ -40,27 +40,25 @@ const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, onPage
     // }, []);
 
     return (
-        <div className="flex items-center space-x-4 justify-center mt-4">
-            <button
-                onClick={handlePrevious}
-                disabled={currentPage <= 1}
-                className="px-4 py-2 bg-transparent cursor-pointer rounded disabled:opacity-50 text-black dark:text-white"
-            >
-                Prev
-            </button>
+      <div className="flex items-center space-x-4 justify-center mt-4">
+        <button
+          onClick={handlePrevious}
+          disabled={currentPage < 1}
+          className="px-4 py-2 bg-transparent cursor-pointer rounded disabled:opacity-50 text-black dark:text-white"
+        >
+          Prev
+        </button>
 
-            <span className="text-lg font-semibold">
-                {currentPage}
-            </span>
+        <span className="text-lg font-semibold">{currentPage + 1}</span>
 
-            <button
-                onClick={handleNext}
-                disabled={!hasNextPage}
-                className="px-4 py-2 bg-transparent cursor-pointer rounded disabled:opacity-50 text-black dark:text-white"
-            >
-                Next
-            </button>
-        </div>
+        <button
+          onClick={handleNext}
+          disabled={!hasNextPage}
+          className="px-4 py-2 bg-transparent cursor-pointer rounded disabled:opacity-50 text-black dark:text-white"
+        >
+          Next
+        </button>
+      </div>
     );
 };
 

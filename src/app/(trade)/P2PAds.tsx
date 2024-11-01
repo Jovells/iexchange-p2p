@@ -1,6 +1,6 @@
 "use client";
 import ExpandableTable from "@/components/data-grid";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { FC, Suspense, useRef, useState } from "react";
 import CreateOrder from "@/app/(trade)/create-order";
 import { useQuery } from "@tanstack/react-query";
@@ -80,7 +80,8 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
   const { indexerUrl } = useContracts();
   const tableRef = useRef<{ closeExpandedRow: () => void } | null>(null);
   const searchParams = useSearchParams();
-  const [currentPage, setCurrentPage] = useState<number>(0);
+  const currentPage = Number(searchParams.get("page") || "0");
+  const router = useRouter();
 
   const trade = searchParams.get("trade") || "Buy";
   // const crypto = searchParams.get("crypto") || "";
@@ -125,9 +126,10 @@ const P2PAds: FC<Props> = ({ offerType, token, currency, amount, paymentMethod, 
     retry: 0,
   });
 
-
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    const params = new URLSearchParams(searchParams);
+    params.set("page", page.toString());
+    router.replace(`${window.location.pathname}?${params.toString()}`);
     console.log("Page changed to:", page);
   };
 

@@ -6,12 +6,13 @@ interface Props {
   className?: string;
   loaderType?: "spinner" | "text";
   size?: "xs" | "sm" | "md" | "lg" | "xl";
+  fullPage?: boolean;
 }
 
-const Loader: React.FC<Props> = ({ className, loaderType = "spinner", size = "md" }) => {
+const Loader: React.FC<Props> = ({ className, loaderType = "spinner", size = "md", fullPage }) => {
   const sizeToPix = size === "xs" ? 4 : size === "sm" ? 10 : size === "md" ? 16 : size === "lg" ? 24 : 32;
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className={`flex items-center justify-center ${className + (fullPage ? " h-screen, w-screen" : "")}`}>
       {loaderType === "spinner" && (
         <div
           className={`w-${sizeToPix} h-${sizeToPix} border-4 border-blue-500 border-dashed rounded-full animate-spin`}

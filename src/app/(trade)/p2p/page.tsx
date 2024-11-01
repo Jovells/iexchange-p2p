@@ -8,11 +8,11 @@ import { useContracts } from "@/common/contexts/ContractContext";
 import { PreparedCurrency, Token } from "@/common/api/types";
 
 const Faqs = React.lazy(() => import("@/components/sections/Faqs"));
-const P2PAds = React.lazy(() => import("./P2PAds"));
+const P2PAds = React.lazy(() => import("@/app/(trade)/P2PAds"));
 const InputAmount = React.lazy(() => import("@/components/ui/InputWithSelect"));
 const SelectPaymentMethod = React.lazy(() => import("@/components/ui/InputSelect"));
 import Loader from "@/components/loader/Loader";
-import CryptoSelector from "./cryptoSelector";
+import CryptoSelector from "@/app/(trade)/cryptoSelector";
 import { useUser } from "@/common/contexts/UserContext";
 import { ACCEPTED_CURRENCIES, ACCEPTED_TOKENS, PAYMENT_METHODS } from "@/common/constants/queryKeys";
 import { useModal } from "@/common/contexts/ModalContext";
@@ -90,43 +90,45 @@ const P2PMarket: React.FC = () => {
   }
 
   return (
-    <Wrapper>
-      <WalletConnectSection />
-      <div className="container mx-auto px-0  lg:px-6 flex flex-col items-start space-y-4">
-        <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
-          {/* <button onClick={showModal1}>ddd</button> */}
-          <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
-          <div className="w-full ">
-            <CryptoSelector tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={setSelectedCrypto} />
+    <Suspense>
+      <Wrapper>
+        <WalletConnectSection />
+        <div className="container mx-auto px-0  lg:px-6 flex flex-col items-start space-y-4">
+          <div className="flex flex-row justify-between items-center w-full flex-wrap lg:flex-nowrap gap-4">
+            {/* <button onClick={showModal1}>ddd</button> */}
+            <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
+            <div className="w-full ">
+              <CryptoSelector tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={setSelectedCrypto} />
+            </div>
+            <div className="w-full">
+              <PaymentsSection
+                currencyAmount={currencyAmount}
+                setCurrencyAmount={setCurrencyAmount}
+                setPaymentMethod={setPaymentMethod}
+                currencies={currencies}
+                paymentMethods={paymentMethods}
+                currentChain={currentChain}
+              />
+            </div>
           </div>
-          <div className="w-full">
-            <PaymentsSection
-              currencyAmount={currencyAmount}
-              setCurrencyAmount={setCurrencyAmount}
-              setPaymentMethod={setPaymentMethod}
-              currencies={currencies}
-              paymentMethods={paymentMethods}
-              currentChain={currentChain}
-            />
-          </div>
-        </div>
 
-        <Suspense fallback={<Loader loaderType="text" className="mt-24" />}>
-          <P2PAds
-            offerType={activeTab}
-            isActive={true}
-            paymentMethod={paymentMethods.find((method: { method: string }) => method.method === paymentMethod)}
-            amount={currencyAmount.amount}
-            currency={acceptedCurrencies?.find(c => c.id === currencyAmount.id)}
-            token={selectedCrypto}
-          />
-        </Suspense>
-        <IExchangeGuide />
-        <Suspense fallback={<Loader loaderType="text" />}>
-          <Faqs />
-        </Suspense>
-      </div>
-    </Wrapper>
+          <Suspense fallback={<Loader loaderType="text" className="mt-24" />}>
+            <P2PAds
+              offerType={activeTab}
+              isActive={true}
+              paymentMethod={paymentMethods.find((method: { method: string }) => method.method === paymentMethod)}
+              amount={currencyAmount.amount}
+              currency={acceptedCurrencies?.find(c => c.id === currencyAmount.id)}
+              token={selectedCrypto}
+            />
+          </Suspense>
+          <IExchangeGuide />
+          <Suspense fallback={<Loader loaderType="text" />}>
+            <Faqs />
+          </Suspense>
+        </div>
+      </Wrapper>
+    </Suspense>
   );
 };
 
@@ -163,7 +165,6 @@ const TabSelector: React.FC<TabSelectorProps> = ({ activeTab, handleTabChange })
     </div>
   );
 };
-
 
 interface PaymentsSectionProps {
   currencies: PreparedCurrency[];

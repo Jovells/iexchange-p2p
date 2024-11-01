@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { HOME_PAGE } from "@/common/page-links";
 
 const Custom404: React.FC = () => {
   return (
@@ -7,7 +8,7 @@ const Custom404: React.FC = () => {
       <div className="text-center">
         <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
         <p className="text-lg text-gray-600 mb-8">Page Not Found</p>
-        <Link className="text-blue-500 hover:underline" href="/">
+        <Link className="text-blue-500 hover:underline" href={HOME_PAGE}>
           Go back to Home
         </Link>
       </div>

@@ -32,6 +32,7 @@ import { CachedConversation, useSendMessage } from "@xmtp/react-sdk";
 import Image from "next/image";
 import { formatEther } from "viem";
 import Wrapper from "@/components/layout/Wrapper";
+import { HOME_PAGE } from "@/common/page-links";
 
 const ChatWithMerchant = lazy(() => import("@/components/merchant/ChatWithMerchant"));
 
@@ -417,7 +418,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
       <div className="flex flex-col items-center justify-center h-screen">
         <h2 className="text-2xl font-semibold">Order Not Found</h2>
         <p className="mt-2">The order you are looking for does not exist</p>
-        <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4]">
+        <Link href={HOME_PAGE} className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4]">
           Go Home
         </Link>
       </div>
@@ -439,7 +440,7 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
       <div className="flex flex-col items-center justify-center h-screen">
         <h2 className="text-2xl font-semibold">Unauthorized Access</h2>
         <p className="mt-2">You are not authorized to view this page.</p>
-        <Link href="/" className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4]">
+        <Link href={HOME_PAGE} className="mt-4 bg-blue-500 text-white rounded-xl px-4 py-2 hover:bg-[#01a2e4]">
           Go Home
         </Link>
       </div>
@@ -503,12 +504,12 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
   const botCountDown = (action: string) =>
     isBot &&
     shouldPoll && (
-      <div className="flex rounded p-2 w-full bg-primary  items-center  justify-center flex-row ">
-        <span className="flex flex-col items-center text-gray-100 ">
-          <span className="pb-2 font-bold"> Order will be {action} in: </span>
+      <div className="flex rounded-xl p-2 w-full border-l-2 border-primary items-center flex-row bg-gray-100 dark:bg-gray-700">
+        <span className="flex flex-col gap-1 items-center text-gray-900 dark:text-gray-100">
+          <span className="pb-1">Order will be {action} in:</span>
           <Timer
-            className={"bg-white !text-xl  !text-primary !font-bold"}
-            sizeInPx={"10px"}
+            className={"bg-transparent !text-6xl !text-gray-900 dark:!text-white !font-black"}
+            sizeInPx={"0px"}
             timestamp={timestamp}
             seconds={2 * 60}
           />

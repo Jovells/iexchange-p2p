@@ -1,15 +1,15 @@
 import {HiOutlineHome, HiOutlineUser, HiOutlineUsers, HiOutlineCalendarDays, HiOutlineEnvelope } from 'react-icons/hi2'
 
 export const ORDER_PAGE = (orderId:string) => `/order/${orderId}`
-export const HOME_PAGE = "/";
+export const HOME_PAGE = "/p2p";
 export const HOME_PAGE_ALT = "https://iexchange.tech";
-export const DASHBOARD_PAGE = '/dashboard'
-export const POST_AD_PAGE = "/my-ads/create"
-export const ORDER_HISTORY_PAGE = "/dashboard/history/orders"
-export const APPEALS_PAGE = "/appeals"
-export const MY_ADS_PAGE = "/my-ads"
-export const QUICK_TRADE_PAGE = "/quick";
-export const SELECT_PAYMENT_METHOD_PAGE = (searchParams: string) => QUICK_TRADE_PAGE + `/2?${searchParams}`;
+export const DASHBOARD_PAGE = "/dashboard";
+export const POST_AD_PAGE = "/my-ads/create";
+export const ORDER_HISTORY_PAGE = "/dashboard/history/orders";
+export const APPEALS_PAGE = "/appeals";
+export const MY_ADS_PAGE = "/my-ads";
+export const QUICK_TRADE_PAGE = "/";
+export const SELECT_PAYMENT_METHOD_PAGE = (searchParams: string) => QUICK_TRADE_PAGE + `2?${searchParams}`;
 
 
 export const WELCOME_PAGE = "/"
