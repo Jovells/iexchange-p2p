@@ -90,16 +90,16 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className="w-full hover:dark:border-[#01a2e4] relative border transition-all duration-300 ease-in-out hover:border-[#01a2e4] border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer"
+      className="flex hover:dark:border-[#01a2e4] relative border transition-all duration-300 ease-in-out hover:border-[#01a2e4] border-gray-300 dark:border-gray-600 rounded-[8px] cursor-pointer"
     >
-      <div className="w-full flex flex-col p-3 py-[14px]">
+      <div className="w-full p-3 py-[14px] overflow-hidden flex-shrink">
         {selectedValue.amount && label && (
           <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</span>
         )}
-        <div className="flex items-center w-full">
+        <div className="flex items-center justify-start gap-4 flex-shrink">
           <input
             type="text"
-            className="flex-1 px-0 border-none outline-none bg-transparent text-black dark:text-white"
+            className="flex-1 min-w-0 px-2 py-1 bg-transparent text-black dark:text-white focus:outline-none focus:ring-0"
             value={valueToDisplay.amount}
             readOnly={readOnly}
             placeholder={!selectedValue.amount ? placeholder : ""}
@@ -113,9 +113,10 @@ const InputWithSelect: React.FC<InputSelectProps> = ({
             {currencies.length > 1 && <ChevronDown className="text-gray-500 dark:text-gray-400" />}
           </div>
         </div>
+        
       </div>
       {isOpen && !selectIsReadOnly && (
-        <div className="absolute w-full bg-white dark:bg-gray-700 p-2 border border-gray-200 dark:border-gray-600 rounded-[8px] shadow-md z-10">
+        <div className="absolute top-14 w-full bg-white dark:bg-gray-700 p-2 border border-gray-200 dark:border-gray-600 rounded-[8px] shadow-md z-10">
           {currencies.map(currency => (
             <div
               key={currency.id}
