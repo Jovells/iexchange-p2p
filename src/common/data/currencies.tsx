@@ -3,12 +3,13 @@ import { SiTether, SiBinance } from 'react-icons/si';
 
 import { DollarSign, Euro } from "lucide-react";
 
-export const currencies = [
-    { id: "0x01", symbol: 'GHS', name: 'Ghanaian Cedi', icon: <DollarSign className="w-4 h-4" /> },
-    { id: "0x02", symbol: 'USD', name: 'US Dollar', icon: <DollarSign className="w-4 h-4" /> },
-    { id: "0x03", symbol: 'EUR', name: 'Euro', icon: <Euro className="w-4 h-4" /> },
-    { id: "0x04", symbol: 'GBP', name: 'British Pound', icon: <DollarSign className="w-4 h-4" /> },
-];
+export const currencyIcons: { [key: string]: JSX.Element } = {
+  GHS: <p className="w-7 h-7 text-sm font-bold flex justify-center items-center bg-primary rounded-full">₵</p>,
+  NGN: <p className="w-7 h-7 text-sm font-bold flex justify-center items-center bg-primary rounded-full">₦</p>,
+  KES: <p className="w-7 h-7 text-xs font-bold flex justify-center items-center bg-primary rounded-full">KSh</p>,
+  USD: <p className="w-7 h-7 text-sm font-bold flex justify-center items-center bg-primary rounded-full">$</p>,
+  EUR: <p className="w-7 h-7 text-sm font-bold flex justify-center items-center bg-primary rounded-full">€</p>,
+};
 
 
 export const cryptoTokens = [

@@ -600,6 +600,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                         {isBuyer ? buyerText[1].sub : sellerText[1].sub}
                       </p>
 
+                      {currentStep === 1 && botCountDown(isBuyerAndNotYetAccepted ? "accepted" : "paid")}
+
                       <div className="flex border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4 mt-2 flex-col justify-start items-start gap-1 w-full">
                         <InfoBlock
                           isAmount
@@ -638,6 +640,8 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                       <p className="text-gray-500 dark:text-gray-400">
                         {isBuyer ? buyerText[2].sub : sellerText[2].sub}
                       </p>
+                      {currentStep === 2 && botCountDown("paid")}
+
                       <div className="w-full border  mb-4 mt-2 flex rounded-xl p-4 h-auto border-gray-200 dark:border-gray-700">
                         <div className="w-full  flex flex-col gap-4">
                           <DetailBlock label="Payment Method" value={order?.offer.paymentMethod.method} />
@@ -676,9 +680,11 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                       <span className="text-darkGray dark:text-darkGray-dark font-semibold">
                         {isBuyer ? buyerText[3].head : sellerText[3].head}
                       </span>
+
                       <p className="text-gray-500 dark:text-gray-400">
                         {isBuyer ? buyerText[3].sub : sellerText[3].sub}
                       </p>
+                      {currentStep === 3 && botCountDown("released")}
                     </div>
                   </div>
                 </div>

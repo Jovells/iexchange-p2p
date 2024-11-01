@@ -18,6 +18,8 @@ import { fetchTokens } from "@/common/api/fetchTokens";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
 import Wrapper from '@/components/layout/Wrapper';
+import { currencyIcons } from "@/common/data/currencies";
+import useMarketData from "@/common/hooks/useMarketData";
 
 const BuySellOptions = [
   {
@@ -111,27 +113,11 @@ const MyAds = () => {
   const crypto = searchParams.get("crypto") || "USDT";
   const isOptimistic = searchParams.get("optimistic") === "true";
 
-  const { data: tokens } = useQuery({
-    queryKey: ACCEPTED_TOKENS(indexerUrl),
-    queryFn: () => fetchTokens(indexerUrl),
-    enabled: !!indexerUrl,
-  });
+  const { tokens, currencies, paymentMethods } = useMarketData();
 
   const [selectedCrypto, setSelectedCrypto] = useState(
     tokens?.find(t => t.symbol === searchParams.get("crypto") || ""),
   );
-
-  const { data: paymentMethods } = useQuery({
-    queryKey: PAYMENT_METHODS(indexerUrl),
-    queryFn: () => fetchContractPaymentMethods(indexerUrl),
-    enabled: !!indexerUrl,
-  });
-
-  const { data: acceptedCurrencies } = useQuery({
-    queryKey: ACCEPTED_CURRENCIES(indexerUrl),
-    queryFn: () => fetchCurrencies(indexerUrl),
-    enabled: !!indexerUrl,
-  });
 
   const options: FetchAdsOptions = {
     page: currentPage,
@@ -151,12 +137,6 @@ const MyAds = () => {
     // placeholderData: keepPreviousData,
   });
 
-  const currencies = acceptedCurrencies?.map(currency => ({
-    symbol: currency.currency,
-    name: currency.currency,
-    id: currency.id,
-    icon: currency.currency === "GHS" ? <p>₵</p> : currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p>,
-  }));
   currencies?.unshift({ symbol: "All", name: "All", id: "0x0", icon: <></> });
 
   const handlePageChange = (page: number) => {

@@ -4,6 +4,7 @@ import { fetchTokens } from "@/common/api/fetchTokens";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
 import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
 import { useContracts } from "../contexts/ContractContext";
+import { currencyIcons } from "../data/currencies";
 
 const useMarketData = () => {
   const { indexerUrl } = useContracts();
@@ -17,7 +18,7 @@ const useMarketData = () => {
     symbol: currency.currency,
     name: currency.currency,
     id: currency.id,
-    icon: currency.currency === "GHS" ? <p>₵</p> : currency.currency === "NGN" ? <p>₦</p> : <p>KSh</p>,
+    icon: currencyIcons[currency.currency],
   }));
 
   const { data: paymentMethods } = useQuery({

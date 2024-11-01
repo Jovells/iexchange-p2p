@@ -99,7 +99,7 @@ function useWriteContractWithToast(numConfirmations = 1) {
   useEffect(() => {
     //TODO:@Jovells refactor to prevent running if user is not waiting for receipt
     const handleReceipt = async () => {
-      console.log("qsvb receipt", receipt, promiseResolveReject);
+      console.log("qsvb receipt", receipt, promiseResolveReject, writeContractResult);
       if (receipt && promiseResolveReject) {
         let logs: DecodedLog[] = [];
         console.log("qs receipt", receipt.logs);

@@ -105,6 +105,8 @@ const ExpandableTable = forwardRef(
     const totalPages = Math.ceil(totalRecords / pageSize);
 
     console.log("expandedRowIndex", expandedRowIndex);
+    const isNoAds = !isLoading && data.length === 0 && carouselData?.length == 0;
+
     return (
       <div className="w-full overflow-x-auto  rounded-[8px]">
         <div className={`min-w-full `} style={styles}>
@@ -125,7 +127,7 @@ const ExpandableTable = forwardRef(
 
           {isLoading && <Loader loaderType="text" className="mt-20" />}
 
-          {!isLoading && data && data.length > 0 && (
+          {!isNoAds && (
             <>
               {isMobile ? (
                 <div>
@@ -246,9 +248,7 @@ const ExpandableTable = forwardRef(
             </>
           )}
 
-          {!isLoading && data && data.length === 0 && (
-            <div className="p-4 text-center text-black dark:text-white">No records to show</div>
-          )}
+          {isNoAds && <div className="p-4 text-center text-black dark:text-white">No records to show</div>}
 
           {data && data.length > 0 && (
             <div className="flex justify-center py-3">

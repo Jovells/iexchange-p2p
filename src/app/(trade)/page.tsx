@@ -19,47 +19,70 @@ import { useModal } from "@/common/contexts/ModalContext";
 import useMarketData from "@/common/hooks/useMarketData";
 import Wrapper from "@/components/layout/Wrapper";
 
-interface P2PMarketProps {}
+interface CurrencyAmount {
+  currency: string;
+  id: `0x${string}` | undefined;
+  amount: string;
+}
 
-const P2PMarket: React.FC<P2PMarketProps> = () => {
+const P2PMarket: React.FC = () => {
   const { showModal, hideModal } = useModal();
   const { session } = useUser();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { currentChain, indexerUrl } = useContracts();
-  const [paymentMethod, setPaymentMethod] = useState("");
   const { currencies, paymentMethods, acceptedCurrencies, tokens } = useMarketData();
-
-  const [selectedCrypto, setSelectedCrypto] = useState(
-    tokens?.find(t => t.symbol === searchParams.get("crypto") || ""),
-  );
-
-  const [activeTab, setActiveTab] = useState<"buy" | "sell" | string>(
-    searchParams.get("trade")?.toLowerCase() || "buy",
-  );
-
   currencies?.unshift({ symbol: "All", name: "All", id: "0x0", icon: <></> });
 
-  const currencyFromUrl = acceptedCurrencies?.find(c => c.currency === searchParams.get("fiat"));
+  const selectedCrypto = tokens?.find(t => t.symbol === searchParams.get("crypto") || "");
+  const paymentMethod = searchParams.get("paymentMethod") || "";
+  const activeTab = searchParams.get("trade")?.toLowerCase() || "buy";
+  const firstCurrency = currencies?.find(c => c.name === "USD");
+  const currencyAmount: CurrencyAmount = {
+    currency: searchParams.get("currency") || firstCurrency?.name || "All",
+    id: (searchParams.get("currencyId") as `0x${string}`) || firstCurrency?.id || "0x0",
+    amount: searchParams.get("amount") || "",
+  };
 
-  const [currencyAmount, setCurrencyAmount] = useState({
-    currency: currencyFromUrl?.currency || "All",
-    id: currencyFromUrl?.id,
-    amount: "",
-  });
+  const setSelectedCrypto = (crypto: any) => {
+    const query = new URLSearchParams(searchParams.toString());
+    query.set("crypto", crypto.symbol);
+    router.push(`${pathname}?${query.toString()}`);
+  };
+
+  const setPaymentMethod = (method: string) => {
+    const query = new URLSearchParams(searchParams.toString());
+    query.set("paymentMethod", method);
+    router.push(`${pathname}?${query.toString()}`);
+  };
+
+  const setActiveTab = (tab: "buy" | "sell" | string) => {
+    const query = new URLSearchParams(searchParams.toString());
+    query.set("trade", tab);
+    router.push(`${pathname}?${query.toString()}`);
+  };
+
+  const setCurrencyAmount = (value: CurrencyAmount) => {
+    const query = new URLSearchParams(searchParams.toString());
+    query.set("currency", value.currency);
+    query.set("currencyId", value.id || "");
+    query.set("amount", value.amount || "");
+    router.push(`${pathname}?${query.toString()}`);
+  };
 
   const handleTabChange = (tab: "buy" | "sell" | string) => {
     setActiveTab(tab);
   };
 
-  useEffect(() => {
-    const fiat: string = currencyAmount.currency || "All";
-    const query = activeTab
-      ? `trade=${activeTab}&crypto=${selectedCrypto?.symbol || ""}&fiat=${fiat}`
-      : `crypto=${selectedCrypto?.symbol || ""}&fiat=${fiat}`;
-    router.push(`${pathname}?${query}`);
-  }, [selectedCrypto, activeTab]);
+  // useEffect(() => {
+  //   if (currencies) {
+  //     setCurrencyAmount(old => {
+  //       const usd = currencies.find(c => c.name === "USD") as PreparedCurrency;
+  //       return { ...old, currency: usd.name, id: usd.id };
+  //     });
+  //   }
+  // }, [!!currencies]);
 
   const isAvailable = !!(tokens && currencies && paymentMethods);
 

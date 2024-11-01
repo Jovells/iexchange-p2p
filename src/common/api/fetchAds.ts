@@ -56,20 +56,21 @@ import {
     };
 
     const mechantIds = graphdata.offers.map(offer => offer.merchant.id);
+    if (mechantIds) {
+      const q = query(collection(db, "Account"), where("address", "in", mechantIds));
 
-    const q = query(collection(db, "Account"), where("address", "in", mechantIds));
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach(doc => {
-      const data = doc.data();
-      const thisMerchantOffer = graphdata.offers.find(offer => offer.merchant.id === data.address);
-      if (thisMerchantOffer) {
-        thisMerchantOffer.merchant = {
-          ...thisMerchantOffer.merchant,
-          ...data,
-        };
-      }
-    });
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const thisMerchantOffer = graphdata.offers.find(offer => offer.merchant.id === data.address);
+        if (thisMerchantOffer) {
+          thisMerchantOffer.merchant = {
+            ...thisMerchantOffer.merchant,
+            ...data,
+          };
+        }
+      });
+    }
     const hasNext = graphdata.offers.length > quantity;
     graphdata.offers = graphdata.offers.slice(0, quantity);
     graphdata.hasNext = hasNext;

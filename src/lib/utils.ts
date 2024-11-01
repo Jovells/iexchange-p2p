@@ -119,15 +119,23 @@ export const getPaymentMethodColor = (label: string) => {
     case "m-pesa":
       return "border-red-600";
     case "airtel tigo mobile money":
-      return "border-[#01a2e4]";
+      return "border-blue-500";
     case "fidelity bank":
       return "border-yellow-800";
     case "mtn mobile money":
       return "border-yellow-600";
     case "mobile money":
-      return "border-yellow-600";
+      return "border-primary";
     case "telecel mobile money":
       return "border-red-600";
+    case "bank transfer":
+      return "border-primary";
+    case "perfectmoney":
+      return "border-red-400";
+    case "zelle":
+      return "border-purple-500";
+    case "revolut":
+      return "border-black";
     default:
       return "border-gray-400";
   }
