@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface CryptoToken {
@@ -7,7 +8,7 @@ interface CryptoToken {
 
 interface CryptoSelectorInputProps {
     tokens: CryptoToken[];
-    selectedCrypto: any | null;
+    selectedCrypto: CryptoToken | null;
     setSelectedCrypto: (crypto: CryptoToken) => void;
 }
 
@@ -18,7 +19,6 @@ const CryptoSelectorInput: React.FC<CryptoSelectorInputProps> = ({
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    // Lock the body scroll when the modal is open
     useEffect(() => {
         if (isOpen) {
             document.body.classList.add("overflow-hidden");
@@ -45,7 +45,10 @@ const CryptoSelectorInput: React.FC<CryptoSelectorInputProps> = ({
                     onClick={() => setIsOpen(true)}
                     className="w-full px-6 py-2 rounded-xl text-md bg-transparent border border-gray-300 text-gray-600 outline-none dark:border-gray-600 dark:text-gray-300"
                 >
-                    {selectedCrypto?.symbol || "Select a Crypto"}
+                    <div className="flex flex-row gap-2 items-center justify-center">
+                        {selectedCrypto?.symbol || "Select a Crypto"}
+                        <ChevronDown />
+                    </div>
                 </button>
             </div>
             {isOpen && (
@@ -54,21 +57,23 @@ const CryptoSelectorInput: React.FC<CryptoSelectorInputProps> = ({
                     onClick={() => setIsOpen(false)}
                 >
                     <div
-                        className="bg-white dark:bg-gray-800 w-full max-h-60 p-4 rounded-t-2xl overflow-auto"
-                        onClick={(e) => e.stopPropagation()} 
+                        className="bg-white dark:bg-gray-800 w-full max-h-60 p-4 rounded-t-2xl"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <h3 className="text-lg font-medium text-center mb-4 dark:text-gray-300">
                             Select a Crypto
                         </h3>
-                        {tokens.map((crypto) => (
-                            <div
-                                key={crypto.id}
-                                className="px-6 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 dark:text-gray-300"
-                                onClick={() => handleSelect(crypto.symbol)}
-                            >
-                                {crypto.symbol}
-                            </div>
-                        ))}
+                        <div className="max-h-48 overflow-y-auto">
+                            {tokens.map((crypto) => (
+                                <div
+                                    key={crypto.id}
+                                    className="px-6 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 dark:text-gray-300"
+                                    onClick={() => handleSelect(crypto.symbol)}
+                                >
+                                    {crypto.symbol}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}
