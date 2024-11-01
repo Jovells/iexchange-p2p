@@ -127,7 +127,8 @@ export default function PaymentMethodsPage() {
   }, [selectedOffer, ads, offerType]);
 
   return (
-    <div className="px-4 py-4">
+    <div className="p-4 w-full">
+      {/* nav */}
       <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-sm mb-6">
         <Link className="hover:text-primary" href={QUICK_TRADE_PAGE}>
           Quick Trade
@@ -137,11 +138,12 @@ export default function PaymentMethodsPage() {
         </svg>
         <span>Payment Method(s)</span>
       </div>
-
-      <h2 className="text-xl font-bold mb-4 dark:text-white">
+      {/* header */}
+      <h2 className="text-xl font-bold my-4 dark:text-white">
         Buy {currency?.name} with {selectedOffer?.paymentMethod.method}
       </h2>
 
+      {/* tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto">
         <button
           onClick={() => setAdsType("bot")}
@@ -168,11 +170,11 @@ export default function PaymentMethodsPage() {
         </button>
       </div>
 
-      {/* Preview Order Card - Shows on Mobile */}
+      {/* ads and previe */}
       {(isBot ? botAds : nonBotads.length) ? (
-        <div className="flex gap-8 w-full  md:flex-row flex-col">
+        <div className="flex justify-between max-w-3xl gap-8 w-full  lg:flex-row flex-col-reverse">
           {/* Payment Methods List */}
-          <div className="min-w-fit">
+          <div className="min-w-fit ">
             <div className="flex font-bold dark:text-lightGray  gap-2">
               <p className="mb-4 ">Select an option:</p>
               or{" "}
@@ -180,12 +182,12 @@ export default function PaymentMethodsPage() {
                 Go to P2P Market <ArrowRight />
               </Link>
             </div>
-            <div className="flex flex-col gap-2 max-h-screen flex-wrap">
+            <div className="flex flex-col gap-2 s:max-h-screen flex-nowrap mflex-wrap">
               {ads?.map(offer => (
                 <div
                   onClick={() => setSelectedOffer(offer)}
                   key={offer.id}
-                  className={`p-4 min-w-80 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 cursor-pointer hover:bg-gray-50  dark:hover:bg-gray-700 ${
+                  className={`p-4 min-w-80 w-full bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 cursor-pointer hover:bg-gray-50  dark:hover:bg-gray-700 ${
                     selectedOffer?.id === offer.id ? "border-primary dark:border-primary" : ""
                   }`}
                 >
@@ -211,8 +213,11 @@ export default function PaymentMethodsPage() {
               ))}
             </div>
           </div>
-          <div className=" flex flex-col gap-2">
-            {/* Preview Order Card */}
+
+          {/* Preview Order Card */}
+
+          <div className="flex flex-col gap-2">
+            <FaucetAndNetwork className="w-full min-w-[350px]" />
             <div className="bg-white min-w-fit dark:bg-gray-800 rounded-xl p-4  border dark:border-gray-700">
               <h3 className="font-medium mb-4 dark:text-white">Preview Order</h3>
 
@@ -230,7 +235,7 @@ export default function PaymentMethodsPage() {
                     {cryptoAmount} {token?.symbol}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between gap-2 items-center">
                   <span className="text-gray-600 dark:text-gray-300">Estimated Response Time</span>
                   <div className="flex items-center gap-1">
                     <span className="font-medium dark:text-white"> ~ {isBot ? "2 mins" : "30 mins"}</span>
@@ -300,7 +305,6 @@ export default function PaymentMethodsPage() {
                 Place order
               </Button>
             </div>
-            <FaucetAndNetwork />
           </div>
         </div>
       ) : isLoading || isBotAdsLoading ? (

@@ -3,7 +3,7 @@ import React from "react";
 import NetworkSwitcher from "./networkSwitcher";
 import { useUser } from "@/common/contexts/UserContext";
 
-export default function FaucetAndNetwork({ className }: { className?: string }) {
+export default function FaucetAndNetwork({ className, outline }: { outline?: boolean; className?: string }) {
   const { isConnected } = useUser();
   return (
     <div
@@ -11,7 +11,7 @@ export default function FaucetAndNetwork({ className }: { className?: string }) 
     >
       {isConnected && (
         <>
-          <Claim className="w-full h-full border" />
+          <Claim className={"w-full h-full border" + (outline ? "border-gray-200 dark:border-gray-700" : "")} />
           <NetworkSwitcher className="w-full h-full" />
         </>
       )}
