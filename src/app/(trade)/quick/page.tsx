@@ -206,7 +206,10 @@ export default function QuickTradePage() {
             <WalletConnect />
           </div>
           <div>
-            <FaucetAndNetwork className="w-full lg:place-self-start md:w-[400px] md:flex-nowrap flex flex-wrap place-self-center mb-4 h-[50px] " />
+            <FaucetAndNetwork
+              outline
+              className="w-full lg:place-self-start md:w-[400px] md:flex-nowrap flex flex-wrap place-self-center mb-4 h-[50px] "
+            />
           </div>
         </div>
       </div>
