@@ -7,7 +7,7 @@ import { HOME_PAGE, HOME_PAGE_ALT } from "../page-links";
 import { createClient, http } from "viem";
 
 // Get projectId from https://cloud.walletconnect.com
-export const projectId = "3a04d38134c46085917b81c1494b1716";
+export const projectId = process.env.WEB3_PROJECT_ID;
 
 if (!projectId) throw new Error("Project ID is not defined");
 
@@ -37,7 +37,7 @@ const connectors = connectorsForWallets(
   ],
   {
     appName: "My RainbowKit App",
-    projectId: "YOUR_PROJECT_ID",
+    projectId: projectId,
   },
 );
 
