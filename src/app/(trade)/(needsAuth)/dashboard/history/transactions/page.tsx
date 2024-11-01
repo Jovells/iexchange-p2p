@@ -31,16 +31,16 @@ const TransactionHistory = () => {
 
   return <InProgress />;
 
-  return (
-    <>
-      <div className='py-12 pt-0 flex flex-col gap-4'>
-        <div className="w-full lg:w-fit">
-          <CustomTab tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
-        </div>
-        <GridTable columns={columns} data={data} actions={actions} itemsPerPage={50} />
-      </div>
-    </>
-  )
+  // return (
+  //   <>
+  //     <div className='py-12 pt-0 flex flex-col gap-4'>
+  //       <div className="w-full lg:w-fit">
+  //         <CustomTab tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
+  //       </div>
+  //       <GridTable columns={columns} data={data} actions={actions} itemsPerPage={50} />
+  //     </div>
+  //   </>
+  // )
 }
 
 export default TransactionHistory

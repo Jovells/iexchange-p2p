@@ -20,6 +20,11 @@ const menuLinks = [
   { href: MY_ADS_PAGE, label: "My Ads" }, // should on be visible to merchants
 ];
 
+const menuLinks2 = [
+  { href: QUICK_TRADE_PAGE, label: "Quick Trade" },
+  { href: "/", label: "P2P" },
+];
+
 const helpCenterLinks = [
   { link: "/buy-sell", label: "How to Buy/Sell" },
   { link: "/place-order", label: "Placing and Order" },
@@ -85,6 +90,31 @@ const SubNav = () => {
       );
     });
 
+    const renderLinks1 = (links: { href: string; label: string }[]) =>(
+      links.map(link => {
+        const isActive = currentPath === link.href;
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`
+          block px-2 py-2 pl-0 font-medium 
+          ${link.label === "My Ads" && !isMerchant ? "hidden" : "flex"} 
+          text-[14px] 
+          text-[#111315] 
+          dark:text-white 
+          hover:text-[#01A2E4] 
+          dark:hover:text-[#01A2E4] 
+          transition-colors duration-200 ease-in-out
+          ${isActive ? "border-b-2 dark:border-[#01A2E4]" : "border-0"} 
+      `}
+          >
+            {link.label}
+          </Link>
+        );
+      })
+    )
+
   const renderMenuDropdowns = () => (
     <div className="flex flex-row gap-4">
       <MenuDropdown title="Help Center" icon={helpIcon as string} dropdownItems={helpCenterLinks} />
@@ -109,8 +139,21 @@ const SubNav = () => {
     </div>
   );
 
+  const renderMenuDropdowns2 = () => (
+    <div className="flex flex-row gap-4">
+      <MenuDropdown title="Help Center" icon={helpIcon as string} dropdownItems={helpCenterLinks} />
+    </div>
+  );
+
   if (!isMounted || !isAuthenticated) {
-    return null;
+    return (
+      <div className="border-0 mt-0 lg:mt-2 mb-0">
+        <div className="w-full lg:container lg:mx-auto flex flex-row justify-between items-center px-2 lg:px-0">
+          <div className="flex flex-row gap-4 pl-2 lg:pl-0">{renderLinks1(menuLinks2)}</div>
+          {renderMenuDropdowns2()}
+        </div>
+      </div>
+    );
   }
 
 

@@ -183,7 +183,7 @@ const MyAds = () => {
   const isAvailable = !!(tokens && currencies && paymentMethods);
 
   if (!isAvailable) {
-    return <div>dkkkkk</div>;
+    return null;
   }
 
   return (
