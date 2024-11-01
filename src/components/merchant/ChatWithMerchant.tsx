@@ -41,38 +41,43 @@ const ChatWithMerchant = ({
   const signer = useEthersSigner();
 
   const mixedCaseOtherPartyAddress = checksumAddress(otherParty.id);
+  const isBot = otherParty.id === BOT_MERCHANT_ID;
 
   useEffect(() => {
     console.log("qg useClient", client?.address, client, status);
     if (!client && !preInit && !alreadyShownRef.current.enabled) {
       alreadyShownRef.current.enabled = true;
       console.log("qg client not initialized");
-      showModal(
-        <>
-          <ModalAlert
-            modalType="info"
-            title="Please Sign to Allow Messaging"
-            description="To enable secure messaging through XMTP, you need to sign a message. This is separate from your initial login and ensures end-to-end encryption for your conversations."
-            buttonText="Connect to XMTP"
-            buttonClick={resolveEnable}
-          />
-        </>,
-      );
+      //no need to chat with bot
+      !isBot &&
+        showModal(
+          <>
+            <ModalAlert
+              modalType="info"
+              title="Please Sign to Allow Messaging"
+              description="To enable secure messaging through XMTP, you need to sign a message. This is separate from your initial login and ensures end-to-end encryption for your conversations."
+              buttonText="Connect to XMTP"
+              buttonClick={resolveEnable}
+            />
+          </>,
+        );
     }
     if (status === "new") {
       alreadyShownRef.current.new = true;
       console.log("qg status new");
-      showModal(
-        <>
-          <ModalAlert
-            modalType="info"
-            title="Create Your XMTP Account"
-            description="To enable secure messaging, we need to create your XMTP account. This requires signing two(2) messages. One to create your xmtp account and one to enable messaging for your account. This process ensures end-to-end encryption for all your conversations."
-            buttonText="Create XMTP Account"
-            buttonClick={resolveCreate}
-          />
-        </>,
-      );
+      //no need to chat with bot
+      !isBot &&
+        showModal(
+          <>
+            <ModalAlert
+              modalType="info"
+              title="Create Your XMTP Account"
+              description="To enable secure messaging, we need to create your XMTP account. This requires signing two(2) messages. One to create your xmtp account and one to enable messaging for your account. This process ensures end-to-end encryption for all your conversations."
+              buttonText="Create XMTP Account"
+              buttonClick={resolveCreate}
+            />
+          </>,
+        );
     }
     if (client) {
       const checkIfOtherUserIsOnNetwork = async () => {
@@ -129,7 +134,6 @@ const ChatWithMerchant = ({
     startConversationError,
   );
 
-  const isBot = otherParty.id === BOT_MERCHANT_ID;
 
   return (
     <div id="messagesContainer" className="w-full h-[600px] border rounded-xl flex flex-col dark:border-gray-700">

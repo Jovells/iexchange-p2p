@@ -1,6 +1,5 @@
 'use client'
 
-import { currencies } from '@/common/data/currencies'
 import Button from '@/components/ui/Button'
 import InputWithSelect from '@/components/ui/InputWithSelect'
 import { X } from 'lucide-react'
@@ -24,9 +23,7 @@ const Stake = ({ hideModal }: { hideModal: () => void }) => {
           <InputWithSelect
             label="Stake Amount"
             initialCurrencyName="GHS"
-            currencies={
-              currencies as unknown as { symbol: string; name: string; icon: JSX.Element; id: `0x${string}` }[]
-            }
+            currencies={[] as unknown as { symbol: string; name: string; icon: JSX.Element; id: `0x${string}` }[]}
             onValueChange={value => console.log(value)}
             readOnly={false}
             placeholder="Enter amount"
