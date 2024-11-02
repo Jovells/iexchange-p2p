@@ -13,6 +13,10 @@ const config = {
       },
     },
     extend: {
+      backgroundImage: {
+        "gradient-custom": "linear-gradient(90deg, #1ABCFE, #0F0CAE, #3E139B, #FF2F4A)",
+        "gradient-custom-dark": "linear-gradient(90deg, #1ABCFE, #3a38a9, #58389e, #FF2F4A)",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -60,6 +64,10 @@ const config = {
         },
         ixGreen: {
           DEFAULT: "#2ebd85",
+        },
+        ixGradient: {
+          DEFAULT: "bg-gradient-to-r from-[#1ABCFE] via-[#6666e4] to-[#FF2F4A] text-transparent bg-clip-text;",
+          dark: "bg-gradient-to-r from-[#1ABCFE] via-[#6666e4] to-[#FF2F4A] text-transparent bg-clip-text;",
         },
       },
       borderRadius: {

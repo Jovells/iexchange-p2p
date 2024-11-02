@@ -194,13 +194,16 @@ export default function QuickTradePage() {
       {/* cta */}
       <div className="self-center max-w-prose mb-10 lg:mb-0 mt-16 lg:mt-0 text-center lg:text-left">
         <h1 className="text-3xl sm:text-4xl lg:text-8xl font-bold mb-2 text-gray-900 dark:text-white">
-          <span className="gradient-text">P2P</span> Quick Trade
+          P2P{" "}
+          <span className="bg-gradient-custom dark:bg-gradient-custom-dark bg-clip-text text-transparent">
+            Quick Trade
+          </span>
         </h1>
         <h2 className="text-lg sm:text-xl  lg:text-2xl font-bold mb-3 lg:mb-4 text-gray-900 dark:text-white">
-          Quickly Buy and Sell crypto right from your decentralised wallet
+          Quickly buy and sell crypto right from your decentralised wallet
         </h2>
         <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-          Quickly Buy and Sell Crypto with various payment methods
+          Quickly buy and sell crypto with various payment methods
         </p>
         <div className="flex mt-4 flex-col justify-center items-center lg:justify-start lg:items-start w-full">
           <div>
