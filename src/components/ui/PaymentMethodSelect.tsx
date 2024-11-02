@@ -11,7 +11,7 @@ import { getImage, getPaymentMethodColor } from "@/lib/utils";
 
 interface PaymentMethodSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  selectedMethod?: PaymentMethod;
+  selectedMethod?: PaymentMethod | null;
   initialValue?: string;
   skipStep1?: boolean | PaymentMethod["method"];
   options: PaymentMethod[] | [];
@@ -25,6 +25,7 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
   label,
   initialValue,
   options,
+  selectedMethod,
   onValueChange,
   skipStep1 = false,
   placeholder = "Select",
@@ -33,9 +34,13 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
   ...props
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState({
-    method: "",
-  } as PaymentMethod);
+  const [_selectedValue, setSelectedValue] = useState(
+    selectedMethod ||
+      ({
+        method: "",
+      } as PaymentMethod),
+  );
+  const selectedValue = selectedMethod !== undefined ? selectedMethod : _selectedValue;
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { showModal, hideModal } = useModal();
   const toggleDropdown = () => setIsOpen(!isOpen);
@@ -152,7 +157,7 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
           )}
         </div>
       )}
-      <input type="hidden" {...props} value={selectedValue.method} />
+      <input type="hidden" {...props} value={selectedValue?.method} />
     </div>
   );
 };

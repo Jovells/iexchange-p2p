@@ -27,7 +27,7 @@ const Input: React.FC<InputProps> = ({ label, value, onChange, ...props }) => {
       <label
         className={`absolute left-2 transition-all duration-200 bg-transparent px-1 pointer-events-none
         ${
-          inputValue || isFocused
+          value || inputValue || isFocused
             ? "top-1 text-sm text-gray-500"
             : "top-1/2 text-lg text-gray-400 transform -translate-y-1/2"
         }`}
@@ -39,7 +39,7 @@ const Input: React.FC<InputProps> = ({ label, value, onChange, ...props }) => {
       <input
         type="text"
         className="w-full pt-4 px-1 pb-1 bg-transparent outline-none text-gray-800 dark:text-white"
-        value={inputValue}
+        value={value || inputValue}
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}

@@ -26,39 +26,48 @@ import MyAds from "../page";
 import useMarketData from "@/common/hooks/useMarketData";
 
 const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
-const formSchema = z
-  .object({
-    token: z.string().startsWith("0x"),
-    currency: z.string().min(1, "Currency is required"),
-    minOrder: z.number().positive("Minimum order must be positive"),
-    maxOrder: z.number().positive("Maximum order must be positive"),
-    paymentMethod: z.string().min(1, "Payment method is required"),
-    accountName: z.string().min(1, "Account name is required"),
-    accountNumber: z.string().min(1, "Account number is required"),
-    timeLimit: z.number().positive("Time limit must be positive"),
-    terms: z.string().optional(),
-    depositAddress: z.string().refine(val => ethAddressRegex.test(val), {
-      message: "Invalid Ethereum address",
-    }),
-    rate: z.number().positive("Rate must be positive"),
-    offerType: z.enum(["buy", "sell"]),
-  })
-  .refine(data => data.minOrder <= data.maxOrder, {
-    message: "Minimum order cannot be higher than maximum order",
-    path: ["minOrder"],
-  });
 
-type FormData = z.infer<typeof formSchema>;
+
 
 const CreateAd = () => {
   const [activeTab, setActiveTab] = useState<"buy" | "sell">("buy");
   const { p2p, indexerUrl } = useContracts();
   const router = useRouter();
   const { address } = useUser();
+  const [rate, setRate] = useState<string>("0");
   const [submitting, setSubmitting] = useState(false);
   const { writeContractAsync, receipt } = useWriteContractWithToast(4);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const queryClient = useQueryClient();
+
+  const formSchema = z
+    .object({
+      token: z.string().startsWith("0x"),
+      currency: z.string().min(1, "Currency is required"),
+      minOrder: z.number().positive("Minimum order must be positive"),
+      maxOrder: z.number().positive("Maximum order must be positive"),
+      paymentMethod: z.string().min(1, "Payment method is required"),
+      accountName: activeTab === "sell" ? z.string().min(1, "Account name is required") : z.string().optional(),
+      accountNumber: activeTab === "sell" ? z.string().min(1, "Account number is required") : z.string().optional(),
+      timeLimit: z.number().positive("Time limit must be positive"),
+      terms: z.string().optional(),
+      depositAddress: z.string().refine(val => ethAddressRegex.test(val), {
+        message: "Invalid Ethereum address",
+      }),
+      rate: z.number().positive("Rate must be positive"),
+      offerType: z.enum(["buy", "sell"]),
+    })
+    .refine(data => data.minOrder <= data.maxOrder, {
+      message: "Minimum order cannot be higher than maximum order",
+      path: ["minOrder"],
+    });
+
+  type FormData = z.infer<typeof formSchema>;
+  const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newRate = Math.floor(parseFloat(e.target.value)).toString();
+    console.log("newRate", newRate);
+    setRate(newRate);
+  };
 
   const { paymentMethods: userPaymentMethods, isLoading: isPaymentMethodsLoading } = useUserPaymentMethods({
     enabled: activeTab === "buy",
@@ -71,10 +80,13 @@ const CreateAd = () => {
   } = useMarketData({ enablePaymentMethods: activeTab === "sell" });
 
   const paymentMethods = activeTab === "buy" ? generalPaymentMethods : userPaymentMethods;
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | undefined>();
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>();
   const id = "create-ad";
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!address) {
+      return toast.error("Please connect your wallet to create an ad", { id });
+    }
     setSubmitting(true);
     setErrors({});
     toast.loading("Creating Ad...", { id });
@@ -108,6 +120,7 @@ const CreateAd = () => {
             }
           });
           setErrors(fieldErrors);
+          console.log("errors", fieldErrors);
           setSubmitting(false);
           toast.error("Please correct the errors in the form", { id });
           return;
@@ -131,8 +144,8 @@ const CreateAd = () => {
       } = data;
       console.log("create-data", data);
       const accountDetails: AccountDetails = {
-        name: accountName!,
-        number: accountNumber!,
+        name: accountName || "",
+        number: accountNumber || "",
         details: details,
         terms: terms,
         address: address?.toLowerCase() as string,
@@ -214,13 +227,16 @@ const CreateAd = () => {
 
           await queryClient.setQueryData(
             MY_ADS({ indexerUrl, options }),
-            (oldData: { hasNext: boolean; offers: Offer[] } | undefined) => ({
-              ...oldData,
-              offers: [newOffer, ...(oldData?.offers || [])],
-            }),
+            (oldData: { hasNext: boolean; offers: Offer[] } | undefined) => {
+              console.log("oldDatanm", oldData);
+              return {
+                ...oldData,
+                offers: [newOffer, ...(oldData?.offers || [])],
+              };
+            },
           );
 
-          router.push(MY_ADS_PAGE + "?optimitic=true");
+          router.push(MY_ADS_PAGE);
           setSubmitting(false);
           toast.success("Ad created successfully", { id });
         } catch (error: any) {
@@ -238,7 +254,7 @@ const CreateAd = () => {
   };
 
   useEffect(() => {
-    setSelectedPaymentMethod(undefined);
+    setSelectedPaymentMethod(null);
   }, [activeTab]);
 
   if (!(currencies && tokens && paymentMethods) && isLoading) {
@@ -246,9 +262,9 @@ const CreateAd = () => {
   }
 
   return (
-    <div className="container mx-auto p-0 py-4 bg-white dark:bg-[#14161B]">
+    <div className="container mx-auto px-4 py-4 bg-white dark:bg-[#14161B]">
       <div className="my-4 flex flex-col gap-4">
-        <Tabs onTabChange={setActiveTab as any} />
+        <Tabs activeTab={activeTab} onTabChange={setActiveTab as any} />
         <div className="flex flex-col gap-2">
           <h1 className="text-black dark:text-white">Create Advert</h1>
           <p className="text-gray-400">Please fill in the information to proceed to post an Ad.</p>
@@ -290,7 +306,7 @@ const CreateAd = () => {
             </div>
 
             <div className="flex flex-col w-full sm:w-1/3">
-              <Input name="rate" label="Rate" />
+              <Input name="rate" value={rate} onChange={handleRateChange} type="number" label="Rate" />
               {errors.rate && <span className="text-red-500 text-sm mt-1">{errors.rate}</span>}
             </div>
           </div>
@@ -326,6 +342,10 @@ const CreateAd = () => {
               options={paymentMethods || []}
               onValueChange={value => setSelectedPaymentMethod(value)}
             />
+            {(errors.accountName || errors.accountNumber) && (
+              <span className="text-red-500 text-sm mt-1">Please select a payment method</span>
+            )}
+
             <span className="text-gray-700 dark:text-white font-light">Time Limit</span>
 
             <div className="flex flex-col">
