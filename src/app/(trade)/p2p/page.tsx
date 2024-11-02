@@ -74,14 +74,6 @@ const P2PMarket: React.FC = () => {
     setActiveTab(tab);
   };
 
-  // useEffect(() => {
-  //   if (currencies) {
-  //     setCurrencyAmount(old => {
-  //       const usd = currencies.find(c => c.name === "USD") as PreparedCurrency;
-  //       return { ...old, currency: usd.name, id: usd.id };
-  //     });
-  //   }
-  // }, [!!currencies]);
 
   const isAvailable = !!(tokens && currencies && paymentMethods);
 
@@ -98,7 +90,11 @@ const P2PMarket: React.FC = () => {
             {/* <button onClick={showModal1}>ddd</button> */}
             <TabSelector activeTab={activeTab} handleTabChange={handleTabChange} />
             <div className="w-full ">
-              <CryptoSelector tokens={tokens} selectedCrypto={selectedCrypto} setSelectedCrypto={setSelectedCrypto} />
+              <CryptoSelector
+                tokens={[{ id: "0x0", name: "All Tokens", symbol: "All Tokens" }, ...tokens]}
+                selectedCrypto={selectedCrypto}
+                setSelectedCrypto={setSelectedCrypto}
+              />
             </div>
             <div className="w-full">
               <PaymentsSection

@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Square } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import Button from "./Button";
-import { getImage } from "@/lib/utils";
+import { getImage, getPaymentMethodColor } from "@/lib/utils";
 
 interface PaymentMethodSelectProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -125,7 +125,11 @@ const PaymentMethodSelect: React.FC<PaymentMethodSelectProps> = ({
                   ) : (
                     <Square className="text-black dark:text-white w-4 h-4" />
                   )}
-                  <span className="border-l-4 border-blue-500 pl-2 text-gray-800 dark:text-gray-200">
+                  <span
+                    className={`border-l-4 ${getPaymentMethodColor(
+                      option.method,
+                    )} pl-2 text-gray-800 dark:text-gray-200`}
+                  >
                     {option.method}
                   </span>
                 </div>

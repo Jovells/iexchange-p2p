@@ -41,7 +41,7 @@ export default function QuickTradePage() {
   const isBuy = offerType === "buy";
 
   const options: FetchAdsOptions = {
-    currency: currencies?.[0].id,
+    currency: currency?.id,
     quantity: 10,
     merchant: BOT_MERCHANT_ID,
     tokenId: token?.id,

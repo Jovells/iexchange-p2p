@@ -1,6 +1,7 @@
 import { Token } from "@/common/api/types";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronsUpDown } from "lucide-react";
 import { useState, useEffect } from "react";
+import CryptoButton from "./cryptoButton";
 
 interface CryptoSelectorInputProps {
   tokens: Token[];
@@ -38,8 +39,8 @@ const CryptoSelectorInput: React.FC<CryptoSelectorInputProps> = ({ tokens, selec
           className="w-full px-6 py-2 rounded-xl text-md bg-transparent border border-gray-300 text-gray-600 outline-none dark:border-gray-600 dark:text-gray-300"
         >
           <div className="flex flex-row gap-2 items-center justify-center">
-            {selectedCrypto?.symbol || "Select a Crypto"}
-            <ChevronDown />
+            <CryptoButton column={false} token={selectedCrypto || tokens[0]} />
+            <ChevronsUpDown />
           </div>
         </button>
       </div>
@@ -60,7 +61,7 @@ const CryptoSelectorInput: React.FC<CryptoSelectorInputProps> = ({ tokens, selec
                   className="px-6 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 dark:text-gray-300"
                   onClick={() => handleSelect(crypto.symbol)}
                 >
-                  {crypto.symbol}
+                  <CryptoButton column={false} token={crypto} />
                 </div>
               ))}
             </div>

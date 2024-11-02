@@ -1,18 +1,6 @@
 import { Token } from "@/common/api/types";
-import { Filter } from "lucide-react";
-import { useReadContract } from "wagmi";
-import { formatUnits } from "viem";
-import { useContracts } from "@/common/contexts/ContractContext";
-import Button from "@/components/ui/Button";
-import ClaimModal from "@/components/modals/ClaimModal";
-import { useModal } from "@/common/contexts/ModalContext";
-import { Dispatch, SetStateAction } from "react";
-import Loader from "@/components/loader/Loader";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useUser } from "@/common/contexts/UserContext";
 import CryptoSelectorInput from "./cryptoSelectorInput";
 import Claim from "./claim";
-import CryptoButton from "./cryptoButton";
 import Select from "@/components/ui/Select";
 
 interface CryptoSelectorProps {
@@ -22,12 +10,17 @@ interface CryptoSelectorProps {
   showFaucet?: boolean;
 }
 
-const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto, setSelectedCrypto, showFaucet=true }) => {
+const CryptoSelector: React.FC<CryptoSelectorProps> = ({
+  tokens,
+  selectedCrypto,
+  setSelectedCrypto,
+  showFaucet = true,
+}) => {
   return (
     <>
       <div className="hidden sm:flex justify-start items-center space-x-4">
         <Select
-          options={[{ id: "0x0", name: "All Tokens", symbol: "All Tokens" }, ...tokens]}
+          options={tokens}
           column={false}
           onValueChange={value => setSelectedCrypto(value?.id === "0x0" ? undefined : value)}
         />
@@ -54,9 +47,5 @@ const CryptoSelector: React.FC<CryptoSelectorProps> = ({ tokens, selectedCrypto,
     </>
   );
 };
-
-
-
-
 
 export default CryptoSelector;

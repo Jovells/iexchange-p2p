@@ -4,7 +4,7 @@ import Tabs from '@/components/tabs'
 import Button from '@/components/ui/Button'
 import InputSelect from '@/components/ui/InputSelect'
 import Input from '@/components/ui/input'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchCurrencies } from "@/common/api/fetchCurrencies";
@@ -23,6 +23,7 @@ import { AccountDetails, FetchAdsOptions, Offer, PaymentMethod } from "@/common/
 import { ADS, MY_ADS } from "@/common/constants/queryKeys";
 import { MY_ADS_PAGE } from "@/common/page-links";
 import MyAds from "../page";
+import useMarketData from "@/common/hooks/useMarketData";
 
 const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 const formSchema = z
@@ -59,17 +60,17 @@ const CreateAd = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const queryClient = useQueryClient();
 
-  const { paymentMethods, isLoading: isPaymentMethodsLoading } = useUserPaymentMethods();
-
-  const { data: currencies, isLoading: isCurrenciesLoading } = useQuery({
-    queryKey: ["currencies"],
-    queryFn: () => fetchCurrencies(indexerUrl),
+  const { paymentMethods: userPaymentMethods, isLoading: isPaymentMethodsLoading } = useUserPaymentMethods({
+    enabled: activeTab === "buy",
   });
-  const { data: tokens, isLoading: isTokensLoading } = useQuery({
-    queryKey: ["tokens"],
-    queryFn: () => fetchTokens(indexerUrl),
-  });
+  const {
+    paymentMethods: generalPaymentMethods,
+    tokens,
+    acceptedCurrencies: currencies,
+    isLoading,
+  } = useMarketData({ enablePaymentMethods: activeTab === "sell" });
 
+  const paymentMethods = activeTab === "buy" ? generalPaymentMethods : userPaymentMethods;
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | undefined>();
   const id = "create-ad";
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -236,10 +237,11 @@ const CreateAd = () => {
     }
   };
 
-  if (
-    !(currencies && tokens && paymentMethods) &&
-    (isCurrenciesLoading || isPaymentMethodsLoading || isTokensLoading)
-  ) {
+  useEffect(() => {
+    setSelectedPaymentMethod(undefined);
+  }, [activeTab]);
+
+  if (!(currencies && tokens && paymentMethods) && isLoading) {
     return <Loader />;
   }
 
@@ -315,7 +317,7 @@ const CreateAd = () => {
           <div className="flex flex-col gap-3">
             <span className="text-gray-700 dark:text-white font-light">Payment Methods</span>
             <PaymentMethodSelect
-              addButton
+              addButton={activeTab === "sell"}
               label=""
               initialValue=""
               selectedMethod={selectedPaymentMethod}

@@ -4,7 +4,7 @@ import { fetchAccount } from "../api/fetchAccount";
 import fetchPaymentDetails from "../api/fetchPaymentDetails";
 import { useUser } from "../contexts/UserContext";
 
-const useUserPaymentMethods = () => {
+const useUserPaymentMethods = ({ enabled = true } = {}) => {
   const { address } = useUser();
 
   const {
@@ -15,7 +15,7 @@ const useUserPaymentMethods = () => {
   } = useQuery({
     queryKey: ["userPaymentMethods", address],
     queryFn: () => fetchPaymentDetails(address as string),
-    enabled: !!address, // Ensures that address is truthy before making the query
+    enabled: !!address && enabled,
     retry: 1,
     refetchOnWindowFocus: false,
   });

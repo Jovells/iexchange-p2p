@@ -18,9 +18,10 @@ interface CryptoButtonProps {
 }
 
 const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, column = true }) => {
-  const { tokens, currentChain } = useContracts();
+  const { tokens } = useContracts();
   const CopyToClipboard = useCopyToClipboard();
   const { address } = useUser();
+  const enabled = !!address && token.id !== "0x0";
   const {
     data: balance,
     isLoading,
@@ -30,7 +31,7 @@ const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, colu
     abi: tokens[0].abi,
     functionName: "balanceOf",
     args: [address as `0x${string}`],
-    query: { enabled: !!address },
+    query: { enabled },
   });
 
   console.log("qoqueryKey: ", queryKey);
@@ -53,19 +54,23 @@ const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, colu
       <span className={`flex ${column ? "flex-col" : "items-center"} `}>
         <span className="">
           {token.symbol}
-          <ToolTip text="Copy token address to clipboard">
-            <Button
-              onClick={() => CopyToClipboard(token.id, "Token Address copied to clipboard")}
-              title="Copy to clipboard"
-              className="hover:bg-[#01a2e4] hover:text-white  transition duration-300 ease-in-out"
-            >
-              <Copy size={12} />
-            </Button>
-          </ToolTip>
+          {enabled && (
+            <ToolTip text="Copy token address to clipboard">
+              <Button
+                onClick={() => CopyToClipboard(token.id, "Token Address copied to clipboard")}
+                title="Copy to clipboard"
+                className="hover:bg-[#01a2e4] hover:text-white  transition duration-300 ease-in-out"
+              >
+                <Copy size={12} />
+              </Button>
+            </ToolTip>
+          )}
         </span>
-        <p className="bg-gray-100 text-xs text-gray-400  rounded-[3.5px] px-1 py-0.5 dark:bg-gray-700 ">
-          {!isLoading ? "Balance: " + formattedBalance : <Loader size="xs" className="text-xs" loaderType="text" />}
-        </p>
+        {enabled && (
+          <p className="bg-gray-100 text-xs text-gray-400  rounded-[3.5px] px-1 py-0.5 dark:bg-gray-700 ">
+            {!isLoading ? "Balance: " + formattedBalance : <Loader size="xs" className="text-xs" loaderType="text" />}
+          </p>
+        )}
       </span>
     </span>
   );

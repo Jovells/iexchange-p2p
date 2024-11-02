@@ -6,12 +6,19 @@ import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethod
 import { useContracts } from "../contexts/ContractContext";
 import { currencyIcons } from "../data/currencies";
 
-const useMarketData = () => {
+type UseMarketDataProps = {
+  enablePaymentMethods?: boolean;
+  enabletokens?: boolean;
+  enableCurrencies?: boolean;
+};
+
+const useMarketData = (options?: UseMarketDataProps) => {
+  const { enablePaymentMethods = true, enabletokens = true, enableCurrencies = true } = options || {};
   const { indexerUrl } = useContracts();
-  const { data: acceptedCurrencies } = useQuery({
+  const { data: acceptedCurrencies, isLoading: isCurrenciesLoading } = useQuery({
     queryKey: ACCEPTED_CURRENCIES(indexerUrl),
     queryFn: () => fetchCurrencies(indexerUrl),
-    enabled: !!indexerUrl,
+    enabled: !!indexerUrl && enableCurrencies,
   });
 
   const currencies = acceptedCurrencies
@@ -23,19 +30,20 @@ const useMarketData = () => {
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const { data: paymentMethods } = useQuery({
+  const { data: paymentMethods, isLoading: isPaymentMethodsLoading } = useQuery({
     queryKey: PAYMENT_METHODS(indexerUrl),
     queryFn: () => fetchContractPaymentMethods(indexerUrl),
-    enabled: !!indexerUrl,
+    enabled: !!indexerUrl && enablePaymentMethods,
   });
 
-  const { data: tokens } = useQuery({
+  const { data: tokens, isLoading: isTokensLoading } = useQuery({
     queryKey: ACCEPTED_TOKENS(indexerUrl),
     queryFn: () => fetchTokens(indexerUrl),
-    enabled: !!indexerUrl,
+    enabled: !!indexerUrl && enabletokens,
   });
 
   return {
+    isLoading: isCurrenciesLoading || isPaymentMethodsLoading || isTokensLoading,
     currencies,
     acceptedCurrencies,
     paymentMethods,
