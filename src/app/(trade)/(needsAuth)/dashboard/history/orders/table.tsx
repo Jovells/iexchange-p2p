@@ -67,6 +67,7 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
     orderType: orderType,
     merchant: address?.toLowerCase(),
     trader: address?.toLowerCase(),
+    quantity: 20,
   };
 
   const { isPending, isError, error, data, isFetching, isPlaceholderData } = useQuery({
@@ -96,7 +97,7 @@ const OrdersTable: FC<Partial<OrderOptions>> = ({ orderType, status }) => {
           data={data || []}
           actions={actions}
           isLoading={isPending}
-          itemsPerPage={50}
+          itemsPerPage={10}
         ></GridTable>
       </div>
     </Suspense>

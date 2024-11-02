@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  ReactNode,
-  useImperativeHandle,
-  forwardRef,
-  ReactElement,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { useState, ReactNode, useImperativeHandle, forwardRef, ReactElement, useEffect, useRef } from "react";
 import Loader from '../loader/Loader';
 import { X } from 'lucide-react';
 import { Offer } from '@/common/api/types';
@@ -128,11 +120,11 @@ const ExpandableTable = forwardRef(
             </div>
           )}
 
-          {isLoading && <Loader loaderType="text" className="mt-20" />}
+          {isLoading && <Loader loaderType="text" className="mt-10" />}
 
           {!isNoAds && (
             <>
-              {isMobile ? (
+              {isMobile && (
                 <div>
                   {carouselData && carouselData.length > 0 && (
                     <div className="mt-2 mb-2 rounded-xl border border-primary  cursor-pointer">
@@ -186,7 +178,8 @@ const ExpandableTable = forwardRef(
                     />
                   ))}
                 </div>
-              ) : (
+              )}
+              {!isMobile && (
                 <div>
                   {carouselData && carouselData.length > 0 && (
                     <div className="mt-2 rounded-xl p-0 m-0  border border-primary  cursor-pointer">
@@ -251,9 +244,13 @@ const ExpandableTable = forwardRef(
             </>
           )}
 
-          {isNoAds && data && data.length > 0 && <div className="p-4 text-center text-black dark:text-white">No records to show</div>}
+          {isNoAds && data && data.length > 0 && (
+            <div className="p-4 text-center text-black dark:text-white">No records to show</div>
+          )}
 
-          {paginationType == "default" && <CustomPagination currentPage={page} onPageChange={onPageChange} hasNextPage={!!hasNextPage} />}
+          {paginationType == "default" && (
+            <CustomPagination currentPage={page} onPageChange={onPageChange} hasNextPage={!!hasNextPage} />
+          )}
 
           {paginationType == "numbers" && data && data.length > 0 && (
             <div className="flex justify-center py-3">
@@ -297,7 +294,6 @@ const ExpandableTable = forwardRef(
               </div>
             </div>
           )}
-
         </div>
       </div>
     );

@@ -25,7 +25,7 @@ const useMyPendingOrders = () => {
     retry: false,
   });
 
-  const total = myOrders?.length ? (myOrders.length <= 20 ? myOrders?.length.toString() : "20+") : "";
+  const total = myOrders?.length ? (myOrders.length <= 19 ? (myOrders?.length + 1).toString() : "20+") : "";
 
   return { myOrders, isLoading, error, total };
 };

@@ -96,6 +96,8 @@ export type OrderOptions = {
   orderType?: OfferType;
   status?: OrderState;
   status_not?: OrderState;
+  orderBy?: string;
+  orderDirection?: string;
 };
 
 export type Order = {
