@@ -22,7 +22,7 @@ const Tabs: FC<Props> = ({ onTabChange }) => {
             type="button"
             onClick={() => handleTabChange("buy")}
             className={`w-auto rounded-xl text-center text-md py-1 px-6 ${
-              activeTab.toLowerCase() === "buy" ? "text-white bg-[#01a2e4]" : "text-gray-600 dark:text-gray-300"
+              activeTab.toLowerCase() === "buy" ? "text-white bg-ixGreen" : "text-gray-600 dark:text-gray-300"
             }`}
           >
             I want to Buy
@@ -30,7 +30,7 @@ const Tabs: FC<Props> = ({ onTabChange }) => {
           <button
             onClick={() => handleTabChange("sell")}
             className={`w-auto rounded-xl text-center text-md py-1 px-6 ${
-              activeTab.toLowerCase() === "sell" ? "text-white bg-[#01a2e4]" : "text-gray-600 dark:text-gray-300"
+              activeTab.toLowerCase() === "sell" ? "text-white bg-ixRed" : "text-gray-600 dark:text-gray-300"
             }`}
           >
             I want to Sell

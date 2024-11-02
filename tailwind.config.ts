@@ -55,6 +55,12 @@ const config = {
           DEFAULT: "#484848",
           dark: "#d2d2d2",
         },
+        ixRed: {
+          DEFAULT: "#f14e4e",
+        },
+        ixGreen: {
+          DEFAULT: "#2ebd85",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

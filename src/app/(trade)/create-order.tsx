@@ -116,7 +116,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
               type="submit"
               text={alreadyApproved ? `${trade} ${crypto}` : `Approve and ${trade} ${crypto}`}
               className={`${
-                isBuy ? "bg-[#2ebd85]" : "bg-[#f14e4e]"
+                isBuy ? "bg-ixRed" : "bg-ixGreen"
               } text-white rounded-xl px-4 py-2 transition duration-300 ease-in-out transform hover:bg-opacity-90`}
             />
           </div>
