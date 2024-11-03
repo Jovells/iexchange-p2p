@@ -32,7 +32,7 @@ const connectors = connectorsForWallets(
   [
     {
       groupName: "Recommended",
-      wallets: [injectedWallet, metaMaskWalletConnector, walletConnectWallet],
+      wallets: [metaMaskWalletConnector, walletConnectWallet],
     },
   ],
   {
