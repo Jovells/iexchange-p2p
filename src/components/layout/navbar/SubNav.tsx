@@ -7,11 +7,15 @@ import WalletConnect from "@/components/wallet";
 import { useEffect, useState } from "react";
 import {
   APPEALS_PAGE,
+  BUY_SELL_PAGE,
   DASHBOARD_PAGE,
   HOME_PAGE,
+  MERCHANT_PAGE,
   MY_ADS_PAGE,
   ORDER_HISTORY_PAGE,
+  PLACING_AD_PAGE,
   QUICK_TRADE_PAGE,
+  SETTLER_PAGE,
 } from "@/common/page-links";
 import useIsMerchant from "@/common/hooks/useIsMerchant";
 import { useUser } from "@/common/contexts/UserContext";
@@ -34,10 +38,10 @@ const menuLinks2 = [
 ];
 
 const helpCenterLinks = [
-  { link: "/buy-sell", label: "How to Buy/Sell" },
-  { link: "/place-order", label: "Placing and Order" },
-  { link: "/becoming-merchant", label: "How to be a Merchant" },
-  { link: "/becoming-settler", label: "How to be a settler" },
+  { link: BUY_SELL_PAGE, label: "How to Buy/Sell" },
+  { link: PLACING_AD_PAGE, label: "Pacing an Ad" },
+  { link: MERCHANT_PAGE, label: "How to be a Merchant" },
+  { link: SETTLER_PAGE, label: "How to be a settler" },
 ];
 
 const SubNav = () => {

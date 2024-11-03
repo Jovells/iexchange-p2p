@@ -52,12 +52,15 @@ function useWriteContractWithToast(numConfirmations = 1) {
       onReceipt,
       successMessage,
     } = options;
-    const toastId = toast.loading(loadingMessage || "Calling " + args[0].functionName + "...", { id: tId });
+    // const toastId = toast.loading(loadingMessage || "Calling " + args[0].functionName + "...", { id: tId });
+    const toastId = toast.loading("Please confirm transaction in your wallet", { id: tId });
     setOptions({ ...options, toastId, args });
     try {
       setIspending(true);
       const txHash = await writeContractAsync(...args);
       console.log("vb before afterAction");
+      toast.loading(loadingMessage || "Transaction sent. Waiting for confirmation.", { id: tId });
+
       await onTxSent?.(txHash);
       console.log("after afterAction");
       const timeTimeToWait = ttw || onTxSent ? 0 : 5000;
