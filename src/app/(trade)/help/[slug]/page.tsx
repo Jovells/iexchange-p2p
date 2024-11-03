@@ -1,9 +1,11 @@
 "use client";
+import Loader from "@/components/loader/Loader";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const BuySellPage: React.FC = () => {
   const { slug } = useParams();
+  const [loading, setLoading] = useState(true);
   const getLink = () => {
     if (slug === "buy-sell") {
       return "https://scribehow.com/embed/How_to_BuySell_on_iExchange__lCmCyQVLTLmS1JkgJ06QXw?as=scrollable";
@@ -19,7 +21,20 @@ const BuySellPage: React.FC = () => {
 
   return (
     <div className="container mx-auto h-screen p-0 py-4">
-      <iframe src={link} width="100%" height="100%" className="" allowFullScreen frameBorder="0"></iframe>
+      {loading && (
+        <div className=" flex w-full justify-center items-center  h-screen ">
+          <Loader />
+        </div>
+      )}
+      <iframe
+        src={link}
+        width="100%"
+        height="100%"
+        className=""
+        onLoad={() => setLoading(false)}
+        allowFullScreen
+        frameBorder="0"
+      ></iframe>
     </div>
   );
 };

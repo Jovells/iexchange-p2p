@@ -1,30 +1,33 @@
+import { BUY_SELL_PAGE, MERCHANT_PAGE, PLACING_AD_PAGE } from "@/common/page-links";
+import Link from "next/link";
 import React from "react";
+
 export function HelpNav({ slug }: { slug?: string | undefined }) {
   return (
     <nav className="mt-4 p-4 rounded-md">
       <ul className="flex justify-center space-x-4">
         <li className={slug == undefined ? "text-primary font-bold" : "text-gray-700"}>
-          <a href="/help" className="hover:underline">
+          <Link href="/help" className="hover:underline">
             Full Guide
-          </a>
+          </Link>
         </li>
         <span>|</span>
         <li className={slug === "buy-sell" ? "text-primary font-bold" : "text-gray-700"}>
-          <a href="/help/buy-sell" className="hover:underline">
+          <Link href={BUY_SELL_PAGE} className="hover:underline">
             How to Buy/Sell
-          </a>
+          </Link>
         </li>
         <span>|</span>
         <li className={slug === "place-ad" ? "text-primary font-bold" : "text-gray-700"}>
-          <a href="/help/how-to-place-an-ad" className="hover:underline">
+          <Link href={PLACING_AD_PAGE} className="hover:underline">
             How to Place an Ad
-          </a>
+          </Link>
         </li>
         <span>|</span>
         <li className={slug === "become-merchant" ? "text-primary font-bold" : "text-gray-700"}>
-          <a href="/help/how-to-become-a-merchant" className="hover:underline">
+          <Link href={MERCHANT_PAGE} className="hover:underline">
             How to Become a Merchant
-          </a>
+          </Link>
         </li>
       </ul>
     </nav>
