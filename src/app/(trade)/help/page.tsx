@@ -1,4 +1,5 @@
 "use client";
+import { HelpNav } from "@/components/help-nav";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -8,6 +9,8 @@ const BuySellPage: React.FC = () => {
 
   return (
     <div className="container mx-auto h-screen p-0 py-4">
+      <HelpNav />
+
       <iframe
         src={"https://scribehow.com/embed/iExchange_Full_guide__LKwXrMoITIm19QdPPvCmoA?as=scrollable" + hash}
         width="100%"
