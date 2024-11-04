@@ -53,7 +53,7 @@ function useWriteContractWithToast(numConfirmations = 1) {
       successMessage,
     } = options;
     // const toastId = toast.loading(loadingMessage || "Calling " + args[0].functionName + "...", { id: tId });
-    const toastId = toast.loading("Please confirm transaction in your wallet", { id: tId });
+    const toastId = toast.loading("Please confirm transaction in your wallet", { id: tId || "toastId" });
     setOptions({ ...options, toastId, args });
     try {
       setIspending(true);
