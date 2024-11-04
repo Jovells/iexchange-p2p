@@ -4,8 +4,6 @@ import React, { lazy, Suspense, useState } from "react";
 import { BOT_MERCHANT_ID, offerTypes } from "@/common/constants";
 import fetchAccountDetails from "@/common/api/fetchAccountDetails";
 import fetchOrder from "@/common/api/fetchOrder";
-const Loader = lazy(() => import("@/components/loader/Loader"));
-const Button = lazy(() => import("@/components/ui/Button"));
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useReadContract } from "wagmi";
 import { OrderState, WriteContractWithToastReturnType } from "@/common/api/types";
@@ -13,27 +11,27 @@ import { formatCurrency, formatBlockTimesamp, shortenAddress, getUserConfig, fet
 import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
 import CediH from "@/common/abis/CediH";
 import Link from "next/link";
-import fetchOrderStatus from "@/common/api/fetchOrderStatus";
 import { ixToast as toast } from "@/lib/utils";
 import { useModal } from "@/common/contexts/ModalContext";
+import { useUser } from "@/common/contexts/UserContext";
+import { MessageCircle, X } from "lucide-react";
+import { ORDER, TOKEN_BALANCE } from "@/common/constants/queryKeys";
+import { CachedConversation, useSendMessage } from "@xmtp/react-sdk";
+import Image from "next/image";
+import { formatEther } from "viem";
+import { HOME_PAGE } from "@/common/page-links";
+import { useContracts } from "@/common/contexts/ContractContext";
+
+const Loader = lazy(() => import("@/components/loader/Loader"));
+const Button = lazy(() => import("@/components/ui/Button"));
+const SellerPaymentConfirmedModal = lazy(() => import("@/components/modals/SellerPaymentConfirmedModal"));
+const OrderCancellationModal = lazy(() => import("@/components/modals/OrderCancelledModal"));
+const InfoBlock = lazy(() => import("../infoBlock"));
+const DetailBlock = lazy(() => import("./detailBlock"));
 const OrderCancellationWarning = lazy(() => import("@/components/modals/OrderCancellationWarning"));
 const PaymentConfirmation = lazy(() => import("@/components/modals/PaymentConfirmation"));
 const ReleaseConfirmation = lazy(() => import("@/components/modals/ReleaseConfirmation"));
 const BuyerReleaseModal = lazy(() => import("@/components/modals/BuyerReleaseModal"));
-import { useUser } from "@/common/contexts/UserContext";
-const SellerPaymentConfirmedModal = lazy(() => import("@/components/modals/SellerPaymentConfirmedModal"));
-const OrderCancellationModal = lazy(() => import("@/components/modals/OrderCancelledModal"));
-import { MessageCircle, ToggleLeft, ToggleRight, X } from "lucide-react";
-import { ORDER, ORDER_STATUS, TOKEN_BALANCE } from "@/common/constants/queryKeys";
-const InfoBlock = lazy(() => import("../infoBlock"));
-const DetailBlock = lazy(() => import("./detailBlock"));
-import { CachedConversation, useSendMessage } from "@xmtp/react-sdk";
-import Image from "next/image";
-import { formatEther } from "viem";
-const Wrapper = lazy(() => import("@/components/layout/Wrapper"));
-import { HOME_PAGE } from "@/common/page-links";
-import { useContracts } from "@/common/contexts/ContractContext";
-
 const ChatWithMerchant = lazy(() => import("@/components/merchant/ChatWithMerchant"));
 
 // Later in your component, when you use ChatWithMerchant:

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Offer } from "../api/types";
 import { formatCurrency } from "@/lib/utils";
 
-export const createOrderSchema = (data: Offer) =>
+export const createOrderSchema = (data: Offer, isSell?: boolean) =>
   z.object({
     fiatAmount: z
       .string()
@@ -29,5 +29,27 @@ export const createOrderSchema = (data: Offer) =>
           )}`,
         },
       ),
-    paymentMethod: z.string().min(1, "Payment method is required"),
+    paymentMethod: isSell
+      ? z.object(
+          {
+            name: z.string().min(1, "Payment method name is required"),
+            number: z.string().min(1, "Payment method number is required"),
+            method: z.string().min(1, "Payment method menubar is required"),
+          },
+          {
+            message: "Payment method is required",
+            invalid_type_error: "Payment method is required",
+            required_error: "Payment method is required",
+          },
+        )
+      : z.object(
+          {
+            method: z.string().min(1, "Payment method is required"),
+          },
+          {
+            message: "Payment method is required",
+            invalid_type_error: "Payment method is required",
+            required_error: "Payment method is required",
+          },
+        ),
   });

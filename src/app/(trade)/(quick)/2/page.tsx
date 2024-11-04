@@ -1,33 +1,25 @@
 "use client";
-import CediH from "@/common/abis/CediH";
 import { fetchAds } from "@/common/api/fetchAds";
-import storeAccountDetails from "@/common/api/storeAccountDetails";
-import { FetchAdsOptions, Offer, Order, OrderState, PaymentMethod } from "@/common/api/types";
+import { FetchAdsOptions, Offer, PaymentMethod } from "@/common/api/types";
 import { BOT_MERCHANT_ID } from "@/common/constants";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { useUser } from "@/common/contexts/UserContext";
 import useMarketData from "@/common/hooks/useMarketData";
-import useWriteContractWithToast from "@/common/hooks/useWriteContractWithToast";
-import { createOrderSchema } from "@/common/schema";
-import Loader from "@/components/loader/Loader";
-import ToolTip from "@/components/toolTip";
 import { formatCurrency, getPaymentMethodColor, shortenAddress, ixToast as toast } from "@/lib/utils";
-import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
-import { useFeeData, useReadContract } from "wagmi";
-import { getBlock } from "@wagmi/core";
-import { config } from "@/common/configs";
-import { ORDER } from "@/common/constants/queryKeys";
-import { ArrowRight, Bolt, MoveRight, MoveRightIcon, Zap } from "lucide-react";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState, lazy } from "react";
+import { ArrowRight, Zap } from "lucide-react";
 import Link from "next/link";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
-import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
-import Button from "@/components/ui/Button";
-import useCreateOrder from "@/common/hooks/useCreateOrder";
 import { HOME_PAGE, QUICK_TRADE_PAGE } from "@/common/page-links";
-import FaucetAndNetwork from "@/components/faucetAndNetwork";
+import useUserPaymentMethods from "@/common/hooks/useUserPaymentMenthods";
+import useCreateOrder from "@/common/hooks/useCreateOrder";
+
+const Loader = lazy(() => import("@/components/loader/Loader"));
+const ToolTip = lazy(() => import("@/components/toolTip"));
+const PaymentMethodSelect = lazy(() => import("@/components/ui/PaymentMethodSelect"));
+const Button = lazy(() => import("@/components/ui/Button"));
+const FaucetAndNetwork = lazy(() => import("@/components/faucetAndNetwork"));
 
 export default function PaymentMethodsPage() {
   const searchParams = useSearchParams();
@@ -41,7 +33,7 @@ export default function PaymentMethodsPage() {
   } = Object.fromEntries(searchParams.entries());
 
   const [selectedOffer, setSelectedOffer] = useState<Offer | undefined>(undefined);
-  const { handleSubmit, isPending, handleFormDataChange, setFormData, paymentMethod, fiatAmount, cryptoAmount } =
+  const { handleSubmit, errors, isPending, handleFormDataChange, paymentMethod, fiatAmount, cryptoAmount } =
     useCreateOrder(selectedOffer, {
       fiatAmount: fm,
       cryptoAmount: cm,
@@ -72,26 +64,41 @@ export default function PaymentMethodsPage() {
     withoutBots: true,
   };
 
-  const { data: botAds, isLoading: isBotAdsLoading } = useQuery({
+  const botAdsEnabled = !!currencyId && !!tokenId && !!offerType;
+  const nonBotAdsEnabled = paymentMethods && paymentMethods.length > 0;
+  console.log("enabledqwa fetching", botOptions, nonBotAdsEnabled, botAdsEnabled);
+
+  const {
+    data: botAds,
+    isLoading: isBotAdsLoading,
+    error: botAdsError,
+  } = useQuery({
     queryKey: ["ads", botOptions],
-    queryFn: () => fetchAds(indexerUrl, botOptions),
-    enabled: !!currencyId && !!tokenId && !!offerType,
+    queryFn: () => (console.log("fetching did"), fetchAds(indexerUrl, botOptions)),
+    enabled: botAdsEnabled,
   });
-  const { data: nonBotads, isLoading } = useQueries({
+  const {
+    data: nonBotads,
+    isLoading,
+    errors: nonBotAdsErrors,
+  } = useQueries({
     queries:
       paymentMethods?.map(method => ({
         queryKey: ["ads", { ...nonBotOptions, paymentMethod: method.id }],
         queryFn: () => fetchAds(indexerUrl, { ...nonBotOptions, paymentMethod: method.id }),
-        enabled: paymentMethods && paymentMethods.length > 0,
+        enabled: nonBotAdsEnabled,
       })) || [],
     combine: results => {
       return {
         data: results.flatMap(result => result.data?.offers || []),
         isPending: results.some(result => result.isPending),
         isLoading: results.some(result => result.isLoading),
+        errors: results.map(res => res.error),
       };
     },
   });
+
+  console.log("fetching botAdsNonbot", botAdsError, nonBotAdsErrors);
 
   const currency = currencies?.find(c => c.id === currencyId);
   const token = tokens?.find(t => t.id === tokenId);
@@ -105,7 +112,7 @@ export default function PaymentMethodsPage() {
   useEffect(() => {
     if (!selectedOffer) return;
     handleFormDataChange(lastChanged, cryptoAmount);
-    handleFormDataChange("paymentMethod", selectedOffer?.paymentMethod as PaymentMethod);
+    isBuy && handleFormDataChange("paymentMethod", selectedOffer?.paymentMethod as PaymentMethod);
   }, [selectedOffer, adsType]);
 
   useEffect(() => {
@@ -124,6 +131,10 @@ export default function PaymentMethodsPage() {
     }
   }, [selectedOffer, ads, offerType]);
 
+  console.log("qz errors 2", errors);
+  const paymentMethodError = errors.find(error => error.path.find(e => e === "paymentMethod"))?.message;
+  console.log("qz paymentMethodError 3", paymentMethodError);
+
   return (
     <Suspense>
       <div className="p-4 w-full">
@@ -139,7 +150,17 @@ export default function PaymentMethodsPage() {
         </div>
         {/* header */}
         <h2 className="text-xl font-bold my-4 dark:text-white">
-          Buy {currency?.name} with {selectedOffer?.paymentMethod.method}
+          {isBuy && (
+            <>
+              Buy {token?.name} with {selectedOffer?.paymentMethod.method}
+            </>
+          )}
+          {!isBuy && (
+            <>
+              Sell {token?.name}{" "}
+              {selectedOffer?.paymentMethod.method ? "and receive " + selectedOffer.paymentMethod.method : ""}
+            </>
+          )}
         </h2>
 
         {/* tabs */}
@@ -241,7 +262,7 @@ export default function PaymentMethodsPage() {
                       <ToolTip
                         text={
                           isBot
-                            ? "The not merchant atomatically fulfills orders within 2 minutes"
+                            ? "The not merchant automatically fulfills orders within 2 minutes"
                             : "This is an estimate which depends on the availability of the merchant"
                         }
                       >
@@ -286,6 +307,7 @@ export default function PaymentMethodsPage() {
                     skipStep1={selectedOffer?.paymentMethod.method}
                     addButtonText={"Add " + selectedOffer?.paymentMethod.method + " details"}
                     label=""
+                    error={paymentMethodError}
                     initialValue=""
                     selectedMethod={paymentMethod}
                     placeholder="Select account to receive payment"
@@ -301,7 +323,7 @@ export default function PaymentMethodsPage() {
                   onClick={handleSubmit}
                   className="w-full py-4 bg-primary hover:bg-primary-foreground text-white rounded-xl mt-6 font-medium"
                 >
-                  Place order
+                  Place {isBuy ? "buy " : "sell "} order
                 </Button>
               </div>
             </div>

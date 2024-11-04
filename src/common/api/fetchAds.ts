@@ -13,6 +13,7 @@ import {
 
 
   export async function fetchAds(indexerUrl: string, options?: FetchAdsOptions) {
+    console.log("fetching ads inside", options);
     const {
       quantity = 10,
       page = 0,
@@ -29,9 +30,9 @@ import {
       withoutBots,
     } = options || {};
 
-    const realAmount = amount ? (BigInt(amount) * BigInt(10 ** 18)).toString() : undefined;
+    const realAmount = amount ? BigInt(Math.round(parseFloat(amount) * 10 ** 18)).toString() : undefined;
 
-    console.log("realAmount", realAmount, amount);
+    console.log("fetching realAmount", realAmount, amount, options);
 
     const operation = constructAdsQuery({
       first: quantity,
@@ -58,7 +59,7 @@ import {
     };
 
     const mechantIds = graphdata.offers.map(offer => offer.merchant.id);
-    if (mechantIds) {
+    if (mechantIds?.length) {
       const q = query(collection(db, "Account"), where("address", "in", mechantIds));
 
       const querySnapshot = await getDocs(q);

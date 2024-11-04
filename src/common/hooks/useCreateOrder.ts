@@ -17,16 +17,22 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 const useCreateOrder = (
   offer: Offer | undefined,
-  initialFormData?: { fiatAmount?: string; cryptoAmount?: string; paymentMethod?: PaymentMethod },
+  initialFormData?: { fiatAmount?: string; cryptoAmount?: string; paymentMethod?: PaymentMethod | null },
 ) => {
   const { openConnectModal } = useConnectModal();
   const { isConnected } = useUser();
   const { indexerUrl } = useContracts();
+  const isBuy = offer?.offerType === OfferType.buy;
   const [{ fiatAmount, cryptoAmount, paymentMethod }, setFormData] = useState({
     fiatAmount: initialFormData?.fiatAmount || "",
     cryptoAmount: initialFormData?.cryptoAmount || "",
-    paymentMethod: initialFormData?.paymentMethod,
+    paymentMethod: isBuy
+      ? initialFormData?.paymentMethod
+      : initialFormData?.paymentMethod?.number
+      ? initialFormData.paymentMethod
+      : null,
   });
+  console.log("qzz, initialpaymentMethod", paymentMethod);
   const [errors, setErrors] = useState<z.ZodIssue[]>([]);
   const newOrder = useRef<Partial<Order>>({});
   const navigate = useRouter();
@@ -45,8 +51,6 @@ const useCreateOrder = (
 
   const isMerchant = userAddress === offer?.merchant.id;
 
-  const isBuy = offer?.offerType === OfferType.buy;
-
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
     abi: CediH,
     address: offer?.token.id,
@@ -58,7 +62,7 @@ const useCreateOrder = (
   });
 
   function handleFormDataChange(name: "cryptoAmount" | "fiatAmount" | "paymentMethod", value: string | PaymentMethod) {
-    if (!offer) return toast.error("please Select an offer");
+    if (!offer) return toast.error("Please select an offer");
 
     // Prevent non-numeric input for fiatAmount and cryptoAmount fields
     if ((name === "fiatAmount" || name === "cryptoAmount") && !/^\d*\.?\d*$/.test(value as string)) {
@@ -99,8 +103,8 @@ const useCreateOrder = (
   const handleSubmit = async (e: React.BaseSyntheticEvent) => {
     if (!isConnected) return openConnectModal?.();
     e.preventDefault();
-    if (!offer) return toast.error("please Select an offer");
-    if (!paymentMethod) return toast.error("please Select a payment method");
+    if (!offer) return toast.error("Please select an offer");
+
     const isMerchant = offer.merchant.id === userAddress;
 
     if (isMerchant) {
@@ -109,12 +113,16 @@ const useCreateOrder = (
     }
 
     // Validate the form before submission
-    const formData = { fiatAmount: fiatAmount, cryptoAmount: cryptoAmount, paymentMethod: paymentMethod?.method };
+    const formData = { fiatAmount: fiatAmount, cryptoAmount: cryptoAmount, paymentMethod: paymentMethod };
+
     const result = createOrderSchema(offer).safeParse(formData);
     if (!result.success) {
       setErrors(result.error.issues);
       console.log("qz errors", result.error.issues, "fdara", formData);
-      toast.error(result.error.issues.map(issue => issue.path + " " + issue.message).join(", "));
+      if (!paymentMethod) return toast.error("please Select a payment method");
+      if (!isBuy && (!paymentMethod.name || paymentMethod.number))
+        return toast.error("please an account for receiving payment");
+      else toast.error(result.error.issues.map(issue => issue.path + " " + issue.message).join(", "));
       return;
     } else {
       setErrors([]);
@@ -125,11 +133,11 @@ const useCreateOrder = (
     const accountHash = isBuy
       ? offer.accountHash
       : await storeAccountDetails({
-          name: paymentMethod.name as string,
+          name: paymentMethod?.name as string,
           address: userAddress as string,
-          number: paymentMethod.number as string,
+          number: paymentMethod?.number as string,
           paymentMethod: paymentMethod?.method,
-          details: paymentMethod.details,
+          details: paymentMethod?.details,
         });
     const toastId = "createOrder";
 
