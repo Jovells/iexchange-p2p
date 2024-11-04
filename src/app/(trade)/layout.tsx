@@ -2,12 +2,13 @@
 
 import "@/styles/globals.css";
 import "@/styles/custom.css";
-import MainNav from "@/components/layout/navbar";
-import SubNav from "@/components/layout/navbar/SubNav";
-import Footer from "@/components/layout/footer";
-import Loader from "@/components/loader/Loader";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { usePathname } from "next/navigation";
+
+const MainNav = lazy(() => import("@/components/layout/navbar"));
+const SubNav = lazy(() => import("@/components/layout/navbar/SubNav"));
+const Footer = lazy(() => import("@/components/layout/footer"));
+const Loader = lazy(() => import("@/components/loader/Loader"));
 
 const TradeLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [isLoading, setIsLoading] = useState(true);

@@ -1,23 +1,20 @@
 "use client";
-
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import WalletConnectSection from "@/components/sections/WalletConnectSection";
-import IExchangeGuide from "@/components/sections/IExchangeGuide";
 import { useContracts } from "@/common/contexts/ContractContext";
 import { PreparedCurrency, Token } from "@/common/api/types";
+import { useUser } from "@/common/contexts/UserContext";
+import useMarketData from "@/common/hooks/useMarketData";
 
+const WalletConnectSection = React.lazy(() => import("@/components/sections/WalletConnectSection"));
+const IExchangeGuide = React.lazy(() => import("@/components/sections/IExchangeGuide"));
 const Faqs = React.lazy(() => import("@/components/sections/Faqs"));
 const P2PAds = React.lazy(() => import("@/app/(trade)/P2PAds"));
 const InputAmount = React.lazy(() => import("@/components/ui/InputWithSelect"));
 const SelectPaymentMethod = React.lazy(() => import("@/components/ui/InputSelect"));
-import Loader from "@/components/loader/Loader";
-import CryptoSelector from "@/app/(trade)/cryptoSelector";
-import { useUser } from "@/common/contexts/UserContext";
-import { ACCEPTED_CURRENCIES, ACCEPTED_TOKENS, PAYMENT_METHODS } from "@/common/constants/queryKeys";
-import { useModal } from "@/common/contexts/ModalContext";
-import useMarketData from "@/common/hooks/useMarketData";
-import Wrapper from "@/components/layout/Wrapper";
+const Loader = React.lazy(() => import("@/components/loader/Loader"));
+const CryptoSelector = React.lazy(() => import("@/app/(trade)/cryptoSelector"));
+const Wrapper = React.lazy(() => import("@/components/layout/Wrapper"));
 
 interface CurrencyAmount {
   currency: string;
@@ -26,8 +23,6 @@ interface CurrencyAmount {
 }
 
 const P2PMarket: React.FC = () => {
-  const { showModal, hideModal } = useModal();
-  const { session } = useUser();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -73,7 +68,6 @@ const P2PMarket: React.FC = () => {
   const handleTabChange = (tab: "buy" | "sell" | string) => {
     setActiveTab(tab);
   };
-
 
   const isAvailable = !!(tokens && currencies && paymentMethods);
 

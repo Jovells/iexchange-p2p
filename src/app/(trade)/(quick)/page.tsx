@@ -4,24 +4,22 @@ import { fetchAds } from "@/common/api/fetchAds";
 import { FetchAdsOptions, Token } from "@/common/api/types";
 import { useContracts } from "@/common/contexts/ContractContext";
 import useMarketData from "@/common/hooks/useMarketData";
-import Loader from "@/components/loader/Loader";
-import ToolTip from "@/components/toolTip";
-import InputSelect from "@/components/ui/InputSelect";
-import Select from "@/components/ui/Select";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { formatEther } from "ethers";
+import { lazy, Suspense, useLayoutEffect, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
-import { set, z } from "zod";
-import Claim from "../claim";
-import NetworkSwitcher from "@/components/networkSwitcher";
-import { useUser } from "@/common/contexts/UserContext";
-import WalletConnect from "@/components/wallet";
-import { QUICK_TRADE_PAGE, SELECT_PAYMENT_METHOD_PAGE } from "@/common/page-links";
-import FaucetAndNetwork from "@/components/faucetAndNetwork";
+import { z } from "zod";
+import { SELECT_PAYMENT_METHOD_PAGE } from "@/common/page-links";
 import { BOT_MERCHANT_ID } from "@/common/constants";
+
+// Lazy load components
+const Loader = lazy(() => import("@/components/loader/Loader"));
+const ToolTip = lazy(() => import("@/components/toolTip"));
+const InputSelect = lazy(() => import("@/components/ui/InputSelect"));
+const Select = lazy(() => import("@/components/ui/Select"));
+const WalletConnect = lazy(() => import("@/components/wallet"));
+const FaucetAndNetwork = lazy(() => import("@/components/faucetAndNetwork"));
 
 interface CurrencyInput {
   amount: string;
@@ -30,7 +28,6 @@ interface CurrencyInput {
 
 export default function QuickTradePage() {
   const { currencies, tokens } = useMarketData();
-  const { isConnected } = useUser();
   const { indexerUrl } = useContracts();
   const [currency, setCurrency] = useState(currencies?.[0]);
   const [token, setToken] = useState(tokens?.[0]);
@@ -190,7 +187,7 @@ export default function QuickTradePage() {
   console.log({ isLoading, isLoadingRate, minAndMax, estimatedRate, ready: isReady });
 
   return (
-    <>
+    <Suspense fallback={<Loader fullPage />}>
       {/* cta */}
       <div className="self-center max-w-prose mb-10 lg:mb-0 mt-16 lg:mt-0 text-center lg:text-left">
         <h1 className="text-3xl sm:text-4xl lg:text-8xl font-bold mb-2 text-gray-900 dark:text-white">
@@ -377,6 +374,6 @@ export default function QuickTradePage() {
           </div>
         )}
       </div>
-    </>
+    </Suspense>
   );
 }

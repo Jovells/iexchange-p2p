@@ -43,7 +43,7 @@ const ModalAlert: React.FC<Props> = ({
   };
 
   return (
-    <div className="flex flex-col bg-white dark:bg-gray-800 rounded-xl w-[500px] min-h-[250px]">
+    <div className="flex flex-col p-4 bg-white dark:bg-gray-800 rounded-xl w-[500px] min-h-[250px]">
       <div className="w-full flex flex-row justify-end">
         <button
           onClick={hideModal}

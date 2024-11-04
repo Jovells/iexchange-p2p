@@ -1,8 +1,7 @@
 'use client'
-import GridTable from '@/components/datatable';
+import { lazy, Suspense, useRef, useState } from "react";
 import { CircleX, Pencil } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import React, { Suspense, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAds } from "@/common/api/fetchAds";
 import { useContracts } from "@/common/contexts/ContractContext";
@@ -10,16 +9,14 @@ import { FetchAdsOptions, Offer, Token } from "@/common/api/types";
 import { offerTypes } from "@/common/constants";
 import { useUser } from "@/common/contexts/UserContext";
 import { formatCurrency, getPaymentMethodColor } from "@/lib/utils";
-import { ACCEPTED_CURRENCIES, ACCEPTED_TOKENS, MY_ADS, PAYMENT_METHODS } from "@/common/constants/queryKeys";
-import InputSelect from "@/components/ui/InputSelect";
-import InputWithSelect from "@/components/ui/InputWithSelect";
-import CryptoSelector from "../../cryptoSelector";
-import { fetchTokens } from "@/common/api/fetchTokens";
-import { fetchCurrencies } from "@/common/api/fetchCurrencies";
-import fetchContractPaymentMethods from "@/common/api/fetchContractPaymentMethods";
-import Wrapper from '@/components/layout/Wrapper';
-import { currencyIcons } from "@/common/data/currencies";
+import { MY_ADS } from "@/common/constants/queryKeys";
 import useMarketData from "@/common/hooks/useMarketData";
+
+const GridTable = lazy(() => import("@/components/datatable"));
+const InputSelect = lazy(() => import("@/components/ui/InputSelect"));
+const InputWithSelect = lazy(() => import("@/components/ui/InputWithSelect"));
+const CryptoSelector = lazy(() => import("../../cryptoSelector"));
+const Wrapper = lazy(() => import("@/components/layout/Wrapper"));
 
 const BuySellOptions = [
   {
