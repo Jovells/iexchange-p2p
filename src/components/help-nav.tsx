@@ -7,26 +7,26 @@ export function HelpNav({ slug }: { slug?: string | undefined }) {
     <nav className="mt-4 p-4 rounded-md">
       <ul className="flex justify-center space-x-4">
         <li className={slug == undefined ? "text-primary font-bold" : "text-gray-700"}>
-          <Link href="/help" className="hover:underline">
+          <Link href="/help" className="hover:underline text-sm">
             Full Guide
           </Link>
         </li>
         <span>|</span>
         <li className={slug === "buy-sell" ? "text-primary font-bold" : "text-gray-700"}>
-          <Link href={BUY_SELL_PAGE} className="hover:underline">
+          <Link href={BUY_SELL_PAGE} className="hover:underline  text-sm">
             How to Buy/Sell
           </Link>
         </li>
         <span>|</span>
         <li className={slug === "place-ad" ? "text-primary font-bold" : "text-gray-700"}>
-          <Link href={PLACING_AD_PAGE} className="hover:underline">
-            How to Place an Ad
+          <Link href={PLACING_AD_PAGE} className="hover:underline  text-sm">
+            Pacing an Ad
           </Link>
         </li>
         <span>|</span>
         <li className={slug === "become-merchant" ? "text-primary font-bold" : "text-gray-700"}>
-          <Link href={MERCHANT_PAGE} className="hover:underline">
-            How to Become a Merchant
+          <Link href={MERCHANT_PAGE} className="hover:underline  text-sm">
+            Becoming a Merchant
           </Link>
         </li>
       </ul>
