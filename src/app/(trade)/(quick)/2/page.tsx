@@ -243,14 +243,14 @@ export default function PaymentMethodsPage() {
 
                 <div className="space-y-3 mb-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">You Pay</span>
+                    <span className="text-gray-600 dark:text-gray-300">{isBuy ? "You pay" : "You Receive"}</span>
                     <span className="font-medium text-lg dark:text-white">
                       {fiatAmount} {currency?.name}
                     </span>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">You Receive</span>
+                    <span className="text-gray-600 dark:text-gray-300">{isBuy ? "You Receive" : "You Send"}</span>
                     <span className="font-medium text-lg dark:text-white">
                       {cryptoAmount} {token?.symbol}
                     </span>

@@ -10,24 +10,23 @@ import { getImage } from "@/lib/utils";
 import { HOME_PAGE } from "@/common/page-links";
 
 const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
-    const navigation = useRouter()
-    const { session } = useUser();
+    const navigation = useRouter();
     const drawerRef = useRef<HTMLDivElement>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
 
     const handleClickOutside = (event: MouseEvent) => {
-        if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
-            setIsDrawerOpen(false);
-        }
+      if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
+        setIsDrawerOpen(false);
+      }
     };
 
     useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
     }, []);
 
     const renderLinks = (links: { href: string; label: string }[]) =>
@@ -41,28 +40,28 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
           {link.label}
         </Link>
       ));
-    
 
     const navLinks = [
-        { href: "", label: "Product" },
-        { href: "", label: "Solutions" },
-        { href: "", label: "Whitepaper" },
-        { href: "", label: "FAQ's" },
-        { href: "", label: "News" }
+      { href: "", label: "Product" },
+      { href: "", label: "Solutions" },
+      { href: "", label: "Whitepaper" },
+      { href: "", label: "FAQ's" },
+      { href: "", label: "News" },
     ];
 
-    const togglerIcon = getImage("toggler.svg")
+    const togglerIcon = getImage("toggler.svg");
 
     return (
       <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 pr-3 lg:pr-4">
-        <Image
+        {/* <Image
           src="/images/logo/iexchange-logo.png"
           alt="iexchange logo"
           className="h-[50px] w-auto lg:w-auto cursor-pointer"
           width={150}
           height={50}
           onClick={() => navigation.push(HOME_PAGE)}
-        />
+        /> */}
+        logo here
         <div className="w-full flex flex-row justify-end lg:justify-between items-center">
           <div className="hidden lg:flex space-x-1 mt-1">{renderLinks(navLinks)}</div>
 
