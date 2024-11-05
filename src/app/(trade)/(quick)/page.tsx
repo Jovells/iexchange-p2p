@@ -202,7 +202,7 @@ export default function QuickTradePage() {
         <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
           Quickly buy and sell crypto with various payment methods
         </p>
-        <div className="flex mt-4 flex-col justify-center items-center lg:justify-start lg:items-start w-full">
+        <div className="flex mt-4 mb-1 flex-col justify-center items-center lg:justify-start lg:items-start w-full">
           <div>
             <WalletConnect />
           </div>
