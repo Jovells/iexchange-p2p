@@ -60,7 +60,7 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
         <div className="bg-transparent rounded-xl p-0 pt-0">
           <MerchantProfile offer={data} />
         </div>
-        <div className="bg-white dark:bg-gray-700 rounded-xl p-4 lg:p-6 space-y-3 pt-6">
+        <div className="bg-white dark:bg-transparent border dark:border-gray-700 rounded-xl p-4 lg:p-6 space-y-3 pt-6">
           <InputWithSelect
             placeholder={isBuy ? "You Pay" : "You Receive"}
             initialCurrencyName={data.currency.currency}

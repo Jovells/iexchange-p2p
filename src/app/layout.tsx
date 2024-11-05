@@ -34,7 +34,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${roboto.className} bg-white dark:bg-[#14161B]`}>
+      <body className={`${roboto.className} bg-white dark:bg-gray-900`}>
         <ErrorBoundary>
           <ThemeProvider>
             <TopLoader />

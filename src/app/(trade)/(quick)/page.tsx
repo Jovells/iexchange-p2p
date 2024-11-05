@@ -213,7 +213,7 @@ export default function QuickTradePage() {
 
       <div className=" w-full max-w-[500px] mx-auto lg:mx-0">
         {isReady ? (
-          <div className=" p-4 sm:p-6 w-full bg-white dark:bg-gray-950 dark:border dark:border-gray-700 rounded-2xl shadow-lg ">
+          <div className=" p-4 sm:p-6 w-full bg-white dark:bg-transparent dark:border dark:border-gray-700 rounded-2xl shadow-lg ">
             <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setOfferType("buy")}
