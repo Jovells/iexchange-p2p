@@ -53,15 +53,14 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
 
     return (
       <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 pr-3 lg:pr-4">
-        {/* <Image
+        <Image
           src="/images/logo/iexchange-logo.png"
           alt="iexchange logo"
           className="h-[50px] w-auto lg:w-auto cursor-pointer"
           width={150}
           height={50}
           onClick={() => navigation.push(HOME_PAGE)}
-        /> */}
-        logo here
+        />
         <div className="w-full flex flex-row justify-end lg:justify-between items-center">
           <div className="hidden lg:flex space-x-1 mt-1">{renderLinks(navLinks)}</div>
 

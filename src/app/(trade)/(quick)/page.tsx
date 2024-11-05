@@ -29,8 +29,8 @@ interface CurrencyInput {
 export default function QuickTradePage() {
   const { currencies, tokens } = useMarketData();
   const { indexerUrl } = useContracts();
-  const [currency, setCurrency] = useState(currencies?.[0]);
-  const [token, setToken] = useState(tokens?.[0]);
+  const [currency, setCurrency] = useState(currencies?.find(c => c.name === "USD") || currencies?.[0]);
+  const [token, setToken] = useState(tokens?.find(c => c.symbol === "USDT") || tokens?.[0]);
   const [offerType, setOfferType] = useState("buy");
   const [lastChanged, setLastChanged] = useState<"cryptoAmount" | "fiatAmount">();
   const [formErrors, setFormErrors] = useState<{ fiatAmount?: string; cryptoAmount?: string }>({});
@@ -206,19 +206,14 @@ export default function QuickTradePage() {
           <div>
             <WalletConnect />
           </div>
-          <div>
-            <FaucetAndNetwork
-              outline
-              className="w-full lg:place-self-start md:w-[400px] md:flex-nowrap flex flex-wrap place-self-center mb-4 h-[50px] "
-            />
-          </div>
+          <div></div>
         </div>
       </div>
       {/* form */}
 
       <div className=" w-full max-w-[500px] mx-auto lg:mx-0">
         {isReady ? (
-          <div className=" p-4 sm:p-6 w-full bg-white dark:bg-transparent dark:border dark:border-gray-700 rounded-2xl shadow-lg ">
+          <div className=" p-4 sm:p-6 w-full bg-white dark:bg-gray-950 dark:border dark:border-gray-700 rounded-2xl shadow-lg ">
             <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setOfferType("buy")}
