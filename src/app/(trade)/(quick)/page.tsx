@@ -218,7 +218,7 @@ export default function QuickTradePage() {
 
       <div className=" w-full max-w-[500px] mx-auto lg:mx-0">
         {isReady ? (
-          <div className=" p-4 sm:p-6 w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg ">
+          <div className=" p-4 sm:p-6 w-full bg-white dark:bg-transparent dark:border dark:border-gray-700 rounded-2xl shadow-lg ">
             <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setOfferType("buy")}
@@ -244,7 +244,7 @@ export default function QuickTradePage() {
 
             <div className="space-y-4 w-full">
               <div className={`flex ${isBuy ? "flex-col" : "flex-col-reverse"} w-full gap-4 items-center`}>
-                <div className="p-4 bg-gray-50 w-full dark:bg-gray-700 rounded-xl">
+                <div className="p-4 bg-gray-50 dark:bg-transparent w-full dark:border  dark:border-gray-700 rounded-xl">
                   <label className="block text-sm mb-2 text-black dark:text-white">
                     {isBuy ? "You Pay" : "You Receive"}
                   </label>
@@ -252,7 +252,7 @@ export default function QuickTradePage() {
                     <input
                       disabled={minAndMax.maxCrypto === "0.00" || isLoading}
                       type="text"
-                      className="w-full flex-1 text-lg font-bold md:text-2xl text-ellipsis bg-transparent outline-none text-black dark:text-white"
+                      className="w-full flex-1 text-lg md:text-2xl text-ellipsis bg-transparent outline-none text-black dark:text-white"
                       placeholder={minAndMax.minFiat + " - " + minAndMax.maxFiat}
                       value={fiatAmount}
                       onChange={e => handleFormDataChange("fiatAmount", e.target.value)}
@@ -281,7 +281,7 @@ export default function QuickTradePage() {
                   )}
                 </div>
 
-                <div className="p-4 w-full bg-gray-50 dark:bg-gray-700 rounded-xl">
+                <div className="p-4 bg-gray-50 dark:bg-transparent w-full dark:border  dark:border-gray-700 rounded-xl">
                   <label className="block text-sm mb-2 text-black dark:text-white">
                     {!isBuy ? "You Sell" : "You Receive"}
                   </label>
@@ -289,7 +289,7 @@ export default function QuickTradePage() {
                     <input
                       disabled={minAndMax.maxCrypto === "0.00" || isLoading}
                       type="text"
-                      className="w-full flex-1 text-lg text-ellipsis font-bold md:text-2xl bg-transparent outline-none text-black dark:text-white"
+                      className="w-full flex-1 text-lg text-ellipsis  md:text-2xl bg-transparent outline-none text-black dark:text-white"
                       placeholder={minAndMax.minCrypto + " - " + minAndMax.maxCrypto}
                       value={cryptoAmount}
                       onChange={e => handleFormDataChange("cryptoAmount", e.target.value)}

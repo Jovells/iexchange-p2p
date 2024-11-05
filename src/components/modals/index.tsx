@@ -1,28 +1,23 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect } from "react";
 import Button from '../ui/Button';
 import { useModal } from '@/common/contexts/ModalContext';
 import Image from "next/image";
 import { X } from "lucide-react";
+import Loader from "../loader/Loader";
 
 interface Props {
   title?: string;
-  modalType?: "success" | "error" | "info" | "warning";
+  modalType?: "success" | "error" | "info" | "warning" | "loading";
   icon?: React.ReactNode | string;
   description?: string;
   buttonClick?: () => Promise<void>;
   buttonText?: string;
+  autoClose?: boolean;
 }
 
-const ModalAlert: React.FC<Props> = ({
-  modalType,
-  icon,
-  description,
-  title,
-  buttonClick,
-  buttonText,
-}) => {
+const ModalAlert: React.FC<Props> = ({ modalType, icon, description, title, autoClose, buttonClick, buttonText }) => {
   const [loading, setLoading] = React.useState(false);
   const { hideModal } = useModal();
 
@@ -41,6 +36,14 @@ const ModalAlert: React.FC<Props> = ({
       hideModal();
     }
   };
+
+  useEffect(() => {
+    if (autoClose) {
+      setTimeout(() => {
+        hideModal();
+      }, 3000);
+    }
+  }, [autoClose]);
 
   return (
     <div className="flex flex-col p-4 bg-white dark:bg-gray-800 rounded-xl w-[500px] min-h-[250px]">
@@ -75,18 +78,21 @@ const ModalAlert: React.FC<Props> = ({
               {modalType === "info" && (
                 <Image width={50} height={50} src="/images/light/info.png" alt="info" className="h-16 w-16" />
               )}
+              {modalType === "loading" && <Loader />}
             </div>
           )
         )}
         <h1 className="text-center text-lg text-black dark:text-white">{title}</h1>
         <p className="text-md text-gray-400 dark:text-gray-300 text-center px-6">{description}</p>
         <div className="flex gap-2">
-          <Button
-            loading={loading}
-            text={buttonText}
-            onClick={handleClick}
-            className="bg-transparent border rounded-xl border-gray-200 dark:border-gray-600 px-10 py-1 text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-          />
+          {buttonText && (
+            <Button
+              loading={loading}
+              text={buttonText}
+              onClick={handleClick}
+              className="bg-transparent border rounded-xl border-gray-200 dark:border-gray-600 px-10 py-1 text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+            />
+          )}
         </div>
       </div>
     </div>
