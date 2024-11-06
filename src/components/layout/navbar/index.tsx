@@ -5,7 +5,6 @@ import Image from 'next/image';
 import BecomeAMerchant from "../../merchant";
 import { ThemeToggle } from "@/components/shared";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/common/contexts/UserContext";
 import { getImage } from "@/lib/utils";
 import { HOME_PAGE } from "@/common/page-links";
 
