@@ -189,12 +189,15 @@ export default function QuickTradePage() {
   return (
     <Suspense fallback={<Loader fullPage />}>
       {/* cta */}
-      <div className="self-center max-w-prose mb-4 lg:mb-0 mt-16 lg:mt-0 text-center lg:text-left">
+      <div className="self-center lg:max-w-prose   max-w-[400px] mb-4 lg:mb-0 mt-16 lg:mt-0 text-center lg:text-left">
         <h1 className="text-3xl sm:text-4xl lg:text-8xl font-bold mb-2 text-gray-900 dark:text-white">
-          P2P{" "}
-          <span className="bg-gradient-custom dark:bg-gradient-custom-dark bg-clip-text text-transparent">
-            Quick Trade
+          <span className="lg:flex gap-5">
+            <span>{"P2P "}</span>
+            <span className="bg-gradient-custom dark:bg-gradient-custom-dark bg-clip-text text-transparent">
+              {" Quick "}
+            </span>{" "}
           </span>
+          <span className="bg-gradient-custom dark:bg-gradient-custom-dark bg-clip-text text-transparent">Trade</span>
         </h1>
         <h2 className="text-lg sm:text-xl  lg:text-2xl font-bold mb-3 lg:mb-4 text-gray-900 dark:text-white">
           Quickly buy and sell crypto right from your decentralised wallet
@@ -213,7 +216,7 @@ export default function QuickTradePage() {
       </div>
       {/* form */}
 
-      <div className=" w-full max-w-[500px] mx-auto lg:mx-0">
+      <div className=" w-full min-w-[400px] max-w-[450px] place-self-center md:mx-24">
         {isReady ? (
           <div className=" p-4 sm:p-6 w-full bg-white dark:bg-transparent dark:border dark:border-gray-700 rounded-2xl shadow-lg ">
             <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">

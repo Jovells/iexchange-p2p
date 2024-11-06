@@ -7,11 +7,9 @@ import React, { useEffect, useState } from "react";
 const BuySellPage: React.FC = () => {
   const { slug } = useParams();
   const [loading, setLoading] = useState(true);
-  const hash = slug ? "#" + slug : "";
 
   return (
     <div className="container mx-auto h-screen p-0 py-4">
-      <HelpNav />
       {loading && (
         <div className=" flex w-full justify-center items-center  h-screen ">
           <Loader />
@@ -19,7 +17,7 @@ const BuySellPage: React.FC = () => {
       )}
 
       <iframe
-        src={"https://scribehow.com/embed/iExchange_Full_guide__LKwXrMoITIm19QdPPvCmoA?as=scrollable" + hash}
+        src={"https://scribehow.com/page-embed/iExchange_Help_Center__1EKapmT7SOCI_oiAuX4ynQ"}
         width="100%"
         height="100%"
         className=""

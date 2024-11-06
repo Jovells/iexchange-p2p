@@ -54,7 +54,7 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
     return (
       <div className="w-full flex flex-row justify-between lg:justify-start items-center py-2 pr-3 lg:pr-4">
         <Image
-          src="/images/logo/iexchange-logo.png"
+          src={getImage("iexchange.svg") as string}
           alt="iexchange logo"
           className="h-[50px] w-auto lg:w-auto cursor-pointer"
           width={150}

@@ -92,6 +92,7 @@ const MenuDropdown: React.FC<DropdownProps> = ({
             <div className="min-w-[200px] py-4 space-y-3 border border-gray-200 dark:border-gray-800">
               {dropdownItems.map((item, index) => (
                 <Link
+                  target={item.link.startsWith("https") ? "_blank" : "_self"}
                   key={index}
                   href={item.link}
                   className="flex flex-row px-4 py-2 text-sm text-black dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"

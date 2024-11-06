@@ -8,7 +8,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (isDarkMode) {
       toggleTheme();
     }
-  }, [isDarkMode]);
+  }, []);
+
   return <div>{children}</div>;
 }
 

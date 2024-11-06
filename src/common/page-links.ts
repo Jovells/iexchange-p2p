@@ -22,14 +22,18 @@ export const FAQ_PAGE = "/faq";
 export const HELP_PAGE = "/help";
 export const PRIVACY_POLICY_PAGE = "/privacy-policy";
 
-// export const BUY_SELL_PAGE = HELP_PAGE + "/1284c97e";
-// export const PLACING_AD_PAGE = HELP_PAGE + "/gf6556y";
-// export const MERCHANT_PAGE = HELP_PAGE + "/c0e6e841";
-// export const SETTLER_PAGE = HELP_PAGE + "/gf6556y";
-export const BUY_SELL_PAGE = HELP_PAGE + "/buy-sell";
-export const PLACING_AD_PAGE = HELP_PAGE + "/place-ad";
-export const MERCHANT_PAGE = HELP_PAGE + "/become-merchant";
+
+export const BUY_SELL_PAGE =
+  "https://scribehow.com/embed/How_to_BuySell_on_iExchange__lCmCyQVLTLmS1JkgJ06QXw?as=scrollable";
+export const PLACING_AD_PAGE =
+  "https://scribehow.com/embed/How_to_place_an_ad_on_iExchange__VERdj9CgRxS0PmI4xrtlXw?as=scrollable";
+export const MERCHANT_PAGE =
+  "https://scribehow.com/embed/How_to_place_an_ad_on_iExchange__5QzAizAaSWOZb--4FxfTqA?as=scrollable";
 export const SETTLER_PAGE = HELP_PAGE + "/become-settler";
+// export const BUY_SELL_PAGE = HELP_PAGE + "/buy-sell";
+// export const PLACING_AD_PAGE = HELP_PAGE + "/place-ad";
+// export const MERCHANT_PAGE = HELP_PAGE + "/become-merchant";
+// export const SETTLER_PAGE = HELP_PAGE + "/become-settler";
 
 export const primaryNavigationLinks = [
   {
