@@ -189,7 +189,7 @@ export default function QuickTradePage() {
   return (
     <Suspense fallback={<Loader fullPage />}>
       {/* cta */}
-      <div className="self-center max-w-prose mb-10 lg:mb-0 mt-16 lg:mt-0 text-center lg:text-left">
+      <div className="self-center max-w-prose mb-4 lg:mb-0 mt-16 lg:mt-0 text-center lg:text-left">
         <h1 className="text-3xl sm:text-4xl lg:text-8xl font-bold mb-2 text-gray-900 dark:text-white">
           P2P{" "}
           <span className="bg-gradient-custom dark:bg-gradient-custom-dark bg-clip-text text-transparent">
@@ -207,7 +207,7 @@ export default function QuickTradePage() {
             <WalletConnect />
           </div>
           <div>
-            <FaucetAndNetwork className="w-full lg:place-self-start md:w-[400px] md:flex-nowrap flex flex-wrap place-self-center mb-4 h-[50px]" />
+            <FaucetAndNetwork className="lg:place-self-start w-[340px] lg:w-[400px] md:flex-nowrap flex flex-nowrap place-self-center mb-4 h-[35px] lg:h-[50px]" />
           </div>
         </div>
       </div>
