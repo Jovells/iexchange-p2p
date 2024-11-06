@@ -9,6 +9,7 @@ import {
   APPEALS_PAGE,
   BUY_SELL_PAGE,
   DASHBOARD_PAGE,
+  HELP_PAGE,
   HOME_PAGE,
   MERCHANT_PAGE,
   MY_ADS_PAGE,
@@ -129,7 +130,12 @@ const SubNav = () => {
 
   const renderMenuDropdowns = () => (
     <div className="flex flex-row gap-4">
-      <MenuDropdown title="Help Center" icon={helpIcon as string} dropdownItems={helpCenterLinks} />
+      <MenuDropdown
+        title="Help Center"
+        onClick={() => navigate.push(HELP_PAGE)}
+        icon={helpIcon as string}
+        dropdownItems={helpCenterLinks}
+      />
       <MenuDropdown
         title="Orders"
         icon={orderIcons as string}
