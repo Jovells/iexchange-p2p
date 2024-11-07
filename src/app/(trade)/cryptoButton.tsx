@@ -6,9 +6,7 @@ import ToolTip from "@/components/toolTip";
 import Button from "@/components/ui/Button";
 import { useCopyToClipboard } from "@/lib/utils";
 import { formatUnits } from "ethers";
-import { ClipboardCopy, ClipboardCopyIcon, Copy } from "lucide-react";
-import Link from "next/link";
-import { Dispatch, SetStateAction } from "react";
+import { Copy } from "lucide-react";
 import { useReadContract } from "wagmi";
 
 interface CryptoButtonProps {

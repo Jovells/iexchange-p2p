@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/shared";
 import { useRouter } from "next/navigation";
 import { getImage } from "@/lib/utils";
 import { HOME_PAGE } from "@/common/page-links";
+import Balances from "@/components/balances";
 
 const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
     const navigation = useRouter();
@@ -65,21 +66,36 @@ const MenuBar: FC<{ children?: ReactNode }> = ({ children }) => {
 
           <div className="hidden lg:flex flex-row justify-start items-center space-x-3">
             <BecomeAMerchant />
-            <Link
+            {/* <Link
               href=""
               className="rounded-full border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C] p-0"
             >
               <img src="/images/light/gold.png" alt="gold bars" className="w-auto h-auto" />
-            </Link>
+            </Link> */}
+            {/* <Link
+              href=""
+              className="rounded-full border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C] p-0"
+            >
+              Balaces
+            </Link> */}
+            <Balances />
             <ThemeToggle />
           </div>
           <div className="lg:hidden flex flex-row justify-start items-center gap-2" id="mobile-menu">
-            <Link
+            {/* <Link
               href=""
               className="rounded-full border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C] p-0"
             >
               <img src="/images/light/gold.png" alt="gold bars" className="w-auto h-auto" />
-            </Link>
+            </Link> */}
+            {/* <Link
+              href=""
+              className="rounded-full border-2 border-[#FFB323] bg-clip-border border-gradient-to-r from-[#FFB323] via-[#996B15] to-[#C98D1C] p-0"
+            >
+              Balance
+            </Link> */}
+            <Balances />
+
             <button
               type="button"
               className="flex items-center justify-center rounded-md text-gray-400 hover:text-[#01A2E4] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
