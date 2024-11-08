@@ -95,7 +95,7 @@ const SubNav = () => {
         hover:text-[#01A2E4] 
         dark:hover:text-[#01A2E4] 
         transition-colors duration-200 ease-in-out
-        ${isActive ? "border-b-2 dark:border-[#01A2E4]" : "border-0"} 
+        ${isActive ? "border-b-2 border-[#01A2E4]" : "border-0"} 
     `}
         >
           {link.label}

@@ -13,9 +13,10 @@ interface CryptoButtonProps {
   token: Token;
   selectedCrypto?: Token;
   column?: boolean;
+  isInModal?: boolean;
 }
 
-const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, column = true }) => {
+const CryptoButton: React.FC<CryptoButtonProps> = ({ isInModal, token, selectedCrypto, column = true }) => {
   const { tokens } = useContracts();
   const CopyToClipboard = useCopyToClipboard();
   const { address } = useUser();
@@ -49,7 +50,7 @@ const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, colu
         selectedCrypto?.symbol === token.symbol ? "  text-[#01a2e4]" : "text-black dark:text-gray-300"
       } hover:bg-gray-100 dark:hover:bg-gray-600  transition duration-300 ease-in-out`}
     >
-      <span className={`flex ${column ? "flex-col" : "items-center"} `}>
+      <span className={`flex ${column ? "flex-col" : "items-center "} ${isInModal ? "justify-between w-full" : ""}`}>
         <span className="">
           {token.symbol}
           {enabled && (
@@ -65,8 +66,21 @@ const CryptoButton: React.FC<CryptoButtonProps> = ({ token, selectedCrypto, colu
           )}
         </span>
         {enabled && (
-          <p className="bg-gray-100 text-xs text-gray-400  rounded-[3.5px] px-1 py-0.5 dark:bg-gray-700 ">
-            {!isLoading ? "Balance: " + formattedBalance : <Loader size="xs" className="text-xs" loaderType="text" />}
+          <p
+            className={
+              "   rounded-[3.5px] px-1 py-0.5 " +
+              (isInModal ? "font-bold" : " dark:bg-gray-700  text-xs bg-gray-100 text-gray-400")
+            }
+          >
+            {!isLoading ? (
+              isInModal ? (
+                formattedBalance
+              ) : (
+                "Balance: " + formattedBalance
+              )
+            ) : (
+              <Loader size="xs" className="text-xs" loaderType="text" />
+            )}
           </p>
         )}
       </span>

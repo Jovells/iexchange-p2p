@@ -49,15 +49,14 @@ const BecomeAMerchant = () => {
     }
 
     return (
-        <Button
-            text={isMerchant ? 'Post an Ad' : 'Become a Merchant'}
-            icon={isMerchant ? addIcon : exportIcon}
-            iconPosition="right"
-            className='transition duration-300 bg-[#01A2E4] text-white hover:bg-[#0191C8]'
-            onClick={handleClick}
-            loading={isLoading}
-        />
-
+      <Button
+        text={isMerchant ? "Post an Ad" : "Become a Merchant"}
+        icon={isMerchant ? addIcon : exportIcon}
+        iconPosition="left"
+        className="transition duration-300 bg-[#01A2E4] text-white hover:bg-[#0191C8]"
+        onClick={handleClick}
+        loading={isLoading}
+      />
     );
 }
 

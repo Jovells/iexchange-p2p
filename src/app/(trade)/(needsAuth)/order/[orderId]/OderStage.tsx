@@ -14,7 +14,7 @@ import Link from "next/link";
 import { ixToast as toast } from "@/lib/utils";
 import { useModal } from "@/common/contexts/ModalContext";
 import { useUser } from "@/common/contexts/UserContext";
-import { MessageCircle, X } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, MessageCircle, Recycle, RefreshCcw, SkipBackIcon, X } from "lucide-react";
 import { ORDER, TOKEN_BALANCE } from "@/common/constants/queryKeys";
 import { CachedConversation, useSendMessage } from "@xmtp/react-sdk";
 import Image from "next/image";
@@ -749,6 +749,13 @@ function OrderStage({ orderId, toggleExpand }: { orderId: string; toggleExpand: 
                   <InfoBlock label="Payment method" value={order.offer.paymentMethod.method} />
                 </div>
               </div>
+              <Link
+                className="flex w-[180px] justify-center hoc items-center hover:brightness-110 rounded-[8px] font-medium text-[14px] p-2 px-3 bg-black dark:bg-slate-100 dark:text-gray-900 text-white hover:bg-gray-400 dark:hover:bg-gray-400 transition duration-300 ease-in-out py-2"
+                href={`/p2p?crypto=${order.offer.token.symbol}`}
+              >
+                Go to P2P Market
+                <ArrowRightIcon size={20} />
+              </Link>
             </div>
           )}
         </div>

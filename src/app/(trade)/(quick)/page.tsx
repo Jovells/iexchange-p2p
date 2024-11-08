@@ -218,7 +218,7 @@ export default function QuickTradePage() {
 
       <div className=" w-full min-w-[400px] max-w-[450px] place-self-center md:mx-24">
         {isReady ? (
-          <div className=" p-4 sm:p-6 w-full bg-white dark:bg-transparent dark:border dark:border-gray-700 rounded-2xl shadow-lg ">
+          <div className=" p-4 sm:p-6 w-full bg-white dark:bg-[#0f1115] dark:border  dark:border-gray-800 rounded-2xl shadow-lg ">
             <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setOfferType("buy")}
@@ -360,7 +360,7 @@ export default function QuickTradePage() {
                 className={`w-full ${
                   enabled
                     ? "bg-primary text-gray-100 hover:bg-primary-foreground"
-                    : "bg-lightGray dark:bg-lightGray-dark text-gray-500 dark:text-gray-400 pointer-events-none"
+                    : "bg-lightGray dark:bg-gray-700 text-gray-500 dark:text-gray-400 pointer-events-none"
                 } flex items-center justify-center py-4 rounded-xl`}
               >
                 Select Payment Method
