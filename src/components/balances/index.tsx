@@ -3,12 +3,20 @@ import { useModal } from '@/common/contexts/ModalContext'
 import useMarketData from '@/common/hooks/useMarketData'
 import { Wallet, X } from 'lucide-react'
 import React from 'react'
-import CryptoWithBalanceList from './cryptoWithBalanceList'
 import Button from "../ui/Button";
+import { useUser } from '@/common/contexts/UserContext'
 
 const Balances = () => {
   const { showModal, hideModal } = useModal();
   const { tokens: marketDataToken } = useMarketData();
+  const { session } = useUser();
+  const isAuthenticated = session?.status === "authenticated";
+
+  if(!isAuthenticated){
+    return null;
+  }
+
+
 
   const modalHandler = () => {
     showModal(
