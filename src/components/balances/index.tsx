@@ -16,8 +16,6 @@ const Balances = () => {
     return null;
   }
 
-
-
   const modalHandler = () => {
     showModal(
       <div className="w-full  min-h-[250px]  dark:bg-gray-800  rounded-xl">
