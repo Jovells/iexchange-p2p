@@ -193,11 +193,9 @@ export default function QuickTradePage() {
         <h1 className="text-3xl sm:text-4xl lg:text-8xl font-bold mb-2 text-gray-900 dark:text-white">
           <span className="lg:flex gap-5">
             <span>{"P2P "}</span>
-            <span className="bg-gradient-custom dark:bg-gradient-custom-dark bg-clip-text text-transparent">
-              {" Quick "}
-            </span>{" "}
+            <span className="bg-gradient-custom bg-clip-text text-transparent">{" Quick "}</span>{" "}
           </span>
-          <span className="bg-gradient-custom dark:bg-gradient-custom-dark bg-clip-text text-transparent">Trade</span>
+          <span className="bg-gradient-custom-dark bg-clip-text text-transparent">Trade</span>
         </h1>
         <h2 className="text-lg sm:text-xl  lg:text-2xl font-bold mb-3 lg:mb-4 text-gray-900 dark:text-white">
           Quickly buy and sell crypto right from your decentralised wallet
