@@ -13,6 +13,7 @@ import PaymentMethodSelect from "@/components/ui/PaymentMethodSelect";
 import { useUser } from "@/common/contexts/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
 import useCreateOrder from "@/common/hooks/useCreateOrder";
+import { offerTypes } from "@/common/constants";
 
 interface Props {
   data: Offer;
@@ -35,10 +36,10 @@ const CreateOrder: FC<Props> = ({ data, toggleExpand, orderType }) => {
     handleFormDataChange,
   } = useCreateOrder(data);
 
-  const trade = orderType === "buy" ? "Buy" : "Sell";
-  const crypto = data.token.symbol;
-
   const isBuy = orderType.toLowerCase() === "buy";
+
+  const trade = isBuy ? "Buy" : "Sell";
+  const crypto = data.token.symbol;
 
   useEffect(() => {
     if (prevOrderType.current !== orderType) {
