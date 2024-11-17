@@ -73,6 +73,7 @@ export function getUserConfig({
   const isSeller = (isTrader && isSell) || (isMerchant && isBuy);
 
   const otherParty = isTrader ? merchant : trader;
+  console.log("isTradder", { trader, userAddress });
   return { isTrader, isSeller, isMerchant, isBuy, isSell, isBuyer, otherParty };
 }
 
@@ -85,23 +86,31 @@ export const useCopyToClipboard = () => {
   return copyToClipboard;
 };
 
+export const getErrorMessage = (message: string): string => {
+  if (message.includes("User rejected the request")) {
+    return "You rejected the request";
+  }
+  if (message.includes("0xe450d38c")) {
+    return "Insufficient Balance. Please top up your balance";
+  }
+  if (message.includes("ERC20InsufficientBalance")) {
+    return "Insufficient Token Balance. Please top up your balance";
+  }
+  if (message.includes("0xfb8f41b2")) {
+    return "Insufficient Allowance.";
+  }
+  if (message.includes("sender balance and deposit together")) {
+    return "Insufficient funds for gas. Please get some gas tokens from faucet.";
+  }
+  return message;
+};
+
 export const ixToast = {
   ...toast,
   default: (message: Renderable, options?: ToastOptions) => toast(message, options),
   error: (message: Renderable, options?: ToastOptions) => {
-    if (typeof message === "string" && message.includes("User rejected the request")) {
-      return toast.error("You rejected the request", options);
-    }
-    if (typeof message === "string" && message.includes("0xe450d38c")) {
-      return toast.error("Insufficient Balance. Please top up your balance", options);
-    }
-    if (typeof message === "string" && message.includes("ERC20InsufficientBalance")) {
-      return toast.error("Insufficient Token Balance. Please top up your balance", options);
-    }
-    if (typeof message === "string" && message.includes("0xfb8f41b2")) {
-      return toast.error("Insufficient Allowance.", options);
-    }
-    toast.error(message, options);
+    const errorMessage = typeof message === "string" ? getErrorMessage(message) : message;
+    toast.error(errorMessage, options);
   },
 };
 

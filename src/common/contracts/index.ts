@@ -59,6 +59,34 @@ export default {
       },
     ],
   },
+  421614: {
+    indexerUrl: "https://api.goldsky.com/api/public/project_cm3hlsxsh8t4p01xe6i5c4s0e/subgraphs/iexchange/v3/gn",
+    name: "Arbitrum Sepolia",
+    rpcUrl: "https://sepolia-rollup.arbitrum.io/rpc",
+    p2p: {
+      address: "0x3B42D1dEF553EE484984C6c3c769BE58005f5d11",
+      abi: OptimisticP2P,
+    },
+    faucet: {
+      address: "0xe38b25BC2421F5Fde72661FA4c5c3035453bfCE6",
+      abi: faucet,
+      nativeUrl: "https://www.alchemy.com/faucets/arbitrum-sepolia",
+    },
+    tokens: [
+      {
+        address: "0xe8fB78FD7C76A3e2f500d4302E8a75E6706804f8",
+        abi: CediH,
+        name: "IX USDT",
+        symbol: "USDT",
+      },
+      {
+        address: "0x612Dfa9fF8d6D19eff48A78D2827aC5a8F138596",
+        abi: CediH,
+        name: "IX USDC",
+        symbol: "USDC",
+      },
+    ],
+  },
   920637907288165: {
     indexerUrl: "https://query.kakarot.protofire.io/subgraphs/name/kakarot/iexchange",
     name: "Kakarot Sepolia",

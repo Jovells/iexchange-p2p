@@ -63,8 +63,7 @@ const ExpandableTable = forwardRef(
   ) => {
     const [expandedRowIndex, setExpandedRowIndex] = useState<number | string | null>(null);
     const [isMobile, setIsMobile] = useState<boolean>(window?.innerWidth <= 768);
-    const { openConnectModal } = useConnectModal();
-    const { isConnected } = useUser();
+    const { isConnected, openAuthModal } = useUser();
 
     useEffect(() => {
       const handleResize = () => {
@@ -78,7 +77,7 @@ const ExpandableTable = forwardRef(
 
     const handleRowClick = (index: number | string) => {
       if (requiresAuthToOpen && !isConnected) {
-        return openConnectModal?.();
+        return openAuthModal?.();
       }
       if (expandedRowIndex === index) {
         closeExpandedRow();

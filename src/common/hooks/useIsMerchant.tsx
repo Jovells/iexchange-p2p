@@ -7,7 +7,7 @@ import { useUser } from "../contexts/UserContext";
 const useIsMerchant = () => {
   const { p2p } = useContracts();
   const { address } = useUser();
-  const { session } = useUser();
+  const { isConnected } = useUser();
 
   const {
     data: isMerchant,
@@ -30,7 +30,7 @@ const useIsMerchant = () => {
   console.log("isMerchant", isMerchant);
 
   // Return default values if not connected
-  if (session.status === "unauthenticated" || !address) {
+  if (!isConnected || !address) {
     return {
       isMerchant: false,
       isLoading: false,

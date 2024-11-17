@@ -14,7 +14,7 @@ interface Props {
   description?: string;
   buttonClick?: () => Promise<void>;
   buttonText?: string;
-  autoClose?: boolean;
+  autoClose?: boolean | number;
 }
 
 const ModalAlert: React.FC<Props> = ({ modalType, icon, description, title, autoClose, buttonClick, buttonText }) => {
@@ -39,9 +39,12 @@ const ModalAlert: React.FC<Props> = ({ modalType, icon, description, title, auto
 
   useEffect(() => {
     if (autoClose) {
-      setTimeout(() => {
-        hideModal();
-      }, 3000);
+      setTimeout(
+        () => {
+          hideModal();
+        },
+        typeof autoClose === "number" ? autoClose : 2000,
+      );
     }
   }, [autoClose]);
 
@@ -70,13 +73,13 @@ const ModalAlert: React.FC<Props> = ({ modalType, icon, description, title, auto
                 <Image width={50} height={50} src="/images/light/success.png" alt="success" className="h-16 w-16" />
               )}
               {modalType === "error" && (
-                <Image width={50} height={50} src="/images/light/error.png" alt="error" className="h-16 w-16" />
+                <Image width={50} height={50} src="/images/light/alert-error.svg" alt="error" className="h-16 w-16" />
               )}
               {modalType === "warning" && (
                 <Image width={50} height={50} src="/images/light/warning.png" alt="warning" className="h-16 w-16" />
               )}
               {modalType === "info" && (
-                <Image width={50} height={50} src="/images/light/info.png" alt="info" className="h-16 w-16" />
+                <Image width={50} height={50} src="/images/light/alert-info.png" alt="info" className="h-16 w-16" />
               )}
               {modalType === "loading" && <Loader />}
             </div>

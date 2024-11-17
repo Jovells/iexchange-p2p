@@ -50,11 +50,9 @@ const SubNav = () => {
   const currentPath = usePathname();
   const { total: totalPendingOrders } = useMyPendingOrders();
 
-  const { session } = useUser();
+  const { isConnected } = useUser();
   const [isMounted, setIsMounted] = useState(false);
   const { isMerchant, isLoading } = useIsMerchant();
-
-  const isAuthenticated = session?.status === "authenticated";
 
   //images
   const helpIcon = getImage("message.svg");
@@ -65,7 +63,6 @@ const SubNav = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
 
   const homeIcon = getImage("home.svg");
   const clockIcon = getImage("clock.svg");
@@ -103,7 +100,7 @@ const SubNav = () => {
       );
     });
 
-  const renderLinks1 = (links: { href: string; label: string }[]) => (
+  const renderLinks1 = (links: { href: string; label: string }[]) =>
     links.map(link => {
       const isActive = currentPath === link.href;
       return (
@@ -125,8 +122,7 @@ const SubNav = () => {
           {link.label}
         </Link>
       );
-    })
-  )
+    });
 
   const renderMenuDropdowns = () => (
     <div className="flex flex-row gap-4">
@@ -147,11 +143,11 @@ const SubNav = () => {
           <OrdersDropdown />
         </div>
       </MenuDropdown>
-      <MenuDropdown title="Account" icon={profileIcon as string} dropdownItems={isAuthenticated ? accountLinks : []}>
+      <MenuDropdown title="Account" icon={profileIcon as string} dropdownItems={isConnected ? accountLinks : []}>
         <div className="p-4 border border-gray-200 dark:border-gray-800 border-b-0">
           {/* <WalletConnect /> */}
           <ConnectButton chainStatus={"none"} accountStatus={"address"} showBalance={false} />
-          {/* {isAuthenticated && <IsVerifiedButton />} */}
+          {/* {isConnected && <IsVerifiedButton />} */}
         </div>
       </MenuDropdown>
     </div>
@@ -163,7 +159,7 @@ const SubNav = () => {
     </div>
   );
 
-  if (!isMounted || !isAuthenticated) {
+  if (!isMounted || !isConnected) {
     return (
       <div className="border-0 mt-0 lg:mt-2 mb-0">
         <div className="container mx-auto px-3 lg:px-6 flex flex-row justify-between items-center">

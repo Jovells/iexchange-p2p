@@ -10,8 +10,7 @@ interface Props {
   className: string;
 }
 const Claim: React.FC<Props> = ({ className }) => {
-  const { isConnected } = useUser();
-  const { openConnectModal } = useConnectModal();
+  const { isConnected, openAuthModal } = useUser();
   const { showModal, hideModal } = useModal();
 
   const showClaimModal = () => {
@@ -19,7 +18,7 @@ const Claim: React.FC<Props> = ({ className }) => {
       const modal = <ClaimModal />;
       showModal(modal);
     } else {
-      openConnectModal?.();
+      openAuthModal?.();
     }
   };
   return (

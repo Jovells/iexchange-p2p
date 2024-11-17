@@ -172,11 +172,11 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
   setCurrencyAmount,
   setPaymentMethod,
 }) => {
-  const { session } = useUser();
+  const { isConnected } = useUser();
   return (
     <div className="flex flex-row justify-between items-center space-x-0 lg:space-x-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap mt-0 w-full">
       <div className="flex flex-row justify-between items-center space-x-0 gap-3 space-y-3 lg:space-y-0 flex-wrap lg:flex-nowrap w-full">
-        {/* {session.status === "authenticated" && (
+        {/* {isConnected && (
           <div className="w-full block lg:hidden">
             <NetworkSwitcher />
           </div>
@@ -212,7 +212,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
         </div>
         {/* <Filter className="hidden lg:block cursor-pointer" onClick={() => { }} /> */}
       </div>
-      {/* {session.status === "authenticated" && (
+      {/* {isConnected && (
         <div className="lg:w-auto lg:flex hidden lg:block">
           <NetworkSwitcher />
         </div>

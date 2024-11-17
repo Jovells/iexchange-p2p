@@ -20,55 +20,53 @@ export default function DashboardLayout({
 }>) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const { session } = useUser();
+    const { isConnected } = useUser();
 
     const toggleDrawer = () => {
-        setIsDrawerOpen(!isDrawerOpen);
+      setIsDrawerOpen(!isDrawerOpen);
     };
 
     useEffect(() => {
-        const loadContent = async () => {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            setIsLoading(false);
-        };
+      const loadContent = async () => {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setIsLoading(false);
+      };
 
-        loadContent();
+      loadContent();
     }, []);
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen flex justify-center items-center">
-                <Loader />
-            </div>
-        );
+      return (
+        <div className="min-h-screen flex justify-center items-center">
+          <Loader />
+        </div>
+      );
     }
     return (
-        <ModalContextProvider>
-            <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-transparent overflow-hidden">
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#14161B] border-b border-gray-300 dark:border-gray-800">
-                    <MainNav />
-                    <SubNav />
+      <ModalContextProvider>
+        <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-transparent overflow-hidden">
+          <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#14161B] border-b border-gray-300 dark:border-gray-800">
+            <MainNav />
+            <SubNav />
+          </div>
+          <div className="pt-[10px]">
+            <div className="w-full fixed top-[100px] lg:hidden flex flex-row justify-between items-center p-4 pt-4 mb-4 border-b border-gray-300 dark:border-gray-800">
+              <button onClick={toggleDrawer} className="text-gray-600 flex items-center">
+                <Menu className="h-full w-10" />
+              </button>
+              {isConnected && (
+                <div className="">
+                  <NetworkSwitcher />
                 </div>
-                <div className="pt-[10px]">
-                    <div className="w-full fixed top-[100px] lg:hidden flex flex-row justify-between items-center p-4 pt-4 mb-4 border-b border-gray-300 dark:border-gray-800">
-                        <button onClick={toggleDrawer} className="text-gray-600 flex items-center">
-                            <Menu className="h-full w-10" />
-                        </button>
-                        {session.status === "authenticated" && (
-                            <div className="">
-                                <NetworkSwitcher />
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex flex-row flex-1 py-[90px] lg:py-0">
-                        <SideNav isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
-                        <div className="flex-1 px-4 lg:p-6 h-screen overflow-y-auto">
-                            {children}
-                        </div>
-                    </div>
-                </div>
-                <ModalManager />
+              )}
             </div>
-        </ModalContextProvider>
+            <div className="flex flex-row flex-1 py-[90px] lg:py-0">
+              <SideNav isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
+              <div className="flex-1 px-4 lg:p-6 h-screen overflow-y-auto">{children}</div>
+            </div>
+          </div>
+          <ModalManager />
+        </div>
+      </ModalContextProvider>
     );
 }

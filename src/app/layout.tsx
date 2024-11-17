@@ -12,6 +12,9 @@ import { ThemeProvider } from "@/common/contexts/ThemeProvider";
 import { Suspense } from "react";
 import PostAd from "./(trade)/postAd";
 import ScrollToTopOnPageChange from "@/components/layout/ScrollToTop";
+import { cookieToInitialState } from "@account-kit/core";
+import { config } from "./config";
+import { headers } from "next/headers";
 
 const inter = Inter({ subsets: ["latin"] });
 const roboto = Roboto({
@@ -32,13 +35,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
+  const initialState = cookieToInitialState(config, headers().get("cookie") ?? undefined);
+ 
   return (
     <html lang="en">
       <body className={`${roboto.className} bg-gray-50 dark:bg-[#14161B]`}>
         <ErrorBoundary>
           <ThemeProvider>
             <TopLoader />
-            <WalletProvider>
+            <WalletProvider alchemyInitialState={initialState}>
               <ModalContextProvider>
                 <Toaster />
                 <Suspense fallback={<TopLoader />}>

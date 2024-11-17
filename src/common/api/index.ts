@@ -18,6 +18,9 @@ export async function fetchGraphQL(
       variables,
       operationName,
     }),
+    headers: {
+      accept: "application/graphql-response+json, application/json, multipart/mixed",
+    },
   });
 
   const resultjson = await result.json();

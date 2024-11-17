@@ -1,10 +1,12 @@
-import { useWriteContract as useWagmiWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { ixToast as toast } from "@/lib/utils";
-import { useModal } from '../contexts/ModalContext';
-import ModalAlert from '@/components/modals';
-import { useEffect, useRef, useState } from "react";
-import { decodeEventLog, TransactionReceipt } from "viem";
+import { useWriteContract as useWagmiWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useModal } from "../contexts/ModalContext";
+import ModalAlert from "@/components/modals";
+import { useEffect, useState } from "react";
+import { decodeEventLog, encodeFunctionData, TransactionReceipt } from "viem";
 import { DecodedLog, WriteContractWithToastReturnType } from "../api/types";
+import { useSendUserOperation, useSmartAccountClient } from "@account-kit/react";
+import { WriteContractFunctionParameters } from "viem/experimental";
+import { getErrorMessage } from "@/lib/utils";
 
 type Options = {
   timeTimeToWait?: number;
@@ -21,94 +23,130 @@ type Options = {
 };
 
 function useWriteContractWithToast(numConfirmations = 1) {
-  const { showModal } = useModal();
+  const { showModal, hideModal } = useModal();
   const [isPending, setIspending] = useState(false);
   const [options, setOptions] = useState<Options>();
   const [decodedLogs, setDecodedLogs] = useState<any[]>([]);
+  const [hash, setHash] = useState<`0x${string}`>();
   const writeContractResult = useWagmiWriteContract();
+  const { client } = useSmartAccountClient({ type: "LightAccount" });
+
+  const { sendUserOperation, isSendingUserOperation, sendUserOperationAsync } = useSendUserOperation({
+    client,
+    waitForTxn: true,
+    onSuccess: async ({ hash, request }) => {
+      setHash(hash);
+      await options?.onTxSent?.(hash);
+    },
+    onError: error => {
+      console.log("qsalch error", error.name, error.message);
+      showModal(
+        <ModalAlert
+          title="Transaction Failed"
+          description={getErrorMessage(error.message) || "Transaction Failed"}
+          modalType="error"
+        />,
+      );
+      throw error;
+    },
+  });
+
   const {
     data: receipt,
     isError,
     error,
+    status,
   } = useWaitForTransactionReceipt({
-    hash: writeContractResult.data,
+    hash,
     confirmations: numConfirmations,
   });
-  const [promiseResolveReject, setPromiseResolveReject] = useState<{ resolve: any; reject: any }>();
 
-  const { writeContractAsync, writeContract } = writeContractResult;
+  const [promiseResolveReject, setPromiseResolveReject] = useState<{ resolve: any; reject: any }>();
 
   const customWriteAsync = async (
     options: Options,
-    ...args: Parameters<typeof writeContractAsync>
+    ...args: [WriteContractFunctionParameters]
   ): Promise<WriteContractWithToastReturnType> => {
     const {
       waitForReceipt,
       loadingMessage,
-      toastId: tId,
       timeTimeToWait: ttw,
       errorMessage,
       onTxSent,
       onReceipt,
       successMessage,
     } = options;
-    // const toastId = toast.loading(loadingMessage || "Calling " + args[0].functionName + "...", { id: tId });
-    const toastId = toast.loading("Please confirm transaction in your wallet", { id: tId });
-    setOptions({ ...options, toastId, args });
+
+    showModal(<ModalAlert title="Transaction In Progress" description="Please wait." modalType="loading" />);
+
+    setOptions({ ...options, args });
+
     try {
       setIspending(true);
-      const txHash = await writeContractAsync(...args);
-      console.log("vb before afterAction");
-      toast.loading(loadingMessage || "Transaction sent. Waiting for confirmation.", { id: toastId });
 
-      await onTxSent?.(txHash);
-      console.log("after afterAction");
+      const data = encodeFunctionData({
+        abi: args[0].abi,
+        functionName: args[0].functionName,
+        args: args[0].args,
+      });
+
+      const op = await sendUserOperationAsync({
+        uo: {
+          target: args[0].address,
+          data,
+          value: args[0].value,
+        },
+      });
+      console.log("qsalch op", op);
+
+      showModal(
+        <ModalAlert
+          title="Transaction In Progress"
+          description={loadingMessage || "Transaction sent. Waiting for confirmation."}
+          modalType="loading"
+        />,
+      );
+
       const timeTimeToWait = ttw || onTxSent ? 0 : 5000;
       await new Promise(resolve => setTimeout(resolve, timeTimeToWait));
-      console.log("vb after wait");
+
       const p = new Promise((resolve, reject) => {
         setPromiseResolveReject({ resolve, reject });
-        console.log("vb in promise", promiseResolveReject);
         if (!waitForReceipt) {
-          resolve({ txHash });
-          toast.success(successMessage || "Transaction Successful", { id: toastId });
+          resolve({ hash });
+          showModal(
+            <ModalAlert
+              title="Transaction Successful"
+              description={successMessage || "Transaction Successful"}
+              modalType="success"
+              autoClose
+            />,
+          );
         }
       });
-      console.log("vb before finalResult promise", p);
+
       const finalResult = await p;
-      console.log("vb after promise", p, "vb finalResult", finalResult);
       return p as Promise<WriteContractWithToastReturnType>;
     } catch (error: any) {
-      toast.error(errorMessage || `Transaction Failed: ${error.message}`, { id: toastId });
+      showModal(
+        <ModalAlert
+          title="Transaction Failed"
+          description={errorMessage || `Transaction Failed: ${getErrorMessage(error.message)}`}
+          modalType="error"
+        />,
+      );
       throw new Error(error);
     } finally {
       setIspending(false);
     }
   };
 
-  const customWrite = (...args: Parameters<typeof writeContract>) => {
-    const toastId = toast.loading("Processing Transaction...");
-    try {
-      const result = writeContract(...args);
-      toast.success("Transaction Successful", { id: toastId });
-
-      return result;
-    } catch (error: any) {
-      toast.error(`Transaction Failed: ${error.message}`, { id: toastId });
-      throw error;
-    }
-  };
-
   useEffect(() => {
-    //TODO:@Jovells refactor to prevent running if user is not waiting for receipt
     const handleReceipt = async () => {
-      console.log("qsvb receipt", receipt, promiseResolveReject, writeContractResult);
       if (receipt && promiseResolveReject) {
         let logs: DecodedLog[] = [];
-        console.log("qs receipt", receipt.logs);
         for (const log of receipt.logs) {
           try {
-            console.log("qs log", log.data, log.topics, options?.args?.[0].abi);
             const decoded = decodeEventLog({
               abi: options?.args?.[0].abi,
               data: log.data,
@@ -116,16 +154,14 @@ function useWriteContractWithToast(numConfirmations = 1) {
             }) as DecodedLog;
             logs.push(decoded || log);
           } catch (e) {
-            console.log("qs error", e);
             continue;
           }
         }
 
         setDecodedLogs(logs);
-        console.log("qs decoded", logs, promiseResolveReject);
         await options?.onReceipt?.({ receipt, decodedLogs: logs });
-        console.log("qkl after onReceipt", promiseResolveReject);
         promiseResolveReject?.resolve({ receipt, decodedLogs: logs, txHash: receipt.transactionHash });
+
         if (options?.waitForReceipt) {
           options?.shouldShowModal
             ? showModal(
@@ -133,14 +169,20 @@ function useWriteContractWithToast(numConfirmations = 1) {
                   buttonText="Done"
                   buttonClick={options.modalAction}
                   modalType="success"
+                  autoClose
                   title="Successful"
                   description={options.successMessage || options.args?.[0].functionName + " successful"}
                   icon="../../images/icons/success.png"
                 />,
               )
-            : toast.success(options?.successMessage || options?.args?.[0].functionName + " successful", {
-                id: options?.toastId,
-              });
+            : showModal(
+                <ModalAlert
+                  title="Transaction Successful"
+                  description={options?.successMessage || options?.args?.[0].functionName + " successful"}
+                  modalType="success"
+                  autoClose
+                />,
+              );
         }
       }
     };
@@ -153,7 +195,6 @@ function useWriteContractWithToast(numConfirmations = 1) {
     receipt,
     isPending,
     writeContractAsync: customWriteAsync,
-    writeContract: customWrite,
   };
 }
 

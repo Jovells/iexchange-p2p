@@ -9,10 +9,9 @@ import { useUser } from '@/common/contexts/UserContext'
 const Balances = () => {
   const { showModal, hideModal } = useModal();
   const { tokens: marketDataToken } = useMarketData();
-  const { session } = useUser();
-  const isAuthenticated = session?.status === "authenticated";
+  const { isConnected } = useUser();
 
-  if(!isAuthenticated){
+  if (!isConnected) {
     return null;
   }
 

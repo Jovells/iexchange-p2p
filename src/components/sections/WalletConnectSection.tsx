@@ -35,7 +35,7 @@ const WalletConnectSection: React.FC = () => {
             </>
           )}
         </div>
-        <WalletConnect />
+        {!isConnected && <WalletConnect />}
       </div>
     </div>
   );

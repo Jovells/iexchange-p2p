@@ -19,8 +19,7 @@ const useCreateOrder = (
   offer: Offer | undefined,
   initialFormData?: { fiatAmount?: string; cryptoAmount?: string; paymentMethod?: PaymentMethod | null },
 ) => {
-  const { openConnectModal } = useConnectModal();
-  const { isConnected } = useUser();
+  const { isConnected, openAuthModal } = useUser();
   const { indexerUrl } = useContracts();
   const isBuy = offer?.offerType === OfferType.buy;
   const [{ fiatAmount, cryptoAmount, paymentMethod }, setFormData] = useState({
@@ -101,7 +100,7 @@ const useCreateOrder = (
   const alreadyApproved = allowance! >= tokensAmount || isBuy;
 
   const handleSubmit = async (e: React.BaseSyntheticEvent) => {
-    if (!isConnected) return openConnectModal?.();
+    if (!isConnected) return openAuthModal?.();
     e.preventDefault();
     if (!offer) return toast.error("Please select an offer");
 
@@ -170,10 +169,9 @@ const useCreateOrder = (
           toastId,
           loadingMessage: "Creating Order",
           successMessage: "Order Created Successfully",
-          onTxSent: async () => toast.loading("Order Sent. Waiting for finalisation", { id: toastId }),
           onReceipt: async ({ receipt, decodedLogs }) => {
             console.log("qwreceiptdeclogs", receipt, decodedLogs);
-            const orderId = decodedLogs[0].args.orderId.toString();
+            const orderId = decodedLogs.find(log => log.args.orderId !== undefined)?.args.orderId.toString();
             const block = await fetchBlock(receipt.blockNumber);
             console.log("qwblock", block);
             const order = { id: orderId, blockTimestamp: block.timestamp.toString(), ...newOrder.current } as Order;

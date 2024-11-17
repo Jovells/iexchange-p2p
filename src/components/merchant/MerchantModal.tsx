@@ -45,7 +45,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
     const id = toast.loading("Staking...");
     try {
       const stakeAmount = BigInt(1500 * 1e18);
-      if (allowance! <= stakeAmount) {
+      if (allowance! < stakeAmount) {
         const approveHash = await write(
           { waitForReceipt: true, toastId: id },
           {
@@ -61,7 +61,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
       }
 
       const registerHash = await write(
-        { waitForReceipt: true },
+        { waitForReceipt: true, toastId: id },
         {
           abi: OptimisticP2P,
           address: p2p.address,
@@ -114,12 +114,12 @@ const MerchantModal: React.FC<MerchantModalProps> = ({ hideModal, action }) => {
           <div className="flex flex-col gap-6 mb-4">
             <h2 className="text-gray-700 dark:text-gray-300 text-lg">Merchant Stake</h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Stake 1500 CEDIH to continue the process of becoming a merchant.
+              Stake 1500 USDT to continue the process of becoming a merchant.
             </p>
           </div>
           <InputWithSelect
             label="Stake Amount"
-            initialCurrencyName="CEDIH"
+            initialCurrencyName="USDT"
             currencies={[{ id: "0x01", symbol: "GHS", name: "Ghanaian Cedi", icon: "₵" }]}
             onValueChange={value => console.log(value)}
             value="1500"

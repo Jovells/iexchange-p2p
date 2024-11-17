@@ -199,7 +199,7 @@ const CreateAd = () => {
           // Redirect or handle success
           console.log("//////////////////////////////////////");
           const newOffer: Offer = {
-            id: decodedLogs?.[0].args.offerId.toString(),
+            id: decodedLogs?.find(log => log.args.offerId !== undefined)?.args.offerId.toString(),
             token: tokens?.find(t => t.id === token)!,
             currency: currencies?.find(c => c.currency === currency)!,
             paymentMethod: paymentMethods?.find(p => p.method === paymentMethod)!,

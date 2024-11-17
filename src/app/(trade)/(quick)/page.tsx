@@ -67,10 +67,10 @@ export default function QuickTradePage() {
         queryFn: () => fetchAds(indexerUrl, { ...options, ...method, quantity: 1 }),
       })) || [],
     combine: results => {
-      const min = Number(results[0].data?.offers[0].minOrder || 0);
-      const max = Math.min(Number(results[1].data?.offers[0].maxOrder || 0), 1000000000 * 10 ** 18);
-      const minRate = Number(results[0].data?.offers[0].rate || 0);
-      const maxRate = Number(results[1].data?.offers[0].rate || 0);
+      const min = Number(results[0].data?.offers[0]?.minOrder || 0);
+      const max = Math.min(Number(results[1].data?.offers[0]?.maxOrder || 0), 1000000000 * 10 ** 18);
+      const minRate = Number(results[0].data?.offers[0]?.rate || 0);
+      const maxRate = Number(results[1].data?.offers[0]?.rate || 0);
 
       return {
         data: {
@@ -184,7 +184,7 @@ export default function QuickTradePage() {
   const enabled = fiatAmount && cryptoAmount && !formErrors.fiatAmount && !formErrors.cryptoAmount;
 
   const isReady = (!isLoading && !isLoadingRate) || (minAndMax && estimatedRate);
-  console.log({ isLoading, isLoadingRate, minAndMax, estimatedRate, ready: isReady });
+  console.log("isready", { isLoading, isLoadingRate, minAndMax, estimatedRate, ready: isReady });
 
   return (
     <Suspense fallback={<Loader fullPage />}>
@@ -215,7 +215,7 @@ export default function QuickTradePage() {
       {/* form */}
 
       <div className=" w-full min-w-[400px] max-w-[450px] place-self-center md:mx-24">
-        {isReady ? (
+        {isReady && (
           <div className=" p-4 sm:p-6 w-full bg-white dark:bg-[#0f1115] dark:border  dark:border-gray-800 rounded-2xl shadow-lg ">
             <div className="flex mb-4 border-b border-gray-200 dark:border-gray-700">
               <button
@@ -366,9 +366,10 @@ export default function QuickTradePage() {
               </Link>
             </div>
           </div>
-        ) : (
+        )}
+        {!isReady && (
           <div className="flex container w-screen items-center justify-center h-full">
-            <Loader />
+            <Loader fullPage />
           </div>
         )}
       </div>

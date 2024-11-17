@@ -94,4 +94,16 @@ const config = {
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
 
-export default config
+import { withAccountKitUi, createColorSet } from "@account-kit/react/tailwind";
+
+// wrap your existing tailwind config with 'withAccountKitUi'
+export default withAccountKitUi(config, {
+  // override account kit themes
+  colors: {
+    "btn-primary": createColorSet("#01a2e4", "#01a2e4"),
+    "fg-accent-brand": createColorSet("#01a2e4", "#01a2e4"),
+  },
+  borderRadius: "md",
+});
+
+

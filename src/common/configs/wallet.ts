@@ -1,6 +1,6 @@
 import { Config, cookieStorage, createConfig, createConnector, createStorage } from "wagmi";
 import { connectorsForWallets, Wallet } from "@rainbow-me/rainbowkit";
-import { morphHolesky, kakarotSepolia } from "wagmi/chains";
+import { morphHolesky, kakarotSepolia, arbitrum, arbitrumSepolia } from "wagmi/chains";
 import { injectedWallet, metaMaskWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets";
 import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { HOME_PAGE, HOME_PAGE_ALT } from "../page-links";
@@ -67,7 +67,7 @@ const kSepolia = {
 } satisfies Chain;
 
 const isProd = process.env.NODE_ENV === "production";
-export const chains = isProd ? ([mHolesky] as const) : ([mHolesky] as const);
+export const chains = [arbitrumSepolia, morphHolesky] as const;
 export const dconfig = getDefaultConfig({
   appName: "IExchange",
   chains,
@@ -82,7 +82,8 @@ export const cconfig = createConfig({
   chains,
   connectors,
   transports: {
-    [mHolesky.id]: http(),
+    [arbitrumSepolia.id]: http(),
+    [morphHolesky.id]: http(),
     [kSepolia.id]: http(),
   },
 });

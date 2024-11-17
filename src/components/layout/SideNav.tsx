@@ -53,7 +53,7 @@ const SideNav: React.FC<SideNavProps> = ({ isDrawerOpen, toggleDrawer }) => {
   const navigation = useRouter();
   const pathname = usePathname();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const { session } = useUser();
+  const { isConnected } = useUser();
 
   useEffect(() => {
     navItems.forEach((item, index) => {
@@ -86,7 +86,7 @@ const SideNav: React.FC<SideNavProps> = ({ isDrawerOpen, toggleDrawer }) => {
           isDrawerOpen ? "block" : "hidden"
         } pt-6 lg:pt-[130px] lg:fixed absolute top-0 left-0 w-64 bg-white dark:bg-[#14161B] text-gray-600 dark:text-gray-300 h-full z-50 lg:z-auto flex flex-col justify-between`}
       >
-        {session.status === "authenticated" && (
+        {isConnected && (
           <div className="px-4 hidden lg:block mb-6">
             <NetworkSwitcher />
           </div>
