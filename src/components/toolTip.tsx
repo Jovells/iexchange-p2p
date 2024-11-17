@@ -12,7 +12,7 @@ const ToolTip: React.FC<ToolTipProps> = ({ text, children }) => {
   const hideToolTip = () => setVisible(false);
 
   return (
-    <div className="relative inline-block" onMouseEnter={showToolTip} onMouseLeave={hideToolTip}>
+    <div className="relative z-1000 inline-block" onMouseEnter={showToolTip} onMouseLeave={hideToolTip}>
       {children}
       {visible && (
         <div className="absolute bottom-full max-w-60 mb-2 w-max bg-gray-700 text-white text-sm rounded py-1 px-2 z-10">

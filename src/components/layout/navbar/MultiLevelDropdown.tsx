@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { getImage } from '@/lib/utils';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { ChevronDown, ChevronRight, CircleEllipsis } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { getImage } from "@/lib/utils";
+import { ChevronDown, ChevronRight, CircleEllipsis } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import ConnectButton from "@/components/connectButton";
+import SignOutButton from "@/components/connectButton/SignOut";
 
 interface MenuItem {
   title: string;
@@ -72,6 +73,7 @@ const MultiLevelDropdown = () => {
 
   const renderMenuItems = (items: MenuItem[], parentIndex?: string) => (
     <ul className="space-y-1 bg-white dark:bg-[#14161B] text-gray-600 dark:text-gray-300 text-sm py-4">
+      <SignOutButton />
       {items.map((item, index) => {
         const itemIndex = parentIndex ? `${parentIndex}-${index}` : index.toString();
 
@@ -81,11 +83,7 @@ const MultiLevelDropdown = () => {
               <Link href={item.href} onClick={handleOutsideClick}>
                 <div className="flex items-center p-4 py-3 w-full text-left rounded hover:text-blue-400">
                   {item.icon && <img src={item.icon} alt={item.title} className="mr-2 h-5 w-5" />}
-                  {item.title === "wallet" ? (
-                    <ConnectButton chainStatus={"none"} accountStatus={"address"} showBalance={false} />
-                  ) : (
-                    item.title
-                  )}
+                  {item.title === "wallet" ? <ConnectButton /> : item.title}
                 </div>
               </Link>
             ) : (
@@ -97,13 +95,17 @@ const MultiLevelDropdown = () => {
               >
                 {item.icon && <img src={item.icon} alt={item.title} className="mr-2 h-5 w-5" />}
                 {item.title === "wallet" ? (
-                  <ConnectButton chainStatus={"none"} accountStatus={"address"} showBalance={false} />
+                  <ConnectButton />
                 ) : (
                   <>
                     {item.title}
                     {item.subMenu && (
                       <span className="ml-auto">
-                        {openIndex === itemIndex ? <ChevronDown className="text-gray-500 dark:text-gray-400" /> : <ChevronRight className="text-gray-500 dark:text-gray-400" />}
+                        {openIndex === itemIndex ? (
+                          <ChevronDown className="text-gray-500 dark:text-gray-400" />
+                        ) : (
+                          <ChevronRight className="text-gray-500 dark:text-gray-400" />
+                        )}
                       </span>
                     )}
                   </>
@@ -134,15 +136,17 @@ const MultiLevelDropdown = () => {
                           {subItem.title}
                           {subItem.subMenu && (
                             <span className="ml-auto">
-                              {openSubIndex === subItemIndex ? <ChevronDown className="text-gray-500 dark:text-gray-400" /> : <ChevronRight className="text-gray-500 dark:text-gray-400" />}
+                              {openSubIndex === subItemIndex ? (
+                                <ChevronDown className="text-gray-500 dark:text-gray-400" />
+                              ) : (
+                                <ChevronRight className="text-gray-500 dark:text-gray-400" />
+                              )}
                             </span>
                           )}
                         </button>
                       )}
                       {subItem.subMenu && openSubIndex === subItemIndex && (
-                        <ul className="pl-0 mt-1 space-y-1">
-                          {renderMenuItems(subItem.subMenu, subItemIndex)}
-                        </ul>
+                        <ul className="pl-0 mt-1 space-y-1">{renderMenuItems(subItem.subMenu, subItemIndex)}</ul>
                       )}
                     </li>
                   );

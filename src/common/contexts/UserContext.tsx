@@ -3,7 +3,6 @@
 import { getAuth, signInWithCustomToken } from "firebase/auth";
 import { createContext, useContext, ReactNode, FC, useState, useEffect, useLayoutEffect } from "react";
 import { app } from "../configs/firebase";
-import { createAuthenticationAdapter } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
 import { API_ENDPOINT } from "@/common/constants";
 import { useAccount, useDisconnect } from "wagmi";
@@ -28,6 +27,8 @@ interface UserContextType {
   isInitializing: boolean;
   signUserIn: (firebaseToken: string) => void;
   openAuthModal: () => void;
+  isAuthenticating: boolean;
+  isLoading: boolean;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -57,7 +58,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   //   isConnected ? (wagmiAddress?.toLocaleLowerCase() as `0x${string}` | undefined) : undefined;
 
   const address = mixedCaseAddress?.toLocaleLowerCase() as `0x${string}` | undefined;
-  console.log("user qp", { user, signerStatus, address });
+  console.log("user qp", { user, signerStatus, address }, signerStatus.status);
 
   // const authenticationAdapter = createAuthenticationAdapter({
   //   getNonce: async () => {
@@ -163,7 +164,12 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   console.log("session 45", session, auth.currentUser);
 
-  const isConnected = signerStatus.isConnected;
+  const isConnected = !!address;
+  const isLoading = Boolean(
+    signerStatus.isInitializing ||
+      signerStatus.isAuthenticating ||
+      (address && (!signerStatus.isAuthenticating || !signerStatus.isInitializing)),
+  );
 
   return (
     <UserContext.Provider
@@ -171,9 +177,11 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
         address,
         session,
         isInitializing: signerStatus.isInitializing,
+        isAuthenticating: signerStatus.isAuthenticating,
         mixedCaseAddress,
         isConnected,
         signUserOut,
+        isLoading,
         signUserIn,
         openAuthModal,
       }}

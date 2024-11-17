@@ -1,8 +1,7 @@
 import { useModal } from '@/common/contexts/ModalContext';
 import { useUser } from '@/common/contexts/UserContext';
 import ClaimModal from '@/components/modals/ClaimModal';
-import Button from '@/components/ui/Button';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+import Button from "@/components/ui/Button";
 import React from "react";
 import { FaFaucet } from "react-icons/fa";
 

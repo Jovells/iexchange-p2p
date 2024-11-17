@@ -2,8 +2,7 @@
 import { OrdersDropdown } from './OrdersDropdown';
 import IsVerifiedButton from "@/components/ui/IsVerifiedButton";
 import MenuDropdown from "../../ui/MenuDropdown";
-import Link from 'next/link';
-import WalletConnect from "@/components/wallet";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   APPEALS_PAGE,
@@ -22,9 +21,10 @@ import useIsMerchant from "@/common/hooks/useIsMerchant";
 import { useUser } from "@/common/contexts/UserContext";
 import { usePathname, useRouter } from "next/navigation";
 import { getImage } from "@/lib/utils";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import useMyPendingOrders from "@/common/hooks/useMyOrders";
 import MultiLevelDropdown from "./MultiLevelDropdown";
+import ConnectButton from "@/components/connectButton";
+import SignOutButton from "@/components/connectButton/SignOut";
 
 const menuLinks = [
   { href: QUICK_TRADE_PAGE, label: "Quick Trade" },
@@ -146,7 +146,7 @@ const SubNav = () => {
       <MenuDropdown title="Account" icon={profileIcon as string} dropdownItems={isConnected ? accountLinks : []}>
         <div className="p-4 border border-gray-200 dark:border-gray-800 border-b-0">
           {/* <WalletConnect /> */}
-          <ConnectButton chainStatus={"none"} accountStatus={"address"} showBalance={false} />
+          <SignOutButton />
           {/* {isConnected && <IsVerifiedButton />} */}
         </div>
       </MenuDropdown>
@@ -170,14 +170,11 @@ const SubNav = () => {
     );
   }
 
-
   return (
     <div className="border-0 mt-0 lg:mt-2 mb-0">
       <div className="container mx-auto px-3 lg:px-6 flex flex-row justify-between items-center">
         <div className="flex flex-row gap-4 pl-2 lg:pl-0">{renderLinks(menuLinks)}</div>
-        <div className="hidden lg:inline-block">
-          {renderMenuDropdowns()}
-        </div>
+        <div className="hidden lg:inline-block">{renderMenuDropdowns()}</div>
         <MultiLevelDropdown />
       </div>
     </div>

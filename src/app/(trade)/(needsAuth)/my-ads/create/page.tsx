@@ -181,17 +181,7 @@ const CreateAd = () => {
               address: p2p.address,
               functionName: "createOffer",
               abi: p2p.abi,
-              args: [
-                token,
-                currency,
-                paymentMethod,
-                rate,
-                minOrder,
-                maxOrder,
-                accountHash,
-                depositAddress,
-                offerTypes[activeTab],
-              ],
+              args,
             },
           );
           console.log("qs Transaction successful:", txHash, receipt, decodedLogs);

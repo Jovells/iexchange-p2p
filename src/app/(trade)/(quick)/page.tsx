@@ -18,7 +18,7 @@ const Loader = lazy(() => import("@/components/loader/Loader"));
 const ToolTip = lazy(() => import("@/components/toolTip"));
 const InputSelect = lazy(() => import("@/components/ui/InputSelect"));
 const Select = lazy(() => import("@/components/ui/Select"));
-const WalletConnect = lazy(() => import("@/components/wallet"));
+const WalletConnect = lazy(() => import("@/components/connectButton"));
 const FaucetAndNetwork = lazy(() => import("@/components/faucetAndNetwork"));
 
 interface CurrencyInput {

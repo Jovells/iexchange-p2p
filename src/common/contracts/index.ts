@@ -60,7 +60,7 @@ export default {
     ],
   },
   421614: {
-    indexerUrl: "https://api.goldsky.com/api/public/project_cm3hlsxsh8t4p01xe6i5c4s0e/subgraphs/iexchange/v3/gn",
+    indexerUrl: "https://api.goldsky.com/api/public/project_clx6d4c008ktz01wl79of786q/subgraphs/iexchange/arbitrum/gn",
     name: "Arbitrum Sepolia",
     rpcUrl: "https://sepolia-rollup.arbitrum.io/rpc",
     p2p: {

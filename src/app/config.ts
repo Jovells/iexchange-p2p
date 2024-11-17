@@ -14,7 +14,7 @@ const uiConfig: AlchemyAccountsUIConfig = {
       ],
       [{ type: "external_wallets", walletConnect: { projectId: "your-project-id" } }],
     ],
-    addPasskeyOnSignup: false,
+    addPasskeyOnSignup: true,
   },
   supportUrl: "https://t.me/iExchangeCommunity",
 };

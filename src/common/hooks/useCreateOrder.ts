@@ -13,7 +13,6 @@ import { useUser } from "../contexts/UserContext";
 import CediH from "../abis/CediH";
 import { useContracts } from "../contexts/ContractContext";
 import { useBalance, useReadContract } from "wagmi";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 const useCreateOrder = (
   offer: Offer | undefined,

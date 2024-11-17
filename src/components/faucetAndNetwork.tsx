@@ -13,8 +13,8 @@ export default function FaucetAndNetwork({ className, outline }: { outline?: boo
             "flex w-[400px] h-60px flex-row mt-4 items-center justify-center lg:justify-start gap-4 " + className
           }
         >
-          <Claim className={"w-full h-full border" + (outline ? "border-gray-200 dark:border-gray-700" : "")} />
-          <NetworkSwitcher className="w-full h-full" />
+          <Claim className={"w-full  border" + (outline ? "border-gray-200 dark:border-gray-700" : "")} />
+          <NetworkSwitcher className="w-full " />
         </div>
       </>
     )

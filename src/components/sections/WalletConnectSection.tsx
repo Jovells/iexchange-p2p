@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import WalletConnect from "../wallet";
+import WalletConnect from "../connectButton";
 import { useUser } from "@/common/contexts/UserContext";
 import NetworkSwitcher from "../networkSwitcher";
 import Claim from "@/app/(trade)/claim";

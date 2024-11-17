@@ -3,7 +3,6 @@ import Loader from '../loader/Loader';
 import { X } from 'lucide-react';
 import { Offer } from '@/common/api/types';
 import { offerTypes } from "@/common/constants";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useUser } from "@/common/contexts/UserContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
